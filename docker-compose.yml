@@ -8,9 +8,9 @@
       container_name: laravel-app
       restart: unless-stopped
       ports:
-        - "8000:80"  # Apache escucha en el puerto 80 interno
+        - "8000:80" 
       volumes:
-        - ./:/var/www  # Tu proyecto Laravel
+        - ./:/var/www
       depends_on:
         - mysql
 
