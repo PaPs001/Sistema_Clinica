@@ -1,0 +1,242 @@
+    /* Estilos específicos para registro de alergias */
+
+.registration-section {
+    margin-bottom: 30px;
+}
+
+        .allergies-list-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .allergies-list-section h3 {
+            color: #061175;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-filters {
+            margin-bottom: 20px;
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            border: 1px solid #e1e5e9;
+            border-radius: 20px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-tag:hover,
+        .filter-tag.active {
+            background: #061175;
+            color: white;
+            border-color: #061175;
+        }
+
+        .allergies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .allergy-card {
+            border: 1px solid #e1e5e9;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .allergy-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .allergy-header {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .allergy-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .allergy-icon.leve { background: #28a745; }
+        .allergy-icon.moderada { background: #ffc107; }
+        .allergy-icon.severa { background: #fd7e14; }
+        .allergy-icon.anafilaxia { background: #dc3545; }
+
+        .allergy-info {
+            flex: 1;
+        }
+
+        .allergy-info h4 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .patient-name {
+            display: block;
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .allergy-type {
+            display: block;
+            color: #061175;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .allergy-severity {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .allergy-severity.leve { background: #28a745; }
+        .allergy-severity.moderada { background: #ffc107; }
+        .allergy-severity.severa { background: #fd7e14; }
+        .allergy-severity.anafilaxia { background: #dc3545; }
+
+        .allergy-details {
+            padding: 15px 20px;
+        }
+
+        .detail-item {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .detail-item strong {
+            color: #333;
+        }
+
+        .status {
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status.activa { background: #d4edda; color: #155724; }
+        .status.inactiva { background: #fff3cd; color: #856404; }
+        .status.superada { background: #d1ecf1; color: #0c5460; }
+
+        .allergy-actions {
+            padding: 15px 20px;
+            border-top: 1px solid #e1e5e9;
+            display: flex;
+            gap: 10px;
+        }
+
+        .allergy-actions button {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .allergy-actions .btn-edit {
+            background: #28a745;
+            color: white;
+        }
+
+        .allergy-actions .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .allergy-actions button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .no-allergies {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-allergies i {
+            font-size: 3rem;
+            color: #061175;
+            margin-bottom: 15px;
+        }
+
+        .allergies-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .stat-icon.severe { background: #dc3545; }
+        .stat-icon.active { background: #28a745; }
+        .stat-icon.total { background: #061175; }
+
+        .stat-info h4 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+        }

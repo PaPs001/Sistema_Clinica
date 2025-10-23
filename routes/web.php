@@ -2,16 +2,32 @@
 
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\GeneralController;
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    return view('welcome');
 });
 
-require __DIR__.'/settings.php';
-require __DIR__.'/auth.php';
+Route::get('/dashboard', function(){
+    return view('MEDICO.dashboard-medico');
+})->name('dashboard');
+
+Route::get('/registro-expediente', function(){
+    return view('MEDICO.registro-expediente');
+})->name('registro-expediente');
+
+Route::get('/consulta-historial', function(){
+    return view('MEDICO.consulta-historial');
+})->name('consulta-historial');
+
+Route::get('/subir-documentos', function(){
+    return view('MEDICO.subir-documentos');
+})->name('subir-documentos');
+
+Route::get('/filtrar-expedientes', function(){
+    return view('MEDICO.filtrar-expedientes');
+})->name('filtrar-expedientes');
+
+Route::get('/registro-alergias', function(){
+    return view('MEDICO.registro-alergias');
+})->name('registro-alergias');
