@@ -1,7 +1,6 @@
-@extends('MEDICO.plantillas.dashboard_general')
+@extends('plantillas.dashboard_general')
 @section('title', 'Registro de Expediente Médico - Hospital Naval')
 @section('content')
-        <div class="main-content">
             <header class="content-header">
                 <h1>Registro de Expediente Médico</h1>
                 <div class="header-actions">
@@ -150,7 +149,6 @@
                     </form>
                 </div>
             </div>
-        </div>
 @endsection 
 @section('scripts')
     <script src="script-medico.js"></script>

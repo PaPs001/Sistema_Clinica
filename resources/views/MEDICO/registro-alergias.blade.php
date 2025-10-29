@@ -1,8 +1,6 @@
-@extends('MEDICO.plantillas.dashboard_general')
+@extends('plantillas.dashboard_general')
 @section('title', 'Registro alergias Médico - Hospital Naval')
 @section('content')
-<!-- Main Content -->
-        <div class="main-content">
             <header class="content-header">
                 <h1>Registro de Alergias</h1>
                 <div class="header-actions">
@@ -153,7 +151,6 @@
                     </div>
                 </div>
             </div>
-        </div>
 @endsection
 @section('script')
     <script src="script-medico.js"></script>
