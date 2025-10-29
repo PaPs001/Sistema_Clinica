@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Enfermera - Hospital Naval</title>
-    <link rel="stylesheet" href="style-enfermera.css">
+    <title>@yield('title', 'Pagina')</title>
+    @yield('styles')
+    @yield('scripts')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -15,39 +16,39 @@
                 <div class="hospital-icon">
                     <i class="fas fa-hospital"></i>
                 </div>
-                <h2>Hospital Naval</h2>
+                <h2>Clinica Ultima Asignatura</h2>
                 <p>Módulo Enfermera</p>
             </div>
             
             <nav class="sidebar-nav">
-                <a href="dashboard-enfermera.html" class="nav-item active">
+                <a href="{{ route('dashboardEnfermera') }}" class="nav-item {{ request()->routeIs('dashboardEnfermera') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
                 </a>
-                <a href="pacientes-enfermera.html" class="nav-item">
+                <a href="{{ route('pacientesEnfermera') }}" class="nav-item {{ request()->routeIs('pacientesEnfermera') ? 'active' : '' }}">
                     <i class="fas fa-user-injured"></i>
                     <span>Pacientes</span>
                 </a>
-                <a href="signos-vitales.html" class="nav-item">
+                <a href="{{ route('signosVitales') }}" class="nav-item {{ request()->routeIs('signosVitales') ? 'active' : '' }}">
                     <i class="fas fa-heartbeat"></i>
                     <span>Signos Vitales</span>
                 </a>
-                <a href="tratamientos.html" class="nav-item">
+                <a href="{{ route('tratamientos') }}" class="nav-item {{ request()->routeIs('tratamientos') ? 'active' : '' }}">
                     <i class="fas fa-syringe"></i>
                     <span>Tratamientos</span>
                 </a>
-                <a href="medicamentos.html" class="nav-item">
+                <!--<a href="{{ route('medicamentos') }}" class="nav-item {{ request()->routeIs('medicamentos') ? 'active' : '' }}">
                     <i class="fas fa-pills"></i>
                     <span>Medicamentos</span>
-                </a>
-                <a href="citas-enfermera.html" class="nav-item">
+                </a>-->
+                <!--<a href="{{ route('citasEnfermera') }}" class="nav-item {{ request()->routeIs('citasEnfermera') ? 'active' : '' }}">
                     <i class="fas fa-calendar-check"></i>
                     <span>Citas del Día</span>
-                </a>
-                <a href="reportes-enfermera.html" class="nav-item">
+                </a>-->
+                <!--<a href="{{ route('reportesEnfermera') }}" class="nav-item {{ request()->routeIs('reportesEnfermera') ? 'active' : '' }}">
                     <i class="fas fa-chart-bar"></i>
                     <span>Reportes</span>
-                </a>
+                </a>-->
             </nav>
             
             <div class="sidebar-footer">
@@ -60,9 +61,16 @@
                         <span>Enfermera</span>
                     </div>
                 </div>
-                <a href="index.html" class="logout-btn">
+                <form id="logout-form" method="post" style="display: none;"action="{{ route('logout') }}">
+                    @csrf
+                </form>
+                <a href="#" class="logout-btn" onClick="event.preventDefault(); document.getElementById('logout-form').submit();">
                     <i class="fas fa-sign-out-alt"></i>
                     <span>Cerrar Sesión</span>
                 </a>
             </div>
         </div>
+        <div class="main-content">
+            @yield('content')
+        </div>
+    </div>

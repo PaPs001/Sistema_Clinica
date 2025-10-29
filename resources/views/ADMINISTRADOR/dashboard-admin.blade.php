@@ -1,7 +1,9 @@
-
-        <div class="main-content">
+@extends('plantillas.dashboard_administrador')
+@section('title', 'Dashboard Administrador - Clínica "Ultima Asignatura"')
+@section('content')
             <header class="content-header">
                 <h1>Panel de Administración</h1>
+                <!--
                 <div class="header-actions">
                     <div class="search-box">
                         <input type="text" placeholder="Buscar usuario, reporte o configuración..." aria-label="Buscar en el sistema">
@@ -11,7 +13,7 @@
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">3</span>
                     </div>
-                </div>
+                </div>-->
             </header>
 
             <div class="content">
@@ -213,7 +215,7 @@
                     </div>
                 </div>
 
-                <!-- Información del Sistema -->
+                <!-- Información del Sistema 
                 <div class="health-info">
                     <div class="info-card">
                         <h3><i class="fas fa-database"></i> Estado del Sistema</h3>
@@ -249,6 +251,7 @@
                             </button>
                         </div>
                     </div>
+-->
                     
                     <div class="info-card">
                         <h3><i class="fas fa-chart-line"></i> Reportes Recientes</h3>
@@ -313,8 +316,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
     <!-- Modal de notificaciones -->
     <div class="modal-overlay" id="notifications-modal">
@@ -336,7 +337,7 @@
             </div>
         </div>
     </div>
-
-    <script src="script-admin.js"></script>
-</body>
-</html>
+@endsection
+@section('scripts')
+    @vite(['resources/js/ADMINISTRATOR/script-admin.js'])
+@endsection

@@ -1,9 +1,12 @@
-
-        <!-- Main Content -->
-        <div class="main-content">
+@extends('plantillas.dashboard_enfermera')
+@section('title', 'Dashboard Enfermera - Hospital Naval')
+@section('styles')
+    @vite(['resources/css/ENFERMERA/paginas/style-enfermera.css'])
+@endsection
+@section('content')
             <header class="content-header">
                 <h1>¡Hola Laura!</h1>
-                <div class="header-actions">
+                <!--<div class="header-actions">
                     <div class="search-box">
                         <input type="text" placeholder="Buscar paciente o procedimiento..." aria-label="Buscar paciente o procedimiento">
                         <i class="fas fa-search"></i>
@@ -12,13 +15,13 @@
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">5</span>
                     </div>
-                </div>
+                </div>-->
             </header>
 
             <div class="content">
                 <!-- Estadísticas Rápidas -->
                 <div class="stats-grid">
-                    <div class="stat-card">
+                    <!--<div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-user-injured"></i>
                         </div>
@@ -35,7 +38,7 @@
                             <h3>12</h3>
                             <p>Signos Pendientes</p>
                         </div>
-                    </div>
+                    </div>-->
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-syringe"></i>
@@ -190,7 +193,7 @@
                 </div>
 
                 <!-- Información del Turno -->
-                <div class="health-info">
+ 
                     <div class="info-card">
                         <h3><i class="fas fa-tasks"></i> Tareas del Turno</h3>
                         <div class="tasks-list">
@@ -221,7 +224,7 @@
                         </div>
                     </div>
                     
-                    <div class="info-card">
+                    <!--<div class="info-card">
                         <h3><i class="fas fa-calendar-check"></i> Próximas Citas Médicas</h3>
                         <div class="appointments-list">
                             <div class="appointment-item">
@@ -249,8 +252,8 @@
                                 <button class="btn-view" aria-label="Preparar cita de Ana López">Preparar</button>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </div>-->
+
 
                 <!-- Acciones Rápidas -->
                 <div class="quick-actions">
@@ -264,19 +267,17 @@
                             <i class="fas fa-pills"></i>
                             <span>Administrar Medicamentos</span>
                         </a>
-                        <a href="pacientes-enfermera.html" class="action-card">
+                        <!--<a href="pacientes-enfermera.html" class="action-card">
                             <i class="fas fa-user-plus"></i>
                             <span>Nuevo Paciente</span>
                         </a>
                         <a href="reportes-enfermera.html" class="action-card">
                             <i class="fas fa-file-medical"></i>
                             <span>Generar Reporte</span>
-                        </a>
+                        </a>-->
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
     <!-- Modal de notificaciones -->
     <div class="modal-overlay" id="notifications-modal">
@@ -298,7 +299,7 @@
             </div>
         </div>
     </div>
-
-    <script src="script-enfermera.js"></script>
-</body>
-</html>
+@endsection
+@section('scripts')
+@vite('resources/js/ENFERMERA/script-enfermera.js')
+@endsection

@@ -69,17 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Configurar botones de acción
         setupAdminActionButtons();
 
-        // Logout
-        const logoutBtn = document.querySelector('.logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                    logout();
-                }
-            });
-        }
-
         // Botones de filtro y exportación específicos para administrador
         const filterRolesBtn = document.getElementById('filter-roles');
         const addUserBtn = document.getElementById('add-user');

@@ -1,72 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Respaldo de Datos - Panel Admin</title>
-    <link rel="stylesheet" href="respaldo-datos.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="hospital-icon">
-                    <i class="fas fa-database"></i>
-                </div>
-                <h2>Panel Admin</h2>
-                <p>Gestión del Sistema</p>
-            </div>
-
-            <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-tachometer-alt"></i>Dashboard
-                </a>
-                <a href="gestion-usuarios.html" class="nav-item">
-                    <i class="fas fa-users"></i>Gestión de Usuarios
-                </a>
-                <a href="gestion-roles.html" class="nav-item">
-                    <i class="fas fa-user-tag"></i>Gestión de Roles
-                </a>
-                <a href="control-accesos.html" class="nav-item">
-                    <i class="fas fa-lock"></i>Control de Accesos
-                </a>
-                <a href="respaldo-datos.html" class="nav-item active">
-                    <i class="fas fa-database"></i>Respaldo de Datos
-                </a>
-                <a href="reportes.html" class="nav-item">
-                    <i class="fas fa-chart-bar"></i>Reportes
-                </a>
-                <a href="auditoria.html" class="nav-item">
-                    <i class="fas fa-clipboard-list"></i>Auditoría
-                </a>
-                <a href="configuracion.html" class="nav-item">
-                    <i class="fas fa-cogs"></i>Configuración
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user-cog"></i>
-                    </div>
-                    <div class="user-details">
-                        <strong>Administrador</strong>
-                        <span>Super Usuario</span>
-                    </div>
-                </div>
-                <a href="#" class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
-                </a>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
+@extends('plantillas.dashboard_administrador')
+@section('title', 'Respaldo de Datos - Clínica "Última Asignatura"')
+@section('content')
             <header class="content-header">
                 <h1><i class="fas fa-database"></i> Respaldo de Datos</h1>
-                <div class="header-actions">
+                <!--<div class="header-actions">
                     <div class="search-box">
                         <input type="text" id="searchBackups" placeholder="Buscar respaldos..." onkeyup="searchBackups()">
                         <i class="fas fa-search"></i>
@@ -75,7 +12,7 @@
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">2</span>
                     </div>
-                </div>
+                </div>--->
             </header>
 
             <div class="content">
@@ -108,7 +45,7 @@
                             <p>Respaldos Exitosos</p>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <!--<div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-clock"></i>
                         </div>
@@ -116,7 +53,7 @@
                             <h3 id="nextBackup">-</h3>
                             <p>Próximo Respaldo</p>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
 
                 <!-- Acciones Principales -->
@@ -162,7 +99,8 @@
                             </button>
                         </div>
                     </div>
-
+                </div>
+<!--
                     <div class="info-card">
                         <h3><i class="fas fa-history"></i> Estado del Sistema</h3>
                         <div class="system-status">
@@ -196,6 +134,8 @@
                         </div>
                     </div>
                 </div>
+-->
+
 
                 <!-- Historial de Respaldos -->
                 <div class="recent-section">
@@ -231,7 +171,7 @@
                     </div>
                 </div>
 
-                <!-- Programación Automática -->
+                <!-- Programación Automática
                 <div class="recent-section">
                     <h2>
                         <i class="fas fa-clock"></i> Programación Automática
@@ -256,11 +196,12 @@
                                 </tr>
                             </thead>
                             <tbody id="schedulesTableBody">
-                                <!-- Las programaciones se cargarán dinámicamente -->
+                                Las programaciones se cargarán dinámicamente
                             </tbody>
                         </table>
                     </div>
                 </div>
+                 -->
 
                 <!-- Quick Actions -->
                 <div class="quick-actions">
@@ -274,19 +215,17 @@
                             <i class="fas fa-undo"></i>
                             <span>Restaurar Datos</span>
                         </a>
-                        <a href="#" class="action-card" onclick="manageStorage()">
+                        <!--<a href="#" class="action-card" onclick="manageStorage()">
                             <i class="fas fa-hdd"></i>
                             <span>Gestionar Almacenamiento</span>
-                        </a>
-                        <a href="#" class="action-card" onclick="showBackupLogs()">
+                        </a>-->
+                        <!--<a href="#" class="action-card" onclick="showBackupLogs()">
                             <i class="fas fa-list-alt"></i>
                             <span>Ver Logs</span>
-                        </a>
+                        </a>-->
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
 
     <!-- Modal para Restaurar -->
     <div class="modal-overlay" id="restoreModal">
@@ -398,7 +337,7 @@
             </div>
         </div>
     </div>
-
-    <script src="respaldo-datos.js"></script>
-</body>
-</html>
+@endsection
+@section('scripts')
+@vite('resources/js/ADMINISTRATOR/respaldo-datos.js')
+@endsection

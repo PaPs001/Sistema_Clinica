@@ -1,69 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auditoría - Panel Admin</title>
-    <link rel="stylesheet" href="auditoria.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <div class="hospital-icon">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-                <h2>Panel Admin</h2>
-                <p>Gestión del Sistema</p>
-            </div>
-
-            <nav class="sidebar-nav">
-                <a href="dashboard.html" class="nav-item">
-                    <i class="fas fa-tachometer-alt"></i>Dashboard
-                </a>
-                <a href="gestion-usuarios.html" class="nav-item">
-                    <i class="fas fa-users"></i>Gestión de Usuarios
-                </a>
-                <a href="gestion-roles.html" class="nav-item">
-                    <i class="fas fa-user-tag"></i>Gestión de Roles
-                </a>
-                <a href="control-accesos.html" class="nav-item">
-                    <i class="fas fa-lock"></i>Control de Accesos
-                </a>
-                <a href="respaldo-datos.html" class="nav-item">
-                    <i class="fas fa-database"></i>Respaldo de Datos
-                </a>
-                <a href="reportes.html" class="nav-item">
-                    <i class="fas fa-chart-bar"></i>Reportes
-                </a>
-                <a href="auditoria.html" class="nav-item active">
-                    <i class="fas fa-search"></i>Auditoría
-                </a>
-                <a href="configuracion.html" class="nav-item">
-                    <i class="fas fa-cogs"></i>Configuración
-                </a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user-cog"></i>
-                    </div>
-                    <div class="user-details">
-                        <strong>Administrador</strong>
-                        <span>Super Usuario</span>
-                    </div>
-                </div>
-                <a href="#" class="logout-btn" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
-                </a>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="main-content">
+@extends('plantillas.dashboard_administrador')
+@section('title', 'Auditoría del Sistema - Clínica "Ultima Asignatura"')
+@section('content')
             <header class="content-header">
                 <h1><i class="fas fa-search"></i> Auditoría del Sistema</h1>
                 <div class="header-actions">
@@ -290,8 +227,6 @@
                     </div>
                 </div>
             </div>
-        </main>
-    </div>
 
     <!-- Modal para Detalles del Log -->
     <div class="modal-overlay" id="logDetailModal">
@@ -383,7 +318,7 @@
             </div>
         </div>
     </div>
-
-    <script src="auditoria.js"></script>
-</body>
-</html>
+@endsection
+@section('scripts')
+    @vite(['resources/js/ADMINISTRATOR/auditoria.js'])
+@endsection
