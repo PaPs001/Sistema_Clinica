@@ -69,17 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Configurar botones de acción
         setupNurseActionButtons();
 
-        // Logout
-        const logoutBtn = document.querySelector('.logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                    logout();
-                }
-            });
-        }
-
         // Botones de filtro y exportación específicos para enfermera
         const filterAlertsBtn = document.getElementById('filter-alerts');
         const markAllReadBtn = document.getElementById('mark-all-read');

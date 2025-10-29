@@ -1,6 +1,6 @@
-
-        <!-- Main Content -->
-        <div class="main-content">
+@extends('plantillas.dashboard_recepcionista')
+@section('title', 'Dashboard Recepcionista - Clínica "Ultima Asignatura"')
+@section('content')
             <header class="content-header">
                 <h1>¡Buenos días Ana!</h1>
                 <div class="header-actions">
@@ -64,9 +64,9 @@
                             <button class="section-btn" id="filter-appointments">
                                 <i class="fas fa-filter"></i> Filtrar
                             </button>
-                            <button class="section-btn" id="export-schedule">
+                            <!--<button class="section-btn" id="export-schedule">
                                 <i class="fas fa-download"></i> Exportar
-                            </button>
+                            </button>-->
                         </div>
                     </h2>
                     <div class="appointments-table">
@@ -173,10 +173,11 @@
                 <div class="recent-section">
                     <h2>
                         <i class="fas fa-users"></i> Pacientes en Espera
-                        <div class="section-actions">
+                        <!--<div class="section-actions">
                             <button class="section-btn" id="call-next">
                                 <i class="fas fa-bullhorn"></i> Llamar Siguiente
                             </button>
+                            -->
                             <button class="section-btn" id="refresh-waiting">
                                 <i class="fas fa-sync"></i> Actualizar
                             </button>
@@ -331,8 +332,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
     <!-- Modal de notificaciones -->
     <div class="modal-overlay" id="notifications-modal">
@@ -357,7 +356,7 @@
             </div>
         </div>
     </div>
-
+@endsection
+@section('scripts')
     <script src="script-recepcionista.js"></script>
-</body>
-</html>
+@endsection

@@ -29,7 +29,13 @@ class LoginController extends Controller
                 return redirect()->route('dashboardPaciente');
             } elseif ($user->typeUser_id == 2) {
                 return redirect()->route('dashboardMedico'); 
-            } else {
+            } elseif ($user->typeUser_id == 1) {
+                return redirect()->route('dashboardAdmin');
+            }elseif ($user->typeUser_id == 4) {
+                return redirect()->route('dashboardRecepcionista');
+            }elseif ($user->typeUser_id == 5) {
+                return redirect()->route('dashboardEnfermera');
+            }else{
                 return redirect()->route('login');
             }
         }

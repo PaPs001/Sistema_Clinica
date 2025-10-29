@@ -1,82 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recordatorios - Clínica "Ultima Asignatura"</title>
-    <link rel="stylesheet" href="style-recepcionista.css">
-    <link rel="stylesheet" href="style-recordatorios.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="hospital-icon">
-                    <i class="fas fa-hospital"></i>
-                </div>
-                <h2>Hospital Naval</h2>
-                <p>Módulo Recepcionista</p>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="dashboard-recepcionista.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Inicio</span>
-                </a>
-                <a href="registro-pacientes.html" class="nav-item">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Registrar Pacientes</span>
-                </a>
-                <a href="gestion-citas.html" class="nav-item">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Gestión de Citas</span>
-                </a>
-                <a href="agenda.html" class="nav-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Agenda</span>
-                </a>
-                <a href="pacientes-recepcion.html" class="nav-item">
-                    <i class="fas fa-user-injured"></i>
-                    <span>Pacientes</span>
-                </a>
-                <a href="recordatorios.html" class="nav-item active">
-                    <i class="fas fa-bell"></i>
-                    <span>Recordatorios</span>
-                </a>
-                <a href="reportes-recepcion.html" class="nav-item">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Reportes</span>
-                </a>
-            </nav>
-            
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user-clock"></i>
-                    </div>
-                    <div class="user-details">
-                        <strong>Ana Rodríguez</strong>
-                        <span>Recepcionista</span>
-                    </div>
-                </div>
-                <a href="index.html" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Cerrar Sesión</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
+@extends('plantillas.dashboard_recepcionista')
+@section('title', 'Gestión de Recordatorios - Hospital Naval')
+@section('content')
             <header class="content-header">
                 <h1>Gestión de Recordatorios</h1>
                 <div class="header-actions">
-                    <div class="search-box">
+                    <!--<div class="search-box">
                         <input type="text" placeholder="Buscar recordatorios..." aria-label="Buscar recordatorios">
                         <i class="fas fa-search"></i>
-                    </div>
+                    </div>-->
                     <button class="section-btn" id="new-reminder-btn">
                         <i class="fas fa-plus"></i> Nuevo Recordatorio
                     </button>
@@ -104,7 +35,7 @@
                             <p>Enviados Esta Semana</p>
                         </div>
                     </div>
-                    <div class="stat-card">
+                    <!--<div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-exclamation-triangle"></i>
                         </div>
@@ -121,7 +52,7 @@
                             <h3>89%</h3>
                             <p>Tasa de Éxito</p>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
 
                 <!-- Filtros y Controles -->
@@ -467,7 +398,7 @@
                                 <h4>Confirmación de Cita</h4>
                                 <p>Plantilla estándar para confirmar citas médicas programadas.</p>
                                 <div class="template-stats">
-                                    <span><i class="fas fa-chart-bar"></i> 85% tasa de apertura</span>
+                                    <!--<span><i class="fas fa-chart-bar"></i> 85% tasa de apertura</span>-->
                                     <span><i class="fas fa-clock"></i> Usada 234 veces</span>
                                 </div>
                             </div>
@@ -484,7 +415,7 @@
                                 <h4>Recordatorio de Pago</h4>
                                 <p>Plantilla para recordatorios de pagos pendientes y facturas.</p>
                                 <div class="template-stats">
-                                    <span><i class="fas fa-chart-bar"></i> 72% tasa de apertura</span>
+                                    <!--<span><i class="fas fa-chart-bar"></i> 72% tasa de apertura</span>-->
                                     <span><i class="fas fa-clock"></i> Usada 156 veces</span>
                                 </div>
                             </div>
@@ -501,7 +432,7 @@
                                 <h4>Resultados Disponibles</h4>
                                 <p>Notificación cuando los resultados de laboratorio están listos.</p>
                                 <div class="template-stats">
-                                    <span><i class="fas fa-chart-bar"></i> 91% tasa de apertura</span>
+                                    <!--<span><i class="fas fa-chart-bar"></i> 91% tasa de apertura</span>-->
                                     <span><i class="fas fa-clock"></i> Usada 89 veces</span>
                                 </div>
                             </div>
@@ -510,7 +441,7 @@
                             </button>
                         </div>
                         
-                        <div class="template-card">
+                        <!--<div class="template-card">
                             <div class="template-icon">
                                 <i class="fas fa-plus-circle"></i>
                             </div>
@@ -521,12 +452,10 @@
                             <button class="section-btn">
                                 <i class="fas fa-plus"></i> Crear
                             </button>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
     <!-- Modal de Nuevo Recordatorio -->
     <div class="modal-overlay" id="new-reminder-modal">
@@ -613,7 +542,7 @@
             </div>
         </div>
     </div>
-
-    <script src="script-recordatorios.js"></script>
-</body>
-</html>
+@endsection
+@section('scripts')
+@vite('resources/js/RECEPCIONISTA/script-recordatorios.js')
+@endsection

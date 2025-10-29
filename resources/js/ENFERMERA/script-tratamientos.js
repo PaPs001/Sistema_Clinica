@@ -90,17 +90,6 @@ function inicializarApp() {
         // Configurar eventos
         configurarEventos();
 
-        // Logout
-        const logoutBtn = document.querySelector('.logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                    logout();
-                }
-            });
-        }
-
         console.log('Aplicación de tratamientos inicializada correctamente');
         
     } catch (error) {
