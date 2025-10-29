@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta Historial - Hospital Naval</title>
+    <link rel="stylesheet" href="styles-medico.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="hospital-icon">
+                    <i class="fas fa-hospital"></i>
+                </div>
+                <h2>Hospital Naval</h2>
+                <p>Módulo Médico</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="dashboard-medico.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="registro-expediente.html" class="nav-item">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Nuevo Expediente</span>
+                </a>
+                <a href="consulta-historial.html" class="nav-item active">
+                    <i class="fas fa-history"></i>
+                    <span>Historial Médico</span>
+                </a>
+                <a href="subir-documentos.html" class="nav-item">
+                    <i class="fas fa-file-upload"></i>
+                    <span>Subir Documentos</span>
+                </a>
+                <a href="filtrar-expedientes.html" class="nav-item">
+                    <i class="fas fa-filter"></i>
+                    <span>Filtrar Expedientes</span>
+                </a>
+                <a href="registro-alergias.html" class="nav-item">
+                    <i class="fas fa-allergies"></i>
+                    <span>Alergias</span>
+                </a>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="user-details">
+                        <strong>Dr. Juan Pérez</strong>
+                        <span>Cardiólogo</span>
+                    </div>
+                </div>
+                <a href="index.html" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="content-header">
+                <h1>Consulta de Historial Médico</h1>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <input type="text" id="searchPatient" placeholder="Buscar por nombre o ID...">
+                        <i class="fas fa-search"></i>
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+                <!-- Panel de Búsqueda -->
+                <div class="search-panel">
+                    <div class="search-filters">
+                        <div class="filter-group">
+                            <label for="filterDate">Filtrar por fecha:</label>
+                            <input type="date" id="filterDate">
+                        </div>
+                        <div class="filter-group">
+                            <label for="filterDiagnosis">Filtrar por diagnóstico:</label>
+                            <select id="filterDiagnosis">
+                                <option value="">Todos los diagnósticos</option>
+                                <option value="hipertension">Hipertensión</option>
+                                <option value="diabetes">Diabetes</option>
+                                <option value="infeccion">Infección</option>
+                            </select>
+                        </div>
+                        <button class="btn-primary" onclick="buscarPacientes()">
+                            <i class="fas fa-search"></i> Buscar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Resultados -->
+                <div class="results-section">
+                    <h2>Resultados de Búsqueda</h2>
+                    
+                    <!-- Información del Paciente Seleccionado -->
+                    <div class="patient-info-card" id="patientInfo" style="display: none;">
+                        <div class="patient-header">
+                            <div class="patient-avatar-large">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="patient-details">
+                                <h3 id="patientName">Nombre del Paciente</h3>
+                                <div class="patient-meta">
+                                    <span id="patientAge">Edad</span> • 
+                                    <span id="patientGender">Género</span> • 
+                                    <span id="patientId">ID</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="patient-summary">
+                            <div class="summary-item">
+                                <strong>Alergias:</strong>
+                                <span id="patientAllergies">Ninguna registrada</span>
+                            </div>
+                            <div class="summary-item">
+                                <strong>Enfermedades Crónicas:</strong>
+                                <span id="patientChronic">Ninguna registrada</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Historial de Consultas -->
+                    <div class="consultation-history">
+                        <h3>Historial de Consultas</h3>
+                        <div class="timeline">
+                            <!-- Consulta 1 -->
+                            <div class="timeline-item">
+                                <div class="timeline-date">15 Mar 2024 - 10:30 AM</div>
+                                <div class="timeline-content">
+                                    <h4>Consulta de Seguimiento</h4>
+                                    <div class="consultation-details">
+                                        <p><strong>Motivo:</strong> Control de presión arterial</p>
+                                        <p><strong>Diagnóstico:</strong> Hipertensión controlada</p>
+                                        <p><strong>Tratamiento:</strong> Continuar con Losartán 50mg</p>
+                                        <p><strong>Signos Vitales:</strong> PA: 125/80, FC: 72 lpm</p>
+                                    </div>
+                                    <div class="consultation-actions">
+                                        <button class="btn-view" onclick="verConsultaCompleta(1)">Ver Completo</button>
+                                        <button class="btn-edit" onclick="editarConsulta(1)">Editar</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Consulta 2 -->
+                            <div class="timeline-item">
+                                <div class="timeline-date">01 Mar 2024 - 09:15 AM</div>
+                                <div class="timeline-content">
+                                    <h4>Consulta Inicial</h4>
+                                    <div class="consultation-details">
+                                        <p><strong>Motivo:</strong> Evaluación de presión alta</p>
+                                        <p><strong>Diagnóstico:</strong> Hipertensión arterial</p>
+                                        <p><strong>Tratamiento:</strong> Iniciar Losartán 50mg diario</p>
+                                        <p><strong>Signos Vitales:</strong> PA: 145/95, FC: 78 lpm</p>
+                                    </div>
+                                    <div class="consultation-actions">
+                                        <button class="btn-view" onclick="verConsultaCompleta(2)">Ver Completo</button>
+                                        <button class="btn-edit" onclick="editarConsulta(2)">Editar</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Documentos Adjuntos -->
+                    <div class="attached-documents">
+                        <h3>Documentos Adjuntos</h3>
+                        <div class="documents-grid">
+                            <div class="document-card">
+                                <i class="fas fa-file-pdf"></i>
+                                <div class="document-info">
+                                    <strong>Radiografía Torax.pdf</strong>
+                                    <span>15 Mar 2024 - 250 KB</span>
+                                </div>
+                                <button class="btn-view" onclick="verDocumento(1)">Ver</button>
+                            </div>
+                            <div class="document-card">
+                                <i class="fas fa-file-image"></i>
+                                <div class="document-info">
+                                    <strong>Analisis Sangre.jpg</strong>
+                                    <span>01 Mar 2024 - 180 KB</span>
+                                </div>
+                                <button class="btn-view" onclick="verDocumento(2)">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script-medico.js"></script>
+    <script>
+        // Script específico para consulta de historial
+        function buscarPacientes() {
+            const searchTerm = document.getElementById('searchPatient').value;
+            const filterDate = document.getElementById('filterDate').value;
+            const filterDiagnosis = document.getElementById('filterDiagnosis').value;
+            
+            // Simular búsqueda
+            console.log('Buscando:', { searchTerm, filterDate, filterDiagnosis });
+            
+            // Mostrar información del paciente (simulado)
+            document.getElementById('patientInfo').style.display = 'block';
+            document.getElementById('patientName').textContent = 'María González';
+            document.getElementById('patientAge').textContent = '35 años';
+            document.getElementById('patientGender').textContent = 'Femenino';
+            document.getElementById('patientId').textContent = 'ID: MG-001';
+            document.getElementById('patientAllergies').textContent = 'Penicilina';
+            document.getElementById('patientChronic').textContent = 'Hipertensión';
+        }
+
+        function verConsultaCompleta(consultaId) {
+            alert(`Mostrando consulta completa #${consultaId}`);
+            // Aquí se abriría un modal con toda la información
+        }
+
+        function editarConsulta(consultaId) {
+            if (confirm('¿Estás seguro de que quieres editar esta consulta?')) {
+                alert(`Editando consulta #${consultaId}`);
+                // Redirigir a edición
+            }
+        }
+
+        function verDocumento(documentoId) {
+            alert(`Abriendo documento #${documentoId}`);
+            // Aquí se abriría el documento en una nueva pestaña o visor
+        }
+
+        // Búsqueda en tiempo real
+        document.getElementById('searchPatient').addEventListener('input', function(e) {
+            if (e.target.value.length >= 3) {
+                buscarPacientes();
+            }
+        });
+    </script>
+
+    <style>
+        /* Estilos adicionales para consulta-historial */
+        .search-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            align-items: end;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .filter-group input,
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid #e1e5e9;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        .patient-info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .patient-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .patient-avatar-large {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #061175;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        .patient-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .patient-summary {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .summary-item {
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .timeline {
+            border-left: 2px solid #061175;
+            margin-left: 20px;
+            padding-left: 30px;
+        }
+
+        .timeline-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -40px;
+            top: 25px;
+            width: 12px;
+            height: 12px;
+            background: #061175;
+            border-radius: 50%;
+        }
+
+        .timeline-date {
+            color: #061175;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .consultation-details {
+            margin: 10px 0;
+        }
+
+        .consultation-details p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+
+        .consultation-actions {
+            margin-top: 15px;
+        }
+
+        .attached-documents {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .document-card {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+        }
+
+        .document-card i {
+            font-size: 2rem;
+            color: #061175;
+            margin-right: 15px;
+        }
+
+        .document-info {
+            flex: 1;
+        }
+
+        .document-info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .document-info span {
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</body>
+</html>
