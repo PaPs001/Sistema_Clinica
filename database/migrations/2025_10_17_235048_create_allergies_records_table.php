@@ -19,9 +19,6 @@ return new class extends Migration
                 ->on('medical_records')
                 ->onDelete('cascade');
             $table->unsignedBigInteger('allergie_id');
-            $table->foreign('allergie_id')
-                ->references('id')
-                ->on('allergies');
             $table->text('notes')->nullable();
             $table->timestamps();
         });

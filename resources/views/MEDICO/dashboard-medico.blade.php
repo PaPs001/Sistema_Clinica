@@ -1,9 +1,6 @@
-@extends('MEDICO.plantillas.dashboard_general')
+@extends('plantillas.dashboard_general')
 @section('title', 'Dashboard Médico - Hospital Naval')
 @section('content')
-    <div class="dashboard-container">
-        <!-- Main Content -->
-        <div class="main-content">
             <header class="content-header">
                 <h1>Hola Médico!</h1>
                 <div class="header-actions">
@@ -142,6 +139,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+@endsection
+@section('scripts')
     <script src="script-medico.js"></script>
 @endsection

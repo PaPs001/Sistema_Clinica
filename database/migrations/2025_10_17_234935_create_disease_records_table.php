@@ -19,9 +19,6 @@ return new class extends Migration
                 ->on('medical_records')
                 ->onDelete('cascade');
             $table->unsignedBigInteger('disease_id');
-            $table->foreign('disease_id')
-                ->references('id')
-                ->on('disease');
             $table->date('diagnosis_date');
             $table->text('notes')->nullable();
             $table->timestamps();

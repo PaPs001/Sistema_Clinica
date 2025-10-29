@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Manejar envío del formulario
-    loginForm.addEventListener('submit', function(e) {
+   /* loginForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
         const username = document.getElementById('username').value;
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 loginBtn.disabled = false;
             }
         }, 2000);
-    }
+    }*/
 
     function showAlert(message, type) {
         // Remover alerta anterior si existe

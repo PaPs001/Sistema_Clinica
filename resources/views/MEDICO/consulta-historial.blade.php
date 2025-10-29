@@ -1,8 +1,6 @@
-@extends('MEDICO.plantillas.dashboard_general')
+@extends('plantillas.dashboard_general')
 @section('title', 'Consulta Historial - Hospital Naval')
 @section('content')
-        <!-- Main Content -->
-        <div class="main-content">
             <header class="content-header">
                 <h1>Consulta de Historial Médico</h1>
                 <div class="header-actions">
@@ -133,7 +131,6 @@
                     </div>
                 </div>
             </div>
-        </div>
     @endsection
     @section('scripts')
 

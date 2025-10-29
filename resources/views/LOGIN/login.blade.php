@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital Central - Iniciar Sesión</title>
-    <link rel="stylesheet" href="styles.css">
+    @vite(['resources/css/auth_log/login.css'])
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -16,22 +17,25 @@
                 <div class="hospital-icon">
                     <i class="fas fa-hospital"></i>
                 </div>
-                <h2>Hospital Naval</h2>
+                <h2>Clinica Ultima Asignatura</h2>
                 <p>Cuidando tu salud con excelencia</p>
             </div>
 
             <!-- Lado Derecho - Formulario -->
             <div class="right-side">
-                <form class="login-form" id="loginForm">
+                <form class="login-form" id="loginForm" action="{{ route('login_Attempt') }}" method="post">
                     <h2>Iniciar Sesión</h2>
                     <p class="subtitle">Accede a tu cuenta del sistema</p>
-
+                    @csrf
                     <div class="form-group">
                         <label for="username">
-                            <i class="fas fa-user"></i> Usuario
+                            <i class="fas fa-user"></i> Correo Electrónico
                         </label>
-                        <input type="text" id="username" name="username" required 
-                               placeholder="Ingresa tu usuario">
+                        <input type="email" id="email" name   ="email" required 
+                               placeholder="Ingresa tu Correo Electrónico" value="{{ old('email') }}">
+                                @error('email')
+                                    <span class="error-message" style="color:red;">{{ $message }}</span>
+                                @enderror
                     </div>
 
                     <div class="form-group">
@@ -63,6 +67,6 @@
         </div>
     </div>
 
-    @vite('resources/js/auth_log/script.js')
+    <!--@vite('resources/js/auth_log/script.js')-->
 </body>
 </html>
