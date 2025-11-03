@@ -17,13 +17,17 @@ return new class extends Migration
             $table->foreign('medical_record_id')
                 ->references('id')
                 ->on('medical_records');
+            
+                $table->unsignedBigInteger('register_date');
+            $table->foreign('register_date')
+                ->references('id')
+                ->on('appointments');
+            
             $table->float('temperature')->nullable();
             $table->integer('heart_rate')->nullable();
-            $table->integer('respiratory_rate')->nullable();;
-            $table->float('oxygen_saturation')->nullable();
             $table->float('weight')->nullable();
             $table->float('height')->nullable();
-            $table->unsignedBigInteger('register_by')->nullable();
+            $table->unsignedBigInteger('register_by');
             $table->foreign('register_by')
                 ->references('id')
                 ->on('nurse_users');

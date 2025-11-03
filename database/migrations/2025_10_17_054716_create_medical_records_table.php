@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('medical_records', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('patient_id')->nullable();
+            $table->unsignedBigInteger('patient_id');
+            $table->datetime('creation_date');
             $table->foreign('patient_id')
                 ->references('id')
                 ->on('patient_users');

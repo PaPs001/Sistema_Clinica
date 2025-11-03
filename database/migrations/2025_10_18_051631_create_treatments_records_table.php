@@ -25,7 +25,7 @@ return new class extends Migration
             $table->date('start_date');
             $table->date('end_date')->nullable();
             $table->text('notes')->nullable();
-            $table->enum('status', ['ongoing', 'completed', 'paused']);
+            $table->enum('status', ['En seguimiento', 'Completado', 'suspendido'])->default('En seguimiento');
             $table->unsignedBigInteger('prescribed_by')->nullable();
             $table->foreign('prescribed_by')
                 ->references('id')

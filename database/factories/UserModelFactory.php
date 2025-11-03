@@ -27,7 +27,7 @@ class UserModelFactory extends Factory
             'birthdate' => fake()->date(),
             'phone' => fake()->phoneNumber(),
             'email' => fake()->unique()->safeEmail(),
-            'password' => Hash::make('password'),
+            'password' => '12345',
             'status' => 'active',
             'typeUser_id' => rand(1,5),
         ];
