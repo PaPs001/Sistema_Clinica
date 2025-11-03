@@ -27,10 +27,11 @@ return new class extends Migration
                 ->on('recepcionist_users');
             $table->date('appointment_date');
             $table->time('appointment_time');
-            $table->enum('status', ['scheduled', 'completed', 'canceled'])->default('scheduled');
-            $table->string('reason')->nullable();
-            $table->string('notes')->nullable();
-            $table->string('notifications')->nullable();
+            $table->enum('status', ['En curso', 'completada', 'cancelada', 'Sin confirmar', 'Confirmada'])->default('scheduled');
+            $table->string('reason');
+            $table->string('notes');
+            $table->string('notifications');
+            $table->text('diagnosis');
             $table->timestamps();
         });
     }

@@ -24,7 +24,7 @@ return new class extends Migration
             $table->float('file_size');
             $table->text('description');
             $table->string('document_type');
-            $table->timestamp('upload_date');
+            $table->datetime('upload_date');
             $table->timestamps();
         });
     }

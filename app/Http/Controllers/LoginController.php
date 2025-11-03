@@ -25,19 +25,15 @@ class LoginController extends Controller
             Session::put('last_name', $user->last_name);
             Session::put('typeUser_id', $user->typeUser_id);
 
-            if ($user->typeUser_id == 3) {
-                return redirect()->route('dashboardPaciente');
-            } elseif ($user->typeUser_id == 2) {
-                return redirect()->route('dashboardMedico'); 
-            } elseif ($user->typeUser_id == 1) {
-                return redirect()->route('dashboardAdmin');
-            }elseif ($user->typeUser_id == 4) {
-                return redirect()->route('dashboardRecepcionista');
-            }elseif ($user->typeUser_id == 5) {
-                return redirect()->route('dashboardEnfermera');
-            }else{
-                return redirect()->route('login');
-            }
+            $routes = [
+                usersType::ROLE_ADMIN => 'dashboardAdmin',
+                usersType::ROLE_MEDIC => 'dashboardMedico',
+                usersType::ROLE_PATIENT => 'dashboardPaciente',
+                usersType::ROLE_RECEPTIONIST => 'dashboardRecepcionista',
+                usersType::ROLE_NURSE => 'dashboardEnfermera',
+            ];
+
+            return redirect()->route($routes[$user->typeUser_id] ?? 'login');
         }
 
         return back()->withErrors([

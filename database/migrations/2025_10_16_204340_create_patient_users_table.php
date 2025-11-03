@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('patient_users', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('userId')->nullable();
+            $table->string('DNI');
             $table->foreign('userId')
                 ->references('id')
                 ->on('general_users')
