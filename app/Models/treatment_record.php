@@ -31,6 +31,10 @@ class treatment_record extends Model
         return $this->belongsTo(medicUser::class, 'prescribed_by', 'id');
     }
 
+    public function consultDiseases(){
+        return $this->hasMany(consult_disease::class, 'treatment_id', 'id');
+    }
+    
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',

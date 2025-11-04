@@ -18,6 +18,7 @@ class appointment extends Model
         'status',
         'reason',
         'notes',
+        'notifications',
     ];
 //listo
     public function patient()
@@ -35,4 +36,12 @@ class appointment extends Model
         return $this->belongsTo(receptionistUser::class, 'receptionist_id');
     }
 
+    public function vitalSigns()
+    {
+        return $this->hasMany(vital_sign::class, 'register_date', 'id');
+    }
+
+    public function consultDiseases(){
+        return $this->hasMany(consult_disease::class, 'appointment_id', 'id');
+    }
 }

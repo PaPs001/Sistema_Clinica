@@ -22,12 +22,12 @@ class UserModelFactory extends Factory
     {
         return [
             //
-            'first_name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
+            'name' => fake()->Name(),
             'birthdate' => fake()->date(),
             'phone' => fake()->phoneNumber(),
             'email' => fake()->unique()->safeEmail(),
             'password' => '12345',
+            'address' => fake()->address(),
             'status' => 'active',
             'typeUser_id' => rand(1,5),
         ];

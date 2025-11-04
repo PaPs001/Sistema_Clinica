@@ -12,6 +12,7 @@ class patientUser extends Model
     protected $table = 'patient_users';
     protected $fillable = [
         'userId',
+        'DNI',
     ];
 
 //listo

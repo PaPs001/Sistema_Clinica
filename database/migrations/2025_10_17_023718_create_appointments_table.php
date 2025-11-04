@@ -25,13 +25,13 @@ return new class extends Migration
             $table->foreign('receptionist_id')
                 ->references('id')
                 ->on('recepcionist_users');
+                //si hubo cambios
             $table->date('appointment_date');
             $table->time('appointment_time');
-            $table->enum('status', ['En curso', 'completada', 'cancelada', 'Sin confirmar', 'Confirmada'])->default('scheduled');
+            $table->enum('status', ['En curso', 'completada', 'cancelada', 'Sin confirmar', 'Confirmada', 'agendada'])->default('agendada');
             $table->string('reason');
             $table->string('notes');
             $table->string('notifications');
-            $table->text('diagnosis');
             $table->timestamps();
         });
     }

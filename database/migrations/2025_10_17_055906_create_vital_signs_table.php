@@ -17,12 +17,12 @@ return new class extends Migration
             $table->foreign('medical_record_id')
                 ->references('id')
                 ->on('medical_records');
-            
-                $table->unsignedBigInteger('register_date');
+            //nuevo campo
+            $table->unsignedBigInteger('register_date');
             $table->foreign('register_date')
                 ->references('id')
                 ->on('appointments');
-            
+            //cambios
             $table->float('temperature')->nullable();
             $table->integer('heart_rate')->nullable();
             $table->float('weight')->nullable();

@@ -11,12 +11,12 @@ class userModel extends Model
     protected $table = 'general_users';
 
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'name',
         'birthdate',
         'phone',
         'email',
         'password',
+        'address',
         'status',
         'typeUser_id',
     ];

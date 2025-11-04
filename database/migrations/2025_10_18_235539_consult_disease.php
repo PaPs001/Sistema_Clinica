@@ -1,0 +1,49 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        //
+        schema::create('consult_disease', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('id_medical_record');
+            $table->foreign('id_medical_record')
+                ->references('id')
+                ->on('medical_records')
+                ->onDelete('cascade');
+            $table->unsignedBigInteger('disease_id')->nullabe();
+            $table->foreign('disease_id')
+                ->references('id')
+                ->on('disease');
+            $table->unsignedBigInteger('treatment_id');
+            $table->foreign('treatment_id')
+                ->references('id')
+                ->on('treatments_records');
+            $table->unsignedBigInteger('appointment_id');
+            $table->foreign('appointment_id')
+                ->references('id')
+                ->on('appointments');
+            $table->text('reason');
+            $table->text('symptoms');
+            $table->text('findings');
+            $table->text('diagnosis');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        //
+    }
+};
