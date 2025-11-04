@@ -23,7 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('typeUser_id')->nullable();
             $table->foreign('typeUser_id')
                 ->references('id')
-                ->on('Acces_roles')
+                ->on('acces_roles')
                 ->onDelete('cascade');
             $table->timestamps();
         });
