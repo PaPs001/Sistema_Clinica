@@ -13,6 +13,6 @@ class roleModel extends Model
     ];
  //Relacion completada a usuarios generales
     public function General_user(){
-        return $this->hasMany(userModel::class, 'typeUser_id');
+        return $this->hasMany(UserModel::class, 'typeUser_id');
     }
 }

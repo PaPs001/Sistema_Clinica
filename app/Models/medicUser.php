@@ -17,7 +17,7 @@ class medicUser extends Model
 //listo
     public function user()
     {
-        return $this->belongsTo(userModel::class, 'user_id');
+        return $this->belongsTo(UserModel::class, 'user_id');
     }
 //listo
     public function appointments()

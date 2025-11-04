@@ -4,11 +4,11 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
-use App\Models\userModel;
+use App\Models\UserModel;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\userModel>
  */
-class userModelFactory extends Factory
+class UserModelFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -16,13 +16,13 @@ class userModelFactory extends Factory
      * @return array<string, mixed>
      */
 
-    protected $model = userModel::class;
+    protected $model = UserModel::class;
     
     public function definition(): array
     {
         return [
             //
-            'name' => fake()->Name(),
+            'name' => fake()->name(),
             'birthdate' => fake()->date(),
             'phone' => fake()->phoneNumber(),
             'email' => fake()->unique()->safeEmail(),

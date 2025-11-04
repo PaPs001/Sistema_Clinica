@@ -16,7 +16,7 @@ class nurseUser extends Model
     ];
 //listo
     public function user(){
-        return $this->belongsTo(userModel::class, 'userId');
+        return $this->belongsTo(UserModel::class, 'userId');
     }
 //listo
     public function vitalSigns(){

@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\userModel;
+use App\Models\UserModel;
 use App\Models\administratorUser;
 use App\Models\medicUser;
 use App\Models\patientUser;
@@ -21,7 +21,7 @@ class UsersInitSeeder extends Seeder
         //
         $types = [1,2,3,4,5];
         foreach($types as $type){
-            $user = userModel::factory()->create(['typeUser_id' => $type]);
+            $user = UserModel::factory()->create(['typeUser_id' => $type]);
 
              switch ($type) {
                 case 1:
