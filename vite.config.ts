@@ -14,7 +14,8 @@ export default defineConfig({
                 'resources/css/ENFERMERA/general.css',
                 'resources/css/medic/general.css',
                 'resources/css/PACIENTE/general.css',
-                'resources/css/RECEPCIONISTA/general.css'
+                'resources/css/RECEPCIONISTA/general.css',
+                'resources/js/auth_log/script.js', 
                 ],
             ssr: 'resources/js/ssr.tsx',
             refresh: true,
