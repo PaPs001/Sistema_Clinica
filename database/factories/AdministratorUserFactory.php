@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AdministratorUser>
  */
-class AdministratorUserFactory extends Factory
+class administratorUserFactory extends Factory
 {
     /**
      * Define the model's default state.
