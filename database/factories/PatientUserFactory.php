@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PatientUser>
  */
-class PatientUserFactory extends Factory
+class patientUserFactory extends Factory
 {
     /**
      * Define the model's default state.

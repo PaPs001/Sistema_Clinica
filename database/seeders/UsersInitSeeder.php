@@ -14,7 +14,7 @@ use App\Models\nurseUser;
 class UsersInitSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Run the dataabase seeds.
      */
     public function run(): void
     {
