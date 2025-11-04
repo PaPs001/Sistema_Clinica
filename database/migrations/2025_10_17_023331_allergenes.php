@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('patient_users', function (Blueprint $table) {
+        //
+        schema::create('allergenes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('userId')->nullable();
-            //nuevo campo
-            $table->string('DNI');
-            $table->foreign('userId')
-                ->references('id')
-                ->on('general_users')
-                ->onDelete('cascade');
+            $table->string('name');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('patient_users');
+        //
     }
 };

@@ -22,11 +22,30 @@ return new class extends Migration
             $table->foreign('allergie_id')
                 ->references('id')
                 ->on('allergies');
+                //nuevo campo
+            $table->unsignedBigInteger('alergeno_id');
+            $table->foreign('alergeno_id')
+                ->references('id')
+                ->on('allergenes');
+                //nuevos campos
+            $table->enum('severity', ['Leve', 'Moderada', 'Grave']);
+            $table->enum('status', ['Activa', 'Inactiva']);
+            $table->text('symptoms');
+            $table->text('treatments');
             $table->date('diagnosis_date');
             $table->text('notes')->nullable();
             $table->timestamps();
         });
     }
+
+    /* -TipoAlergia(enum)
+-id_alergeno-> id(alergeno)(int)
+-Severidad(enum)
+-Estado(enum)
+-fecha_diagnostico(DATE)
+-Sintomas(TEXT)
+-tratamientos(TEXT)
+-obvservaciones(TEXT) */ 
 
     /**
      * Reverse the migrations.

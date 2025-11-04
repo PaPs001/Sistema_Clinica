@@ -10,10 +10,9 @@ class vital_sign extends Model
     protected $table = 'vital_signs';
     protected $fillable = [
             'medical_record_id',
+            'register_date',
             'temperature',
             'heart_rate',
-            'respiratory_rate',
-            'oxygen_saturation',
             'weight',
             'height',
             'register_by',
@@ -34,5 +33,9 @@ class vital_sign extends Model
 //listo
     public function nurseUser(){
         return $this->belongsTo(nurseUser::class, 'register_by', 'id');
+    }
+
+    public function appointment(){
+        return $this->belongsTo(appointment::class, 'register_date', 'id');
     }
 }

@@ -19,6 +19,7 @@ class PatientUserFactory extends Factory
         return [
             //
             'userId' => null,
+            'DNI' => $this->faker->unique()->numerify('##########'),
         ];
     }
 }

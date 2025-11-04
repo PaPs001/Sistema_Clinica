@@ -35,8 +35,8 @@ class medical_records extends Model
     public function files(){
         return $this->hasMany(fileRecord::class, 'id_record');
     }
-//listo
-    public function images(){
-        return $this->hasMany(imagesRecord::class, 'id_records');
+
+    public function consultDiseases(){
+        return $this->hasMany(consult_disease::class, 'id_medical_record', 'id');
     }
 }

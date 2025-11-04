@@ -20,4 +20,8 @@ class disease extends Model
     public function treatmentDiseases(){
         return $this->hasMany(tratment_disease::class, 'disease_id', 'id');
     }
+
+    public function consultDiseases(){
+        return $this->hasMany(consult_disease::class, 'disease_id', 'id');
+    }
 }
