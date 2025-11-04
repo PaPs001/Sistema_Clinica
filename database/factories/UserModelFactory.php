@@ -8,7 +8,7 @@ use App\Models\userModel;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\userModel>
  */
-class UserModelFactory extends Factory
+class userModelFactory extends Factory
 {
     /**
      * Define the model's default state.
