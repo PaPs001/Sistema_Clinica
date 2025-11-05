@@ -2,35 +2,34 @@
 
 namespace App\Http\Controllers;
 
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use App\Models\userModel;
+use App\Models\UserModel;
 use App\Models\usersType;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
 
 class LoginController extends Controller
 {
     public function LoginRequest(Request $request)
     {
-        $credentials = $request->validate([
+        $validation = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        $user = UserModel::where('email', $validation['email'])->first();
 
-            $user = Auth::user();
-            if($user->status === 'inactive'){
-                return redirect()->route('password.primeravez');
-            }
+        if ($user && Hash::check($validation['password'], $user->password)) {
+
+            Session::put('user_id', $user->id);
+            Session::put('first_name', $user->first_name);
+            Session::put('last_name', $user->last_name);
+            Session::put('typeUser_id', $user->typeUser_id);
+
             $routes = [
                 usersType::ROLE_ADMIN => 'dashboardAdmin',
                 usersType::ROLE_MEDIC => 'dashboardMedico',
-                usersType::ROLE_PATIENT => 'dashboard.paciente',
+                usersType::ROLE_PATIENT => 'dashboardPaciente',
                 usersType::ROLE_RECEPTIONIST => 'dashboardRecepcionista',
                 usersType::ROLE_NURSE => 'dashboardEnfermera',
             ];
@@ -39,16 +38,14 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'Credenciales incorrectas.',
+            'email' => 'Las credenciales no coinciden con nuestros registros.',
         ])->onlyInput('email');
+
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
+        Session::flush();
         return redirect('/');
     }
 }
