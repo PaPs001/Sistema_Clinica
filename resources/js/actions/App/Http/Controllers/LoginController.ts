@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
 * @see app/Http/Controllers/LoginController.php:12
@@ -34,6 +34,28 @@ LoginRequest.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\LoginController::LoginRequest
+* @see app/Http/Controllers/LoginController.php:12
+* @route '/login'
+*/
+const LoginRequestForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: LoginRequest.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\LoginController::LoginRequest
+* @see app/Http/Controllers/LoginController.php:12
+* @route '/login'
+*/
+LoginRequestForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: LoginRequest.url(options),
+    method: 'post',
+})
+
+LoginRequest.form = LoginRequestForm
+
+/**
 * @see \App\Http\Controllers\LoginController::logout
 * @see app/Http/Controllers/LoginController.php:45
 * @route '/logout'
@@ -66,6 +88,28 @@ logout.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: logout.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\LoginController::logout
+* @see app/Http/Controllers/LoginController.php:45
+* @route '/logout'
+*/
+const logoutForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: logout.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\LoginController::logout
+* @see app/Http/Controllers/LoginController.php:45
+* @route '/logout'
+*/
+logoutForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: logout.url(options),
+    method: 'post',
+})
+
+logout.form = logoutForm
 
 const LoginController = { LoginRequest, logout }
 
