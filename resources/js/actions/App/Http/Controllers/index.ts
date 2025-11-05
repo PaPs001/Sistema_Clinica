@@ -1,5 +1,4 @@
 import LoginController from './LoginController'
-
 const Controllers = {
     LoginController: Object.assign(LoginController, LoginController),
 }

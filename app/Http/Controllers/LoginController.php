@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use App\Models\userModel;
+use App\Models\UserModel;
+use App\Models\usersType;
 
 class LoginController extends Controller
 {
@@ -13,10 +14,10 @@ class LoginController extends Controller
     {
         $validation = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6',
+            'password' => 'required',
         ]);
 
-        $user = userModel::where('email', $validation['email'])->first();
+        $user = UserModel::where('email', $validation['email'])->first();
 
         if ($user && Hash::check($validation['password'], $user->password)) {
 
