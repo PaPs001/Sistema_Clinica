@@ -26,7 +26,9 @@
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="nombre">Nombre Completo *</label>
-                        <input type="text" id="nombre" name="nombre" required>
+                        <input type="text" id="nombre" name="nombre" required autocomplete="off">
+                        <div id="sugerencias-pacientes" class="sugerencias-lista"></div>
+                        <input type="hidden" id="paciente_id" name="paciente_id">
                     </div>
                     <div class="form-group">
                         <label for="fechaNacimiento">Fecha de Nacimiento *</label>

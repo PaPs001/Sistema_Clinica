@@ -45,18 +45,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Botones de acción
         setupTableButtons();
-
-        // Logout
-        const logoutBtn = document.querySelector('.logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-                    logout();
-                }
-            });
-        }
-
         console.log('Todos los event listeners configurados correctamente');
         
     } catch (error) {
@@ -149,34 +137,102 @@ function showNotifications() {
     document.body.appendChild(modal);
 }
 
-function viewPatient(patientName) {
-    console.log(`Viéndo expediente de: ${patientName}`);
-    // window.location.href = `historial-paciente.html?patient=${encodeURIComponent(patientName)}`;
-}
-
-function editPatient(patientName) {
-    console.log(`Editando expediente de: ${patientName}`);
-    // window.location.href = `editar-expediente.html?patient=${encodeURIComponent(patientName)}`;
-}
-
-function logout() {
-    console.log('Cerrando sesión...');
-    localStorage.removeItem('medicoLoggedIn');
-    window.location.href = 'index.html';
-}
-
-// Verificación de sesión (simulada)
-function checkSession() {
-    const medicoLoggedIn = localStorage.getItem('medicoLoggedIn');
-    if (!medicoLoggedIn) {
-        console.log('No hay sesión activa, redirigiendo al login...');
-        // Para pruebas, comentar esta línea:
-        // window.location.href = 'index.html';
-    } else {
-        console.log('Sesión activa');
-    }
-}
 
 // Inicialización
-checkSession();
 console.log('Script médico inicializado');
+
+document.addEventListener('DOMContentLoaded', function () {
+    const inputNombre = document.getElementById('nombre');
+    const inputTelefono = document.getElementById('telefono');
+    const sugerenciasDiv = document.getElementById('sugerencias-pacientes');
+    const inputId = document.getElementById('paciente_id');
+
+    // Campos adicionales
+    const inputTemp = document.getElementById('temperatura');
+    const inputPresion = document.getElementById('presionArterial');
+    const inputFrecuencia = document.getElementById('frecuenciaCardiaca');
+    const inputPeso = document.getElementById('peso');
+    const inputEstatura = document.getElementById('estatura');
+    const inputCitaFecha = document.getElementById('fechaConsulta');
+    const inputMotivo = document.getElementById('motivoConsulta');
+
+    let timeout = null;
+
+    inputNombre.addEventListener('input', function () {
+        const query = this.value.trim();
+        clearTimeout(timeout);
+        sugerenciasDiv.innerHTML = '';
+
+        if (query.length < 2) return;
+
+        timeout = setTimeout(() => {
+            fetch(`/buscar-pacientes?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    sugerenciasDiv.innerHTML = '';
+
+                    if (data.length === 0) {
+                        const item = document.createElement('div');
+                        item.classList.add('sugerencia-item', 'text-muted');
+                        item.textContent = 'Sin resultados';
+                        sugerenciasDiv.appendChild(item);
+                        return;
+                    }
+
+                    // 🔁 Mostrar resultados
+                    data.forEach(paciente => {
+                        const item = document.createElement('div');
+                        item.classList.add('sugerencia-item');
+                        item.textContent = `${paciente.temporary_name} (${paciente.temporary_phone || 'Sin teléfono'})`;
+
+                        item.addEventListener('click', () => {
+                            inputNombre.value = paciente.temporary_name;
+                            inputTelefono.value = paciente.temporary_phone;
+                            inputId.value = paciente.id;
+                            sugerenciasDiv.innerHTML = '';
+
+                            if (paciente.signos_vitales) {
+                                const sv = paciente.signos_vitales;
+                                inputTemp.value = sv.temperatura ?? '';
+                                inputPresion.value = sv.presion_arterial ?? '';
+                                inputFrecuencia.value = sv.frecuencia_cardiaca ?? '';
+                                inputPeso.value = sv.peso ?? '';
+                                inputEstatura.value = sv.estatura ?? '';
+
+                                if (paciente.signos_vitales && paciente.signos_vitales.cita) {
+                                    const cita = paciente.signos_vitales.cita;
+                                    inputCitaFecha.value = cita.fecha ?? '';
+                                    inputMotivo.value = cita.motivo ?? '';
+                                } else {
+                                    inputCitaFecha.value = '';
+                                    inputMotivo.value = '';
+                                }
+                            } else {
+                                inputTemp.value = '';
+                                inputPresion.value = '';
+                                inputFrecuencia.value = '';
+                                inputPeso.value = '';
+                                inputEstatura.value = '';
+                                inputCitaFecha.value = '';
+                                inputMotivo.value = '';
+                            }
+
+                            console.log("✅ Paciente cargado:", paciente);
+                        });
+
+                        sugerenciasDiv.appendChild(item);
+                    });
+                })
+                .catch(err => {
+                    console.error("❌ Error al buscar pacientes:", err);
+                });
+        }, 400);
+    });
+
+    // Ocultar sugerencias al perder foco
+    document.addEventListener('click', (e) => {
+        if (!sugerenciasDiv.contains(e.target) && e.target !== inputNombre) {
+            sugerenciasDiv.innerHTML = '';
+        }
+    });
+});

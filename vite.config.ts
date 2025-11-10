@@ -16,6 +16,7 @@ export default defineConfig({
                 'resources/css/PACIENTE/general.css',
                 'resources/css/RECEPCIONISTA/general.css',
                 'resources/js/auth_log/script.js', 
+                'resources/js/medic/script-medico.js',
                 ],
             ssr: 'resources/js/ssr.tsx',
             refresh: true,

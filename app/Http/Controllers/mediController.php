@@ -136,4 +136,42 @@ Log::info('Antes del try');
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+    public function buscarPacientes(Request $request)
+    {
+        $query = $request->get('query');
+
+        $pacientes = patientUser::where('is_temporary', 1)
+            ->where('temporary_name', 'LIKE', "%{$query}%")
+            ->limit(10)
+            ->get(['id', 'temporary_name', 'temporary_phone']);
+
+        $pacientesCompletos = $pacientes->map(function($paciente) {
+            // Buscar los signos vitales más recientes
+            $signosVitales = vital_sign::with('appointment')
+                ->where('patient_id', $paciente->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            return [
+                'id' => $paciente->id,
+                'temporary_name' => $paciente->temporary_name,
+                'temporary_phone' => $paciente->temporary_phone,
+                'signos_vitales' => $signosVitales ? [
+                    'presion_arterial' => $signosVitales->blood_pressure ?? null,
+                    'frecuencia_cardiaca' => $signosVitales->heart_rate,
+                    'temperatura' => $signosVitales->temperature,
+                    'peso' => $signosVitales->weight,
+                    'estatura' => $signosVitales->height,
+                    'cita' => $signosVitales->appointment ? [
+                        'id' => $signosVitales->appointment->id,
+                        'fecha' => $signosVitales->appointment->appointment_date,
+                        'motivo' => $signosVitales->appointment->reason ?? '',
+                    ] : null
+                ] : null
+            ];
+        });
+
+        return response()->json($pacientesCompletos);
+    }
 }

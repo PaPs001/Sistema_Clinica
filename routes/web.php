@@ -40,6 +40,7 @@ Route::get('/registro-alergias', function(){
 })->name('registro-alergias');
 
 Route::post('newRecord', [mediController::class, 'storeRecord'])->name('save_medical_record');
+Route::get('/buscar-pacientes', [mediController::class, 'buscarPacientes'])->name('buscar.pacientes');
 
 
 //Rutas a paginas paciente ---------------------------------------------------------------
