@@ -11,17 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('patient_users', function (Blueprint $table) {
+        Schema::create('allergies_allergenes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('userId')->nullable();
-            //nuevo campo
-            $table->string('DNI');
-            $table->boolean('is_Temporary')->default(false);
-            $table->string('temporary_name')->nullable();
-            $table->string('temporary_phone')->nullable();
-            $table->foreign('userId')
+            $table->unsignedBigInteger('allergie_id');
+            $table->foreign('allergie_id')
                 ->references('id')
-                ->on('general_users')
+                ->on('allergies')
+                ->onDelete('cascade');
+            $table->unsignedBigInteger('allergene_id');
+            $table->foreign('allergene_id')
+                ->references('id')
+                ->on('allergenes')
                 ->onDelete('cascade');
             $table->timestamps();
         });
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('patient_users');
+        Schema::dropIfExists('allergies_allergenes');
     }
 };

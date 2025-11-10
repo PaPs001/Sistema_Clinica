@@ -19,14 +19,6 @@ return new class extends Migration
                 ->references('id')
                 ->on('medical_records')
                 ->onDelete('cascade');
-            $table->unsignedBigInteger('disease_id')->nullabe();
-            $table->foreign('disease_id')
-                ->references('id')
-                ->on('disease');
-            $table->unsignedBigInteger('treatment_id');
-            $table->foreign('treatment_id')
-                ->references('id')
-                ->on('treatments_records');
             $table->unsignedBigInteger('appointment_id');
             $table->foreign('appointment_id')
                 ->references('id')
@@ -35,6 +27,7 @@ return new class extends Migration
             $table->text('symptoms');
             $table->text('findings');
             $table->text('diagnosis');
+            $table->text('treatment_diagnosis');
             $table->timestamps();
         });
     }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('email');
             $table->string('password');
             $table->string('address');
+            $table->enum('genre', ['hombre', 'mujer']);
             $table->enum('status', ['active', 'inactive'])->default('inactive');
             $table->unsignedBigInteger('typeUser_id')->nullable();
             $table->foreign('typeUser_id')

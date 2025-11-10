@@ -18,6 +18,7 @@ class UserModel extends Model
         'email',
         'password',
         'address',
+        'genre',
         'status',
         'typeUser_id',
     ];

@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\mediController;
 
 
 //Rutas login
 Route::get('/', function () {
     return view('LOGIN.login');
-})->name('login');
+})->name('loginDashboard');
 Route::post('login', [LoginController::class, 'LoginRequest'])->name('login_Attempt');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
@@ -37,6 +38,8 @@ Route::get('/filtrar-expedientes', function(){
 Route::get('/registro-alergias', function(){
     return view('MEDICO.registro-alergias');
 })->name('registro-alergias');
+
+Route::post('newRecord', [mediController::class, 'storeRecord'])->name('save_medical_record');
 
 
 //Rutas a paginas paciente ---------------------------------------------------------------

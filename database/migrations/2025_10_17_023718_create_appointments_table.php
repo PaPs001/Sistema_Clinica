@@ -31,7 +31,7 @@ return new class extends Migration
             $table->enum('status', ['En curso', 'completada', 'cancelada', 'Sin confirmar', 'Confirmada', 'agendada'])->default('agendada');
             $table->string('reason');
             $table->string('notes');
-            $table->string('notifications');
+            $table->string('notifications')->nullable();
             $table->timestamps();
         });
     }

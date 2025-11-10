@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use App\Models\userModel;
+use App\Models\usersType;
 
 class LoginController extends Controller
 {
@@ -13,7 +14,7 @@ class LoginController extends Controller
     {
         $validation = $request->validate([
             'email' => 'required|email',
-            'password' => 'required|min:6',
+            'password' => 'required',
         ]);
 
         $user = userModel::where('email', $validation['email'])->first();
@@ -33,7 +34,7 @@ class LoginController extends Controller
                 usersType::ROLE_NURSE => 'dashboardEnfermera',
             ];
 
-            return redirect()->route($routes[$user->typeUser_id] ?? 'login');
+            return redirect()->route($routes[$user->typeUser_id] ?? 'loginDashboard');
         }
 
         return back()->withErrors([

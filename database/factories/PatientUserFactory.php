@@ -20,6 +20,21 @@ class patientUserFactory extends Factory
             //
             'userId' => null,
             'DNI' => $this->faker->unique()->numerify('##########'),
+            'is_Temporary' => false,
+            'temporary_name' => null,
+            'temporary_phone' => null,
         ];
+    }
+
+    public function temporaryData(){
+        return $this->state(function (array $attributes){
+            return[
+                'userId' => null,
+                'DNI' => $this->faker->unique()->numerify('##########'),
+                'is_Temporary' => true,
+                'temporary_name' => $this->faker->name(),
+                'temporary_phone' => $this->faker->phoneNumber(),
+            ];
+        });
     }
 }
