@@ -1,3 +1,27 @@
+.sugerencias-lista {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.sugerencia-item {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.sugerencia-item:hover {
+    background-color: #f0f0f0;
+}
+
+
+
+
+
 
 .search-panel {
             background: white;
