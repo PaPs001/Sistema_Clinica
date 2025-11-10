@@ -63,5 +63,7 @@ class UsersInitSeeder extends Seeder
                     break;
             }
         });
+
+        patientUser::factory()->count(5)->temporaryData()->create();
     }
 }

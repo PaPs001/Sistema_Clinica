@@ -14,7 +14,7 @@ class allergene extends Model
         'description',
     ];
 
-    public function allergyRecords(){
-        return $this->hasMany(allergyRecord::class, 'alergeno_id', 'id');
+    public function allergie_allergene(){
+        return $this->hasMany(allergies_allergenes::class, 'allergie_id');
     }
 }

@@ -16,6 +16,10 @@ class generalSeeders extends Seeder
         $this->call([
             AccesRolesSeeder::class,
             UsersInitSeeder::class,
+            appointmentSeeder::class,
+            vitalSignsSeeder::class,
+            allergieSeeder::class,
+            diseaseSeeder::class,
         ]);
     }
 }

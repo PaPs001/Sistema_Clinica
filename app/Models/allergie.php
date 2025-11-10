@@ -12,7 +12,7 @@ class allergie extends Model
         'name',
     ];
 //listo
-    public function allergyRecords(){
-        return $this->hasMany(allergyRecord::class, 'allergie_id');
+    public function allergie_allergene(){
+        return $this->hasMany(allergies_allergenes::class, 'allergene_id');
     }
 }

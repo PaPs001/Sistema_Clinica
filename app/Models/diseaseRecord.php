@@ -8,11 +8,10 @@ class diseaseRecord extends Model
 {
     //
 
-    protected $table = 'disease_records';
+    protected $table = 'chronic_disease_records';
     protected $fillable = [
         'id_record',
-        'disease_id',
-        'diagnosis_date',
+        'chronics_diseases_id',
         'notes',
     ];
 //listo

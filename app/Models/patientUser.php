@@ -13,6 +13,9 @@ class patientUser extends Model
     protected $fillable = [
         'userId',
         'DNI',
+        'is_Temporary',
+        'temporary_name',
+        'temporary_phone'
     ];
 
 //listo
@@ -29,5 +32,8 @@ class patientUser extends Model
     public function appointments()
     {
         return $this->hasMany(appointment::class, 'patient_id');
+    }
+    public function vitalSigns(){
+        return $this->hasMany(vital_sign::class, 'patient_id', 'id');
     }
 }

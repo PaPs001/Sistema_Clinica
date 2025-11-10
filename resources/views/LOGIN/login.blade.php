@@ -28,14 +28,14 @@
                     <p class="subtitle">Accede a tu cuenta del sistema</p>
                     @csrf
                     <div class="form-group">
-                        <label for="username">
+                        <label for="email">
                             <i class="fas fa-user"></i> Correo Electrónico
                         </label>
-                        <input type="email" id="email" name   ="email" required 
-                               placeholder="Ingresa tu Correo Electrónico" value="{{ old('email') }}">
-                                @error('email')
-                                    <span class="error-message" style="color:red;">{{ $message }}</span>
-                                @enderror
+                        <input type="email" id="email" name="email" required 
+                            placeholder="Ingresa tu Correo Electrónico" value="{{ old('email') }}">
+                        @error('email')
+                            <span class="error-message" style="color:red;">{{ $message }}</span>
+                        @enderror
                     </div>
 
                     <div class="form-group">

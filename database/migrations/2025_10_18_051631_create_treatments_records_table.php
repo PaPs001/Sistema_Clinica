@@ -31,7 +31,11 @@ return new class extends Migration
                 ->references('id')
                 ->on('medic_users')
                 ->onDelete('set null');
-            $table->date('prescription_date')->nullable();
+            $table->unsignedBigInteger('appointment_id');
+            $table->foreign('appointment_id')
+                ->references('id')
+                ->on('appointments')
+                ->onDelete('cascade');
             $table->timestamps();
         });
     }
