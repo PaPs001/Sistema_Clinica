@@ -19,6 +19,7 @@ return new class extends Migration
             $table->boolean('is_Temporary')->default(false);
             $table->string('temporary_name')->nullable();
             $table->string('temporary_phone')->nullable();
+            $table->string('userCode');
             $table->foreign('userId')
                 ->references('id')
                 ->on('general_users')

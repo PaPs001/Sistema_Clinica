@@ -2,7 +2,7 @@
 @section('title', 'Dashboard Médico - Hospital Naval')
 @section('content')
             <header class="content-header">
-                <h1>Hola Médico!</h1>
+                <h1>Hola {{ Auth::user()->name }}</h1>
                 <div class="header-actions">
                     <div class="search-box">
                         <input type="text" placeholder="Buscar paciente...">
@@ -14,9 +14,8 @@
                     </div>
                 </div>
             </header>
-
+                <!-- Estadísticas Rápidas 
             <div class="content">
-                <!-- Estadísticas Rápidas -->
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">
@@ -54,7 +53,8 @@
                             <p>Citas del Día</p>
                         </div>
                     </div>
-                </div>
+                </div>-->
+
 
                 <!-- Pacientes Recientes -->
                 <div class="recent-patients">

@@ -8,7 +8,7 @@ class diseaseRecord extends Model
 {
     //
 
-    protected $table = 'chronic_disease_records';
+    protected $table = 'chronic_disease_record';
     protected $fillable = [
         'id_record',
         'chronics_diseases_id',
@@ -22,6 +22,6 @@ class diseaseRecord extends Model
 //listo
     public function disease()
     {
-        return $this->belongsTo(disease::class, 'disease_id');
+        return $this->belongsTo(disease::class, 'chronics_diseases_id');
     }
 }

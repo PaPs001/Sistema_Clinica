@@ -1,5 +1,4 @@
 import{ crearBuscador } from "./util/buscador.js";
-import{ addVitalSigns } from "./util/signos-vitales.js";
 import { agregarBloqueExpandible } from "./util/bloqueExpandible.js";
 function inicializarBuscadores(bloque) {
 
@@ -46,39 +45,18 @@ function inicializarBuscadores(bloque) {
         });
     }
 }
+
 document.addEventListener("DOMContentLoaded", () => {
     crearBuscador({
-        input: "#nombre",
-        contenedor: "#sugerencias-pacientes",
-        url: "/buscar-pacientes?query=",
-        renderItem: p => `${p.nombre} (${p.telefono || "Sin teléfono"})`,
+        input: document.querySelector(".nombre-paciente"),
+        contenedor: document.querySelector(".sugerencias-pacientes"),
+        url: "/buscar-paciente-archivos?query=",
+        renderItem: p => p.user.name,
         onSelect: paciente => {
-            document.querySelector("#nombre").value = paciente.nombre;
-            document.querySelector("#telefono").value = paciente.telefono;
-            document.querySelector("#paciente_id").value = paciente.id;
-
-            if (paciente.userId != null) {
-                document.querySelector("#fechaNacimiento").value = paciente.fechaNacimiento;
-                document.querySelector("#genero").value = paciente.genero;
-                document.querySelector("#direccion").value = paciente.direccion;
-                document.querySelector("#email").value = paciente.email;
-            }
-
-            addVitalSigns(paciente.signos_vitales);
+            document.querySelector(".nombre-paciente").value = paciente.user.name;
+            document.querySelector(".paciente_id").value = paciente.id;
         }
     });
-
-    crearBuscador({
-        input: "#diagnostico",
-        contenedor: "#sugerencias-diagnosticos",
-        url: "/buscar-diagnostico?query=",
-        renderItem: d => d.name,
-        onSelect: d => {
-            document.querySelector("#diagnostico").value = d.name;
-            document.querySelector("#diagnostico_id").value = d.id;
-        }
-    });
-
     window.agregarAlergia = function () {
         agregarBloqueExpandible({
             contenedor: "#contenedorAlergias",
@@ -87,7 +65,6 @@ document.addEventListener("DOMContentLoaded", () => {
             inicializarBuscadores: inicializarBuscadores
         });
     };
-
     window.agregarCronica = function () {
         agregarBloqueExpandible({
             contenedor: "#contenedorCronicas",
@@ -97,3 +74,29 @@ document.addEventListener("DOMContentLoaded", () => {
         })
     };
 });
+
+window.inicializarBuscadores = inicializarBuscadores;
+/*
+function agregarAlergia() {
+    const contenedor = document.getElementById('contenedorAlergias');
+    const template = document.getElementById('template-alergia').innerHTML;
+
+    contenedor.insertAdjacentHTML('beforeend', `
+        <div class="expandible">
+            <div class="expandible-header" onclick="toggleExpandible(this)">
+                <h3>Nueva Alergia</h3>
+                <span class="icon">+</span>
+            </div>
+
+            <div class="expandible-content">
+                ${template}
+            </div>
+        </div>
+    `);
+
+    const nuevoBloque = contenedor.lastElementChild;
+
+    inicializarBuscadores(nuevoBloque);
+}
+*/
+

@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('allergies_allergenes', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('allergie_id');
+            $table->unsignedBigInteger('allergie_id')->nullable();
             $table->foreign('allergie_id')
                 ->references('id')
                 ->on('allergies')
                 ->onDelete('cascade');
-            $table->unsignedBigInteger('allergene_id');
+            $table->unsignedBigInteger('allergene_id')->nullable();
             $table->foreign('allergene_id')
                 ->references('id')
                 ->on('allergenes')

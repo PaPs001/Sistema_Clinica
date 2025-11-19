@@ -15,13 +15,14 @@ class patientUser extends Model
         'DNI',
         'is_Temporary',
         'temporary_name',
-        'temporary_phone'
+        'temporary_phone',
+        'userCode'
     ];
 
 //listo
     public function user()
     {
-        return $this->belongsTo(UserModel::class, 'user_id');
+        return $this->belongsTo(UserModel::class, 'userId');
     }
 //listo
     public function medicalRecords()
@@ -35,5 +36,19 @@ class patientUser extends Model
     }
     public function vitalSigns(){
         return $this->hasMany(vital_sign::class, 'patient_id', 'id');
+    }
+
+    public function medicPatient(){
+        return $this->hasMany(MedicPatient::class, 'patient_id');
+    }
+    
+    public function medicAll()
+    {
+        return $this->belongsToMany(
+            medicUser::class,
+            'medic_patient', 
+            'patient_id', 
+            'medic_id'  
+        );
     }
 }

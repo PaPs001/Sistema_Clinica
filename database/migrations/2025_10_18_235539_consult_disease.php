@@ -26,7 +26,10 @@ return new class extends Migration
             $table->text('reason');
             $table->text('symptoms');
             $table->text('findings');
-            $table->text('diagnosis');
+            $table->unsignedBigInteger('diagnosis_id');
+            $table->foreign('diagnosis_id')
+                ->references('id')
+                ->on('chronics_diseases');
             $table->text('treatment_diagnosis');
             $table->timestamps();
         });

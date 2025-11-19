@@ -6,43 +6,62 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\mediController;
 
 
-//Rutas login
 Route::get('/', function () {
     return view('LOGIN.login');
-})->name('loginDashboard');
+})->name('login');
 Route::post('login', [LoginController::class, 'LoginRequest'])->name('login_Attempt');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
 
 //Rutas de paginas medico --------------------------------------------------------------
-Route::get('/dashboard', function(){
-    return view('MEDICO.dashboard-medico');
-})->name('dashboardMedico');
+Route::middleware(['auth', 'role:medic'])->group(function (){
 
-Route::get('/registro-expediente', function(){
-    return view('MEDICO.registro-expediente');
-})->name('registro-expediente');
-
-Route::get('/consulta-historial', function(){
-    return view('MEDICO.consulta-historial');
-})->name('consulta-historial');
-
-Route::get('/subir-documentos', function(){
-    return view('MEDICO.subir-documentos');
-})->name('subir-documentos');
-
-Route::get('/filtrar-expedientes', function(){
-    return view('MEDICO.filtrar-expedientes');
-})->name('filtrar-expedientes');
-
-Route::get('/registro-alergias', function(){
-    return view('MEDICO.registro-alergias');
-})->name('registro-alergias');
-
-Route::post('newRecord', [mediController::class, 'storeRecord'])->name('save_medical_record');
-Route::get('/buscar-pacientes', [mediController::class, 'buscarPacientes'])->name('buscar.pacientes');
-
-
+    Route::get('/dashboard', function(){
+        return view('MEDICO.dashboard-medico');
+    })->name('dashboardMedico');
+    
+    Route::get('/registro-expediente', function(){
+        return view('MEDICO.registro-expediente');
+    })->name('registro-expediente');
+    
+    //apagado temporal para revisar funcionalidad en controlador
+    /*Route::get('/consulta-historial', function(){
+        return view('MEDICO.consulta-historial');
+    })->name('consulta-historial');
+    */
+    /*Route::get('/subir-documentos', function(){
+        return view('MEDICO.subir-documentos');
+    })->name('subir-documentos');
+    */
+    
+    Route::get('/filtrar-expedientes', function(){
+        return view('MEDICO.filtrar-expedientes');
+    })->name('filtrar-expedientes');
+    
+    Route::get('/registro-alergias', function(){
+        return view('MEDICO.registro-alergias');
+    })->name('registro-alergias');
+    
+    //Agregar nuevo expediente
+    Route::post('newRecord', [mediController::class, 'storeRecord'])->name('save_medical_record');
+    //funcionalidad de la pagina para busqueda mas rapida de paciente
+    Route::get('/buscar-pacientes', [mediController::class, 'buscarPacientes'])->name('buscar.pacientes');
+    Route::get('/consulta-historial', [mediController::class, 'listarPacientes'])->name('consulta-historial');
+    //Consulta para obtener todos los datos e imprimirlos en pagina de historial
+    Route::get('/obtenerDatos/{id}', [mediController::class, 'getHistorial'])->name('obtenerDatosHistorial');
+    //Consulta para obtener los tipos de documento existentes e inciar pagina 
+    Route::get('/tipos-documentos', [mediController::class, 'iniciarPaginaUploadFiles'])->name('iniciar-Upload-files');
+    Route::post('subir-archivos', [mediController::class, 'subirArchivos'])->name('subir_archivos');
+    Route::get('/buscar-paciente-archivos', [mediController::class, 'buscarPacienteArchivos'])->name('buscar.paciente.Archivos');
+    
+    Route::get('/buscar-diagnostico', [mediController::class, 'autocompletarDiagnostico'])->name('buscar_diagnostico');
+    Route::post('/filtrado-expedientes', [mediController::class, 'filtradoExpedientes'])->name('filtro_Expedientes');
+    
+    Route::get('/buscar-alergenos', [mediController::class, 'autocompletarAlergenos'])->name('autocompletar_Alergenos');
+    Route::get('/buscar-alergias', [mediController::class, 'autocompletarAlergias'])->name('autocompletar_Alergias');
+    
+    Route::post('agregar-Alergia', [mediController::class, 'agregarAlergia'])->name('agregar_Alergia');
+});
 //Rutas a paginas paciente ---------------------------------------------------------------
 Route::get('/dashboard-paciente', function(){
     return view('PACIENTE.dashboard-paciente');

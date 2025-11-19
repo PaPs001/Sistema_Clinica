@@ -17,7 +17,7 @@ class medicUser extends Model
 //listo
     public function user()
     {
-        return $this->belongsTo(UserModel::class, 'user_id');
+        return $this->belongsTo(UserModel::class, 'userId');
     }
 //listo
     public function appointments()
@@ -28,5 +28,19 @@ class medicUser extends Model
     public function treatments()
     {
         return $this->hasMany(treatment_record::class, 'prescribed_by');
+    }
+
+    public function medicPatient(){
+        return $this->hasMany(MedicPatient::class, 'medic_id');
+    }
+
+    public function patientsAll()
+    {
+        return $this->belongsToMany(
+            patientUser::class,
+            'medic_patient',
+            'medic_id',   
+            'patient_id'  
+        );
     }
 }
