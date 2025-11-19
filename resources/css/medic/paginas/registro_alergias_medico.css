@@ -47,6 +47,60 @@
             border-color: #061175;
         }
 
+
+
+
+        .expandible {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.expandible-header {
+    background: #f4f4f4;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.expandible-header h3 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.expandible-header .icon {
+    font-size: 22px;
+    font-weight: bold;
+    transition: transform .2s ease-in-out;
+}
+
+.expandible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease;
+    padding: 0 15px;
+}
+
+.expandible.open .expandible-content {
+    max-height: 2000px; /* suficiente para un formulario */
+    padding: 15px;
+}
+
+.expandible.open .expandible-header .icon {
+    transform: rotate(45deg);
+}
+
+
+
+
+
+
+
         .allergies-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));

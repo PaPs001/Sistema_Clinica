@@ -3,12 +3,12 @@
 @section('content')
             <header class="content-header">
                 <h1>Subir Documentos Médicos</h1>
-                <div class="header-actions">
+                <!--<div class="header-actions">
                     <div class="search-box">
                         <input type="text" placeholder="Buscar paciente...">
                         <i class="fas fa-search"></i>
                     </div>
-                </div>
+                </div>-->
             </header>
 
             <div class="content">
@@ -21,39 +21,27 @@
                             <p>Formatos permitidos: PDF, JPG, PNG, DICOM (Max. 10MB)</p>
                         </div>
                         
-                        <form id="uploadForm" class="upload-form">
-                            <div class="form-group">
-                                <label for="patientSelect">Seleccionar Paciente *</label>
-                                <select id="patientSelect" required>
-                                    <option value="">Seleccionar paciente...</option>
-                                    <option value="MG-001">María González (MG-001)</option>
-                                    <option value="CL-002">Carlos López (CL-002)</option>
-                                    <option value="AR-003">Ana Rodríguez (AR-003)</option>
-                                </select>
+                        <form id="uploadForm" class="upload-form" method="post" action="{{ route('subir_archivos') }}" enctype="multipart/form-data">
+                            @csrf
+                                <label for="nombre">Nombre Paciente *</label>
+                                <input type="text" id="nombre" name="nombre" required autocomplete="off">
+                                <div id="sugerencias-pacientes" class="sugerencias-lista"></div>
+                                <input type="hidden" id="paciente_id" name="paciente_id">
                             </div>
 
                             <div class="form-group">
                                 <label for="documentType">Tipo de Documento *</label>
-                                <select id="documentType" required>
-                                    <option value="">Seleccionar tipo...</option>
-                                    <option value="radiografia">Radiografía</option>
-                                    <option value="analisis">Análisis de Laboratorio</option>
-                                    <option value="ecografia">Ecografía</option>
-                                    <option value="tomografia">Tomografía</option>
-                                    <option value="resonancia">Resonancia Magnética</option>
-                                    <option value="receta">Receta Médica</option>
-                                    <option value="otro">Otro</option>
+                                <select id="documentType" name="tipoDocumento" required>
+                                    <option value="">-- Seleccione un tipo de documento --</option>
+                                    @foreach($tiposDocumentos as $type)
+                                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                    @endforeach
                                 </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="documentDate">Fecha del Estudio *</label>
-                                <input type="date" id="documentDate" required>
                             </div>
 
                             <div class="form-group full-width">
                                 <label for="documentDescription">Descripción</label>
-                                <textarea id="documentDescription" rows="3" placeholder="Descripción del documento o hallazgos relevantes..."></textarea>
+                                <textarea name="descripcionDoc" id="documentDescription" rows="3" placeholder="Descripción del documento o hallazgos relevantes..."></textarea>
                             </div>
 
                             <!-- Área de Dropzone -->
@@ -62,12 +50,13 @@
                                     <i class="fas fa-file-upload"></i>
                                     <h4>Arrastra los archivos aquí o haz click para seleccionar</h4>
                                     <p>Puedes subir múltiples archivos</p>
-                                    <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.dcm" style="display: none;">
-                                    <button type="button" class="btn-secondary" onclick="document.getElementById('fileInput').click()">
+                                    <input name="archivo[]" type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.dcm" required hidden>
+                                    <!--<button type="button" class="btn-secondary" onclick="document.getElementById('fileInput').click()">
                                         <i class="fas fa-folder-open"></i> Seleccionar Archivos
-                                    </button>
+                                    </button>-->
                                 </div>
                             </div>
+                            <ul id="fileList"></ul>
 
                             <!-- Archivos seleccionados -->
                             <div class="selected-files" id="selectedFiles">
@@ -86,206 +75,120 @@
                         </form>
                     </div>
                 </div>
-
-                <!-- Documentos Recientes -->
-                <div class="recent-documents">
-                    <h2>Documentos Subidos Recientemente</h2>
-                    <div class="documents-grid">
-                        <div class="document-item">
-                            <div class="document-icon">
-                                <i class="fas fa-file-pdf"></i>
-                            </div>
-                            <div class="document-info">
-                                <h4>Radiografía Torax.pdf</h4>
-                                <p><strong>Paciente:</strong> María González</p>
-                                <p><strong>Tipo:</strong> Radiografía</p>
-                                <p><strong>Fecha:</strong> 15 Mar 2024</p>
-                                <p><strong>Tamaño:</strong> 2.4 MB</p>
-                            </div>
-                            <div class="document-actions">
-                                <button class="btn-view" onclick="verDocumento(1)">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn-edit" onclick="descargarDocumento(1)">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                                <button class="btn-danger" onclick="eliminarDocumento(1)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="document-item">
-                            <div class="document-icon">
-                                <i class="fas fa-file-image"></i>
-                            </div>
-                            <div class="document-info">
-                                <h4>Analisis_Sangre.jpg</h4>
-                                <p><strong>Paciente:</strong> Carlos López</p>
-                                <p><strong>Tipo:</strong> Análisis Laboratorio</p>
-                                <p><strong>Fecha:</strong> 14 Mar 2024</p>
-                                <p><strong>Tamaño:</strong> 1.8 MB</p>
-                            </div>
-                            <div class="document-actions">
-                                <button class="btn-view" onclick="verDocumento(2)">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn-edit" onclick="descargarDocumento(2)">
-                                    <i class="fas fa-download"></i>
-                                </button>
-                                <button class="btn-danger" onclick="eliminarDocumento(2)">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 @endsection
-@section('script')
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const inputNombre = document.getElementById('nombre');
+    const sugerenciasDiv = document.getElementById('sugerencias-pacientes');
+    const inputId = document.getElementById('paciente_id');
+    
+    let timeout = null;
 
-    <script src="script-medico.js"></script>
-    <script>
-        // Script específico para subir documentos
-        const dropzone = document.getElementById('dropzone');
-        const fileInput = document.getElementById('fileInput');
-        const filesList = document.getElementById('filesList');
-        const selectedFiles = document.getElementById('selectedFiles');
+    inputNombre.addEventListener('input', function () {
+        const query = this.value.trim();
+        clearTimeout(timeout);
+        sugerenciasDiv.innerHTML = '';
 
-        let uploadedFiles = [];
+        if (query.length < 2) return;
 
-        // Configurar dropzone
-        dropzone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropzone.classList.add('dragover');
-        });
+        timeout = setTimeout(() => {
+            console.log("Buscando pacientes con:", query);
 
-        dropzone.addEventListener('dragleave', () => {
-            dropzone.classList.remove('dragover');
-        });
+            fetch(`/buscar-paciente-archivos?query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Respuesta del servidor:", data);
+                    sugerenciasDiv.innerHTML = '';
 
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropzone.classList.remove('dragover');
-            handleFiles(e.dataTransfer.files);
-        });
+                    if (!Array.isArray(data)) {
+                        console.error("El servidor no devolvió un array:", data);
+                        return;
+                    }
 
-        dropzone.addEventListener('click', () => {
-            fileInput.click();
-        });
+                    if (data.length === 0) {
+                        const item = document.createElement('div');
+                        item.classList.add('sugerencia-item', 'text-muted');
+                        item.textContent = 'Sin resultados';
+                        sugerenciasDiv.appendChild(item);
+                        return;
+                    }
 
-        fileInput.addEventListener('change', (e) => {
-            handleFiles(e.target.files);
-        });
+                    data.forEach(paciente => {
+                        const item = document.createElement('div');
+                        item.classList.add('sugerencia-item');
+                        item.textContent = paciente.user?.name ?? 'Nombre no disponible';
 
-        function handleFiles(files) {
-            for (let file of files) {
-                if (validateFile(file)) {
-                    uploadedFiles.push(file);
-                    displayFile(file);
-                }
-            }
-            updateSelectedFilesVisibility();
+                        item.addEventListener('click', () => {
+                            inputNombre.value = paciente.user?.name ?? '';
+                            inputId.value = paciente.id;
+                            sugerenciasDiv.innerHTML = '';
+                        });
+
+                        sugerenciasDiv.appendChild(item);
+                    });
+                })
+                .catch(err => {
+                    console.error("Error al buscar pacientes:", err);
+                });
+        }, 400);
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!sugerenciasDiv.contains(e.target) && e.target !== inputNombre) {
+            sugerenciasDiv.innerHTML = '';
         }
+    });
 
-        function validateFile(file) {
-            const validTypes = ['application/pdf', 'image/jpeg', 'image/png', 'application/dicom'];
-            const maxSize = 10 * 1024 * 1024; // 10MB
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
 
-            if (!validTypes.includes(file.type)) {
-                alert('Tipo de archivo no permitido: ' + file.type);
-                return false;
-            }
+    dropzone.addEventListener('click', () => fileInput.click());
 
-            if (file.size > maxSize) {
-                alert('El archivo es demasiado grande: ' + (file.size / 1024 / 1024).toFixed(2) + 'MB');
-                return false;
-            }
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    });
 
-            return true;
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('dragover');
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+
+        const files = e.dataTransfer.files;
+        fileInput.files = files; 
+        mostrarArchivos(files);
+    });
+
+    fileInput.addEventListener('change', () => {
+        mostrarArchivos(fileInput.files);
+    });
+
+    function mostrarArchivos(files) {
+        if (files.length > 20) {
+            alert("Máximo 20 archivos permitidos");
+            return;
         }
+        fileList.innerHTML = '';
+        for (const file of files) {
+            const li = document.createElement('li');
+            let displaySize;
 
-        function displayFile(file) {
-            const fileElement = document.createElement('div');
-            fileElement.className = 'file-item';
-            fileElement.innerHTML = `
-                <div class="file-info">
-                    <i class="fas fa-file"></i>
-                    <span>${file.name}</span>
-                    <small>(${(file.size / 1024 / 1024).toFixed(2)} MB)</small>
-                </div>
-                <button type="button" class="btn-danger" onclick="removeFile('${file.name}')">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-            filesList.appendChild(fileElement);
-        }
-
-        function removeFile(fileName) {
-            uploadedFiles = uploadedFiles.filter(file => file.name !== fileName);
-            const fileElement = Array.from(filesList.children).find(child => 
-                child.querySelector('span').textContent === fileName
-            );
-            if (fileElement) {
-                fileElement.remove();
-            }
-            updateSelectedFilesVisibility();
-        }
-
-        function updateSelectedFilesVisibility() {
-            if (uploadedFiles.length > 0) {
-                selectedFiles.style.display = 'block';
+            if (file.size < 1048576) {
+                displaySize = (file.size / 1024).toFixed(2) + ' KB';
             } else {
-                selectedFiles.style.display = 'none';
-            }
-        }
-
-        function limpiarFormulario() {
-            document.getElementById('uploadForm').reset();
-            uploadedFiles = [];
-            filesList.innerHTML = '';
-            updateSelectedFilesVisibility();
-        }
-
-        document.getElementById('uploadForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            if (uploadedFiles.length === 0) {
-                alert('Por favor, selecciona al menos un archivo.');
-                return;
+                displaySize = (file.size / 1048576).toFixed(2) + ' MB';
             }
 
-            // Simular subida de archivos
-            const formData = new FormData();
-            uploadedFiles.forEach(file => {
-                formData.append('documents', file);
-            });
-
-            // Mostrar progreso
-            alert(`Subiendo ${uploadedFiles.length} archivo(s)...`);
-            
-            // Simular subida exitosa
-            setTimeout(() => {
-                alert('¡Documentos subidos exitosamente!');
-                limpiarFormulario();
-            }, 2000);
-        });
-
-        function verDocumento(id) {
-            alert(`Viendo documento #${id}`);
+            li.textContent = `${file.name} — ${displaySize}`;
+            fileList.appendChild(li);
         }
-
-        function descargarDocumento(id) {
-            alert(`Descargando documento #${id}`);
-        }
-
-        function eliminarDocumento(id) {
-            if (confirm('¿Estás seguro de que quieres eliminar este documento?')) {
-                alert(`Documento #${id} eliminado`);
-            }
-        }
-
-        // Ocultar sección de archivos seleccionados inicialmente
-        updateSelectedFilesVisibility();
-    </script>
+    }
+});
+</script>
 @endsection

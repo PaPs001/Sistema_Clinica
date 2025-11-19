@@ -36,4 +36,6 @@ class medical_records extends Model
     public function consultDiseases(){
         return $this->hasMany(consult_disease::class, 'id_medical_record', 'id');
     }
+
+    
 }

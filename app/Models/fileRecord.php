@@ -15,11 +15,15 @@ class fileRecord extends Model
         'format',
         'file_size',
         'description',
-        'document_type',
+        'document_type_id',
         'upload_date',
     ];
 //listo
     public function record(){
-        return $this->belongTo(medical_records::class, 'id_record');
+        return $this->belongsTo(medical_records::class, 'id_record');
+    }
+
+    public function documentType(){
+        return $this->belongsTo(documentType::class, 'document_type_id', 'id');
     }
 }

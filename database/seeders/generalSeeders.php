@@ -14,6 +14,7 @@ class generalSeeders extends Seeder
     {
         //
         $this->call([
+            documentTypeSeeder::class,
             AccesRolesSeeder::class,
             UsersInitSeeder::class,
             appointmentSeeder::class,

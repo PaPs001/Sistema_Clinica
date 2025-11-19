@@ -14,6 +14,10 @@ class disease extends Model
 //listo
     public function diseaseRecords()
     {
-        return $this->hasMany(diseaseRecord::class, 'disease_id');
+        return $this->hasMany(diseaseRecord::class, 'chronics_diseases_id');
+    }
+
+    public function consultDisease(){
+        return $this->hasMany(consult_disease::class, 'diagnosis_id');
     }
 }
