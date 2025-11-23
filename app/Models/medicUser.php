@@ -13,6 +13,7 @@ class medicUser extends Model
     protected $fillable = [
         'specialty',
         'userId',
+        'service_ID',
     ];
 //listo
     public function user()
@@ -34,13 +35,17 @@ class medicUser extends Model
         return $this->hasMany(MedicPatient::class, 'medic_id');
     }
 
+    public function service(){
+        return $this->belongsTo(services::class, 'service_ID', 'id');
+    }
+
     public function patientsAll()
     {
         return $this->belongsToMany(
             patientUser::class,
             'medic_patient',
             'medic_id',   
-            'patient_id'  
+            'patient_id' 
         );
     }
 }

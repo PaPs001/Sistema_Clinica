@@ -25,6 +25,10 @@ return new class extends Migration
             $table->foreign('receptionist_id')
                 ->references('id')
                 ->on('recepcionist_users');
+            $table->unsignedBigInteger('services_id');
+            $table->foreign('services_id')
+                ->references('id')
+                ->on('services');
                 //si hubo cambios
             $table->date('appointment_date');
             $table->time('appointment_time');

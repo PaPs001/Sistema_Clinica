@@ -21,6 +21,7 @@ class appointment extends Model
         'reason',
         'notes',
         'notifications',
+        'services_id',
     ];
 //listo
     public function patient()
@@ -45,5 +46,9 @@ class appointment extends Model
 
     public function consultDiseases(){
         return $this->hasMany(consult_disease::class, 'appointment_id', 'id');
+    }
+
+    public function services(){
+        return $this->belongsTo(services::class, 'services_id', 'id');
     }
 }

@@ -23,6 +23,8 @@ class patientUserFactory extends Factory
             'is_Temporary' => false,
             'temporary_name' => null,
             'temporary_phone' => null,
+            'userCode' => null,
+
         ];
     }
 
@@ -34,6 +36,7 @@ class patientUserFactory extends Factory
                 'is_Temporary' => true,
                 'temporary_name' => $this->faker->name(),
                 'temporary_phone' => $this->faker->phoneNumber(),
+                'userCode' => null,
             ];
         });
     }

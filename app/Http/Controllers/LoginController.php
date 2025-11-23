@@ -24,11 +24,13 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             $user = Auth::user();
-
+            if($user->status === 'inactive'){
+                return redirect()->route('password.primeravez');
+            }
             $routes = [
                 usersType::ROLE_ADMIN => 'dashboardAdmin',
                 usersType::ROLE_MEDIC => 'dashboardMedico',
-                usersType::ROLE_PATIENT => 'dashboardPaciente',
+                usersType::ROLE_PATIENT => 'dashboard.paciente',
                 usersType::ROLE_RECEPTIONIST => 'dashboardRecepcionista',
                 usersType::ROLE_NURSE => 'dashboardEnfermera',
             ];
@@ -49,5 +51,4 @@ class LoginController extends Controller
 
         return redirect('/');
     }
-
 }

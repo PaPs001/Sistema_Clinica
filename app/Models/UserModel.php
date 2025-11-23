@@ -31,7 +31,7 @@ class UserModel extends Authenticatable
 //listo
     public function patient()
     {
-        return $this->hasOne(patientUser::class, 'user_id');
+        return $this->hasOne(patientUser::class, 'userId');
     }
 //listo
     public function medic()

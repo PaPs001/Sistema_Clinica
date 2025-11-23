@@ -12,7 +12,6 @@
             </header>
 
             <div class="content">
-                <!-- Panel de Subida -->
                 <div class="upload-section">
                     <div class="upload-card">
                         <div class="upload-header">
@@ -44,7 +43,6 @@
                                 <textarea name="descripcionDoc" id="documentDescription" rows="3" placeholder="Descripción del documento o hallazgos relevantes..."></textarea>
                             </div>
 
-                            <!-- Área de Dropzone -->
                             <div class="dropzone" id="dropzone">
                                 <div class="dropzone-content">
                                     <i class="fas fa-file-upload"></i>
@@ -58,7 +56,6 @@
                             </div>
                             <ul id="fileList"></ul>
 
-                            <!-- Archivos seleccionados -->
                             <div class="selected-files" id="selectedFiles">
                                 <h4>Archivos seleccionados:</h4>
                                 <div class="files-list" id="filesList"></div>
