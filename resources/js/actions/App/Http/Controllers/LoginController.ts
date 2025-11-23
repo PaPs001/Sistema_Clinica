@@ -56,7 +56,7 @@ LoginRequest.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     LoginRequest.form = LoginRequestForm
 /**
 * @see \App\Http\Controllers\LoginController::logout
- * @see app/Http/Controllers/LoginController.php:44
+ * @see app/Http/Controllers/LoginController.php:46
  * @route '/logout'
  */
 export const logout = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -71,7 +71,7 @@ logout.definition = {
 
 /**
 * @see \App\Http\Controllers\LoginController::logout
- * @see app/Http/Controllers/LoginController.php:44
+ * @see app/Http/Controllers/LoginController.php:46
  * @route '/logout'
  */
 logout.url = (options?: RouteQueryOptions) => {
@@ -80,7 +80,7 @@ logout.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\LoginController::logout
- * @see app/Http/Controllers/LoginController.php:44
+ * @see app/Http/Controllers/LoginController.php:46
  * @route '/logout'
  */
 logout.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -90,7 +90,7 @@ logout.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\LoginController::logout
- * @see app/Http/Controllers/LoginController.php:44
+ * @see app/Http/Controllers/LoginController.php:46
  * @route '/logout'
  */
     const logoutForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -100,7 +100,7 @@ logout.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\LoginController::logout
- * @see app/Http/Controllers/LoginController.php:44
+ * @see app/Http/Controllers/LoginController.php:46
  * @route '/logout'
  */
         logoutForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

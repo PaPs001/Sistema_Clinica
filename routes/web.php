@@ -3,8 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\mediController;
-
+use App\Http\Controllers\ControladoresMedico\mediController;
+use App\Http\Controllers\ControladoresMedico\antecedentesMedicosController;
+use App\Http\Controllers\ControladoresMedico\archivosMedicosController;
+use App\Http\Controllers\ControladoresMedico\buscadoresController;
+use App\Http\Controllers\ControladoresMedico\ExpedienteMedicoController;
+use App\Http\Controllers\ControladoresMedico\historialMedicoController;
+use App\Http\Controllers\ControladoresMedico\filtradoExpedientesController;
+use App\Http\Controllers\passwordFirstLoginController;
+use App\Http\Controllers\ControladoresPaciente\HistorialPacienteController;
 
 Route::get('/', function () {
     return view('LOGIN.login');
@@ -12,10 +19,14 @@ Route::get('/', function () {
 Route::post('login', [LoginController::class, 'LoginRequest'])->name('login_Attempt');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::middleware(['auth'])->group(function(){
+    Route::get('/cambiar-password-primera-vez', function() {return view('LOGIN.cambiar-password');})->name('password.primeravez');
+    Route::post('/cambiar-password-primera-vez', [passwordFirstLoginController::class, 'actualizarPasswordInicial'])->name('password.primeravez.update');
+});
+
 
 //Rutas de paginas medico --------------------------------------------------------------
 Route::middleware(['auth', 'role:medic'])->group(function (){
-
     Route::get('/dashboard', function(){
         return view('MEDICO.dashboard-medico');
     })->name('dashboardMedico');
@@ -23,16 +34,6 @@ Route::middleware(['auth', 'role:medic'])->group(function (){
     Route::get('/registro-expediente', function(){
         return view('MEDICO.registro-expediente');
     })->name('registro-expediente');
-    
-    //apagado temporal para revisar funcionalidad en controlador
-    /*Route::get('/consulta-historial', function(){
-        return view('MEDICO.consulta-historial');
-    })->name('consulta-historial');
-    */
-    /*Route::get('/subir-documentos', function(){
-        return view('MEDICO.subir-documentos');
-    })->name('subir-documentos');
-    */
     
     Route::get('/filtrar-expedientes', function(){
         return view('MEDICO.filtrar-expedientes');
@@ -42,50 +43,53 @@ Route::middleware(['auth', 'role:medic'])->group(function (){
         return view('MEDICO.registro-alergias');
     })->name('registro-alergias');
     
-    //Agregar nuevo expediente
-    Route::post('newRecord', [mediController::class, 'storeRecord'])->name('save_medical_record');
-    //funcionalidad de la pagina para busqueda mas rapida de paciente
-    Route::get('/buscar-pacientes', [mediController::class, 'buscarPacientes'])->name('buscar.pacientes');
-    Route::get('/consulta-historial', [mediController::class, 'listarPacientes'])->name('consulta-historial');
-    //Consulta para obtener todos los datos e imprimirlos en pagina de historial
-    Route::get('/obtenerDatos/{id}', [mediController::class, 'getHistorial'])->name('obtenerDatosHistorial');
-    //Consulta para obtener los tipos de documento existentes e inciar pagina 
-    Route::get('/tipos-documentos', [mediController::class, 'iniciarPaginaUploadFiles'])->name('iniciar-Upload-files');
-    Route::post('subir-archivos', [mediController::class, 'subirArchivos'])->name('subir_archivos');
-    Route::get('/buscar-paciente-archivos', [mediController::class, 'buscarPacienteArchivos'])->name('buscar.paciente.Archivos');
-    
-    Route::get('/buscar-diagnostico', [mediController::class, 'autocompletarDiagnostico'])->name('buscar_diagnostico');
-    Route::post('/filtrado-expedientes', [mediController::class, 'filtradoExpedientes'])->name('filtro_Expedientes');
-    
-    Route::get('/buscar-alergenos', [mediController::class, 'autocompletarAlergenos'])->name('autocompletar_Alergenos');
-    Route::get('/buscar-alergias', [mediController::class, 'autocompletarAlergias'])->name('autocompletar_Alergias');
-    
-    Route::post('agregar-Alergia', [mediController::class, 'agregarAlergia'])->name('agregar_Alergia');
+    Route::post('newRecord', [ExpedienteMedicoController::class, 'storeRecord'])->name('save_medical_record');
+    Route::get('/buscar-pacientes', [ExpedienteMedicoController::class, 'buscarPacientes'])->name('buscar.pacientes');
+    Route::get('/consulta-historial', [historialMedicoController::class, 'listarPacientes'])->name('consulta-historial');
+    Route::get('/obtenerDatos/{id}', [historialMedicoController::class, 'getHistorial'])->name('obtenerDatosHistorial');
+    Route::get('/tipos-documentos', [archivosMedicosController::class, 'iniciarPaginaUploadFiles'])->name('iniciar-Upload-files');
+    Route::post('subir-archivos', [archivosMedicosController::class, 'subirArchivos'])->name('subir_archivos');
+    Route::get('/buscar-paciente-archivos', [buscadoresController::class, 'buscarPacienteArchivos'])->name('buscar.paciente.Archivos');
+    Route::get('/buscar-diagnostico', [buscadoresController::class, 'autocompletarDiagnostico'])->name('buscar_diagnostico');
+    Route::post('/filtrado-expedientes', [filtradoExpedientesController::class, 'filtradoExpedientes'])->name('filtro_Expedientes');
+    Route::get('/buscar-alergenos', [buscadoresController::class, 'autocompletarAlergenos'])->name('autocompletar_Alergenos');
+    Route::get('/buscar-alergias', [buscadoresController::class, 'autocompletarAlergias'])->name('autocompletar_Alergias');
+    Route::post('agregar-Alergia', [antecedentesMedicosController::class, 'agregarAlergia'])->name('agregar_Alergia');
 });
 //Rutas a paginas paciente ---------------------------------------------------------------
-Route::get('/dashboard-paciente', function(){
-    return view('PACIENTE.dashboard-paciente');
-})->name('dashboardPaciente');
+Route::middleware(['auth', 'role:patient'])->group(function (){
+    Route::get('/dashboard-paciente', function(){
+        return view('PACIENTE.dashboard-paciente');
+    })->name('dashboard.paciente');
+    
+    Route::get('/historial_Paciente', function(){
+        return view('PACIENTE.mi-historial');
+    })->name('historialPaciente');
+    
+    Route::get('/citas-Paciente', function(){
+        return view('PACIENTE.mis-citas');
+    })->name('citasPaciente');
+    
+    Route::get('alergias-Paciente', function(){
+        return view('PACIENTE.mis-alergias');
+    })->name('alergiasPaciente');
+    
+    Route::get('/documentos-Paciente', function(){
+        return view('PACIENTE.mis-documentos');
+    })->name('documentosPaciente');
+    
+    Route::get('/perfil-Paciente', function(){
+        return view('PACIENTE.perfil-paciente');
+    })->name('perfilPaciente');
 
-Route::get('/historial_Paciente', function(){
-    return view('PACIENTE.mi-historial');
-})->name('historialPaciente');
+    //logica Del modulo de paciente 
 
-Route::get('/citas-Paciente', function(){
-    return view('PACIENTE.mis-citas');
-})->name('citasPaciente');
-
-Route::get('alergias-Paciente', function(){
-    return view('PACIENTE.mis-alergias');
-})->name('alergiasPaciente');
-
-Route::get('/documentos-Paciente', function(){
-    return view('PACIENTE.mis-documentos');
-})->name('documentosPaciente');
-
-Route::get('/perfil-Paciente', function(){
-    return view('PACIENTE.perfil-paciente');
-})->name('perfilPaciente');
+    Route::get('/datos-historial-consulta', [HistorialPacienteController::class, 'datosConsulta'])->name('datos.historial.consulta')->middleware(['auth', 'role:patient']);
+    Route::get('/archivos-Historial-Medico', [HistorialPacienteController::class, 'archivosHistorialMedico'])->name('archivos.Historial.Medico');
+    Route::get('/datos-antecedentes-medicos', [HistorialPacienteController::class, 'datosAntecedentesMedicos'])->name('datos.Antecedentes.Medicos');
+    Route::get('/verArchivo/{id}', [HistorialPacienteController::class, 'verArchivo'])->name('ver.Archivo');
+    Route::get('/archivos/descargar/{id}', [HistorialPacienteController::class, 'descargarArchivos'])->name('descargar.archivos');
+});
 
 
 

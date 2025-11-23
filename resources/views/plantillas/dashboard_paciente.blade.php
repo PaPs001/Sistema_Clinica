@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Pagina')</title>
     @vite(['resources/css/PACIENTE/general.css'])
+    @yield('styles')
+    @yield('scripts')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -20,7 +22,7 @@
             </div>
             
             <nav class="sidebar-nav">
-                <a href="{{ route('dashboardPaciente') }}" class="nav-item {{ request()->routeIs('dashboardPaciente') ? 'active' : '' }}">
+                <a href="{{ route('dashboard.paciente') }}" class="nav-item {{ request()->routeIs('dashboard.paciente') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
                 </a>
@@ -28,7 +30,7 @@
                     <i class="fas fa-history"></i>
                     <span>Mi Historial</span>
                 </a>
-                <a href="{{ route('citasPaciente') }}" class="nav-item {{ request()->routeIs('citasPaciente') ? 'active' : '' }}">
+                <!--<a href="{{ route('citasPaciente') }}" class="nav-item {{ request()->routeIs('citasPaciente') ? 'active' : '' }}">
                     <i class="fas fa-calendar-check"></i>
                     <span>Mis Citas</span>
                 </a>
@@ -39,7 +41,7 @@
                 <a href="{{ route('alergiasPaciente') }}" class="nav-item {{ request()->routeIs('alergiasPaciente') ? 'active' : '' }}">
                     <i class="fas fa-allergies"></i>
                     <span>Mis Alergias</span>
-                </a>
+                </a>-->
                 <a href="{{ route('perfilPaciente') }}" class="nav-item {{ request()->routeIs('perfilPaciente') ? 'active' : '' }}">
                     <i class="fas fa-user"></i>
                     <span>Mi Perfil</span>
@@ -52,7 +54,7 @@
                         <i class="fas fa-user"></i>
                     </div>
                     <div class="user-details">
-                        <strong>María González</strong>
+                        <strong>{{ Auth::user()->name }}</strong>
                         <span>Paciente</span>
                     </div>
                 </div>
