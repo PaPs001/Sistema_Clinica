@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
- * @see app/Http/Controllers/LoginController.php:13
+ * @see app/Http/Controllers/LoginController.php:16
  * @route '/login'
  */
 export const LoginRequest = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ LoginRequest.definition = {
 
 /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
- * @see app/Http/Controllers/LoginController.php:13
+ * @see app/Http/Controllers/LoginController.php:16
  * @route '/login'
  */
 LoginRequest.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ LoginRequest.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
- * @see app/Http/Controllers/LoginController.php:13
+ * @see app/Http/Controllers/LoginController.php:16
  * @route '/login'
  */
 LoginRequest.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ LoginRequest.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
- * @see app/Http/Controllers/LoginController.php:13
+ * @see app/Http/Controllers/LoginController.php:16
  * @route '/login'
  */
     const LoginRequestForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +45,7 @@ LoginRequest.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
- * @see app/Http/Controllers/LoginController.php:13
+ * @see app/Http/Controllers/LoginController.php:16
  * @route '/login'
  */
         LoginRequestForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

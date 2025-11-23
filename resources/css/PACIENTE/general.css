@@ -4,3 +4,5 @@
     @import './paginas/style-historial.css';
     @import './paginas/style-perfil.css';
     @import './paginas/styles-paciente.css';
+    @import './paginas/temporal.css';
+    @import './paginas/paginador.css';

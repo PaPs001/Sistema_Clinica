@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class UserModel extends Model
+class UserModel extends Authenticatable
 {
     //
-    use HasFactory;
+    use HasFactory, Notifiable;
     protected $table = 'general_users';
 
     protected $fillable = [
@@ -29,12 +31,12 @@ class UserModel extends Model
 //listo
     public function patient()
     {
-        return $this->hasOne(patientUser::class, 'user_id');
+        return $this->hasOne(patientUser::class, 'userId');
     }
 //listo
     public function medic()
     {
-        return $this->hasOne(medicUser::class, 'user_id');
+        return $this->hasOne(medicUser::class, 'userId');
     }
 //listo
     public function nurse()

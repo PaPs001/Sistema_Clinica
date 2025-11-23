@@ -15,7 +15,7 @@ class consult_disease extends Model
         'reason',
         'symptoms',
         'findings',
-        'diagnosis',
+        'diagnosis_id',
         'treatment_diagnosis',
     ];
 
@@ -25,5 +25,9 @@ class consult_disease extends Model
     
     public function appointment(){
         return $this->belongsTo(appointment::class, 'appointment_id', 'id');
+    }
+
+    public function disease(){
+        return $this->beLongsTo(disease::class, 'diagnosis_id', 'id');
     }
 }

@@ -21,4 +21,8 @@ class allergies_allergenes extends Model
     public function allergene(){
         return $this->belongsTo(allergene::class, 'allergene_id', 'id');
     }
+
+    public function allergieRecord(){
+        return $this->hasMany(allergyRecord::class, 'allergie_allergene_id');
+    }
 }

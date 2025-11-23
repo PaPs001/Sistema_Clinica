@@ -1,238 +1,99 @@
-// script-medico.js - Versión mejorada
-console.log('Script médico cargado correctamente');
+import{ crearBuscador } from "./util/buscador.js";
+import{ addVitalSigns } from "./util/signos-vitales.js";
+import { agregarBloqueExpandible } from "./util/bloqueExpandible.js";
+function inicializarBuscadores(bloque) {
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM completamente cargado');
     
-    try {
-        // Navegación activa
-        const navItems = document.querySelectorAll('.nav-item');
-        if (navItems.length === 0) {
-            console.error('No se encontraron elementos .nav-item');
-            return;
-        }
-        
-        navItems.forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                navItems.forEach(nav => nav.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Redirigir a la página correspondiente
-                const href = this.getAttribute('href');
-                if (href && href !== '#') {
-                    window.location.href = href;
-                }
-            });
+    const alergias = bloque.querySelector(".alergias");
+    if (alergias) {
+        crearBuscador({
+            input: alergias,
+            contenedor: bloque.querySelector(".sugerencias-alergias"),
+            url: "/buscar-alergias?query=",
+            renderItem: d => d.name,
+            onSelect: d => {
+                alergias.value = d.name;
+                bloque.querySelector(".alergias_id").value = d.id;
+            }
         });
-
-        // Buscador de pacientes
-        const searchInput = document.querySelector('.search-box input');
-        if (searchInput) {
-            searchInput.addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase();
-                filterPatients(searchTerm);
-            });
-        }
-
-        // Notificaciones
-        const notificationBell = document.querySelector('.notifications');
-        if (notificationBell) {
-            notificationBell.addEventListener('click', function() {
-                showNotifications();
-            });
-        }
-
-        // Botones de acción
-        setupTableButtons();
-        console.log('Todos los event listeners configurados correctamente');
-        
-    } catch (error) {
-        console.error('Error al configurar el dashboard:', error);
     }
-});
 
-function setupTableButtons() {
-    const viewButtons = document.querySelectorAll('.btn-view');
-    const editButtons = document.querySelectorAll('.btn-edit');
-    
-    viewButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const row = this.closest('tr');
-            if (row) {
-                const patientName = row.querySelector('strong')?.textContent || 'Paciente';
-                viewPatient(patientName);
+    const alergenos = bloque.querySelector(".alergenos");
+    if (alergenos) {
+        crearBuscador({
+            input: alergenos,
+            contenedor: bloque.querySelector(".sugerencias-alergenos"),
+            url: "/buscar-alergenos?query=",
+            renderItem: d => d.name,
+            onSelect: d => {
+                alergenos.value = d.name;
+                bloque.querySelector(".alergenos_id").value = d.id;
             }
         });
-    });
-    
-    editButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const row = this.closest('tr');
-            if (row) {
-                const patientName = row.querySelector('strong')?.textContent || 'Paciente';
-                editPatient(patientName);
+    }
+
+    const cronicas = bloque.querySelector(".enfermedades-cronicas");
+    if (cronicas) {
+        crearBuscador({
+            input: cronicas,
+            contenedor: bloque.querySelector(".sugerencias-enfermedades-cronicas"),
+            url: "/buscar-diagnostico?query=",
+            renderItem: d => d.name,
+            onSelect: d => {
+                cronicas.value = d.name;
+                bloque.querySelector(".enfermedades-cronicas_id").value = d.id;
             }
         });
-    });
+    }
 }
+document.addEventListener("DOMContentLoaded", () => {
+    crearBuscador({
+        input: "#nombre",
+        contenedor: "#sugerencias-pacientes",
+        url: "/buscar-pacientes?query=",
+        renderItem: p => `${p.nombre} (${p.telefono || "Sin teléfono"})`,
+        onSelect: paciente => {
+            document.querySelector("#nombre").value = paciente.nombre;
+            document.querySelector("#telefono").value = paciente.telefono;
+            document.querySelector("#paciente_id").value = paciente.id;
 
-function filterPatients(searchTerm) {
-    const rows = document.querySelectorAll('.patients-table tbody tr');
-    let visibleCount = 0;
-    
-    rows.forEach(row => {
-        const patientName = row.querySelector('strong')?.textContent?.toLowerCase() || '';
-        const patientId = row.querySelector('span')?.textContent?.toLowerCase() || '';
-        
-        if (patientName.includes(searchTerm) || patientId.includes(searchTerm)) {
-            row.style.display = '';
-            visibleCount++;
-        } else {
-            row.style.display = 'none';
+            if (paciente.userId != null) {
+                document.querySelector("#fechaNacimiento").value = paciente.fechaNacimiento;
+                document.querySelector("#genero").value = paciente.genero;
+                document.querySelector("#direccion").value = paciente.direccion;
+                document.querySelector("#email").value = paciente.email;
+            }
+
+            addVitalSigns(paciente.signos_vitales);
         }
     });
-    
-    console.log(`Mostrando ${visibleCount} pacientes de ${rows.length}`);
-}
 
-function showNotifications() {
-    const notifications = [
-        'Nuevo paciente registrado: Ana García',
-        'Recordatorio: Revisar resultados de laboratorio',
-        'Cita cancelada: Pedro Martínez - 16:00 hrs'
-    ];
-    
-    // Crear modal de notificaciones
-    const modal = document.createElement('div');
-    modal.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        z-index: 1000;
-        max-width: 400px;
-        width: 90%;
-    `;
-    
-    modal.innerHTML = `
-        <h3>Notificaciones (3)</h3>
-        <ul style="margin: 15px 0; padding-left: 20px;">
-            ${notifications.map(notif => `<li>${notif}</li>`).join('')}
-        </ul>
-        <button onclick="this.parentElement.remove()" style="
-            background: #061175;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        ">Cerrar</button>
-    `;
-    
-    document.body.appendChild(modal);
-}
-
-
-// Inicialización
-console.log('Script médico inicializado');
-
-document.addEventListener('DOMContentLoaded', function () {
-    const inputNombre = document.getElementById('nombre');
-    const inputTelefono = document.getElementById('telefono');
-    const sugerenciasDiv = document.getElementById('sugerencias-pacientes');
-    const inputId = document.getElementById('paciente_id');
-
-    // Campos adicionales
-    const inputTemp = document.getElementById('temperatura');
-    const inputPresion = document.getElementById('presionArterial');
-    const inputFrecuencia = document.getElementById('frecuenciaCardiaca');
-    const inputPeso = document.getElementById('peso');
-    const inputEstatura = document.getElementById('estatura');
-    const inputCitaFecha = document.getElementById('fechaConsulta');
-    const inputMotivo = document.getElementById('motivoConsulta');
-
-    let timeout = null;
-
-    inputNombre.addEventListener('input', function () {
-        const query = this.value.trim();
-        clearTimeout(timeout);
-        sugerenciasDiv.innerHTML = '';
-
-        if (query.length < 2) return;
-
-        timeout = setTimeout(() => {
-            fetch(`/buscar-pacientes?query=${encodeURIComponent(query)}`)
-                .then(response => response.json())
-                .then(data => {
-                    sugerenciasDiv.innerHTML = '';
-
-                    if (data.length === 0) {
-                        const item = document.createElement('div');
-                        item.classList.add('sugerencia-item', 'text-muted');
-                        item.textContent = 'Sin resultados';
-                        sugerenciasDiv.appendChild(item);
-                        return;
-                    }
-
-                    // 🔁 Mostrar resultados
-                    data.forEach(paciente => {
-                        const item = document.createElement('div');
-                        item.classList.add('sugerencia-item');
-                        item.textContent = `${paciente.temporary_name} (${paciente.temporary_phone || 'Sin teléfono'})`;
-
-                        item.addEventListener('click', () => {
-                            inputNombre.value = paciente.temporary_name;
-                            inputTelefono.value = paciente.temporary_phone;
-                            inputId.value = paciente.id;
-                            sugerenciasDiv.innerHTML = '';
-
-                            if (paciente.signos_vitales) {
-                                const sv = paciente.signos_vitales;
-                                inputTemp.value = sv.temperatura ?? '';
-                                inputPresion.value = sv.presion_arterial ?? '';
-                                inputFrecuencia.value = sv.frecuencia_cardiaca ?? '';
-                                inputPeso.value = sv.peso ?? '';
-                                inputEstatura.value = sv.estatura ?? '';
-
-                                if (paciente.signos_vitales && paciente.signos_vitales.cita) {
-                                    const cita = paciente.signos_vitales.cita;
-                                    inputCitaFecha.value = cita.fecha ?? '';
-                                    inputMotivo.value = cita.motivo ?? '';
-                                } else {
-                                    inputCitaFecha.value = '';
-                                    inputMotivo.value = '';
-                                }
-                            } else {
-                                inputTemp.value = '';
-                                inputPresion.value = '';
-                                inputFrecuencia.value = '';
-                                inputPeso.value = '';
-                                inputEstatura.value = '';
-                                inputCitaFecha.value = '';
-                                inputMotivo.value = '';
-                            }
-
-                            console.log("✅ Paciente cargado:", paciente);
-                        });
-
-                        sugerenciasDiv.appendChild(item);
-                    });
-                })
-                .catch(err => {
-                    console.error("❌ Error al buscar pacientes:", err);
-                });
-        }, 400);
-    });
-
-    // Ocultar sugerencias al perder foco
-    document.addEventListener('click', (e) => {
-        if (!sugerenciasDiv.contains(e.target) && e.target !== inputNombre) {
-            sugerenciasDiv.innerHTML = '';
+    crearBuscador({
+        input: "#diagnostico",
+        contenedor: "#sugerencias-diagnosticos",
+        url: "/buscar-diagnostico?query=",
+        renderItem: d => d.name,
+        onSelect: d => {
+            document.querySelector("#diagnostico").value = d.name;
+            document.querySelector("#diagnostico_id").value = d.id;
         }
     });
+
+    window.agregarAlergia = function () {
+        agregarBloqueExpandible({
+            contenedor: "#contenedorAlergias",
+            template: "#template-alergia",
+            titulo: "Alergias",
+            inicializarBuscadores: inicializarBuscadores
+        });
+    };
+
+    window.agregarCronica = function () {
+        agregarBloqueExpandible({
+            contenedor: "#contenedorCronicas",
+            template: "#template-cronica",
+            titulo: "Enfermedades",
+            inicializarBuscadores: inicializarBuscadores            
+        })
+    };
 });

@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('medic_users', function (Blueprint $table) {
             $table->id();
             $table->string('specialty');
+            $table->unsignedBigInteger("service_ID");
+            $table->foreign("service_ID")
+                ->references("id")
+                ->on("services");
             $table->unsignedBigInteger('userId')->nullable();
             $table->foreign('userId')
                 ->references('id')
