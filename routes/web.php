@@ -12,6 +12,7 @@ use App\Http\Controllers\ControladoresMedico\historialMedicoController;
 use App\Http\Controllers\ControladoresMedico\filtradoExpedientesController;
 use App\Http\Controllers\passwordFirstLoginController;
 use App\Http\Controllers\ControladoresPaciente\HistorialPacienteController;
+use App\Http\Controllers\CorreoController;
 
 Route::get('/', function () {
     return view('LOGIN.login');
@@ -23,6 +24,8 @@ Route::middleware(['auth'])->group(function(){
     Route::get('/cambiar-password-primera-vez', function() {return view('LOGIN.cambiar-password');})->name('password.primeravez');
     Route::post('/cambiar-password-primera-vez', [passwordFirstLoginController::class, 'actualizarPasswordInicial'])->name('password.primeravez.update');
 });
+
+Route::get('/correo-prueba', [CorreoController::class, 'pruebaCorreo']);
 
 
 //Rutas de paginas medico --------------------------------------------------------------
