@@ -3,13 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class vital_sign extends Model
 {
     //
+    use HasFactory;
     protected $table = 'vital_signs';
     protected $fillable = [
-            'medical_record_id',
+            'patient_id',
             'register_date',
             'temperature',
             'heart_rate',
@@ -27,8 +29,8 @@ class vital_sign extends Model
             'height' => 'float',
     ];
     //Relacion completada a reporte medico
-    public function medicalRecord(){
-        return $this->belongsTo(medical_records::class, 'medical_record_id', 'id');
+    public function patientUser(){
+        return $this->belongsTo(patientUser::class, 'patient_id', 'id');
     }
 //listo
     public function nurseUser(){

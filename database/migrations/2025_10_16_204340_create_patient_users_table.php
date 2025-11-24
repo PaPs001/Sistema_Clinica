@@ -16,6 +16,10 @@ return new class extends Migration
             $table->unsignedBigInteger('userId')->nullable();
             //nuevo campo
             $table->string('DNI');
+            $table->boolean('is_Temporary')->default(false);
+            $table->string('temporary_name')->nullable();
+            $table->string('temporary_phone')->nullable();
+            $table->string('userCode')->nullable();
             $table->foreign('userId')
                 ->references('id')
                 ->on('general_users')

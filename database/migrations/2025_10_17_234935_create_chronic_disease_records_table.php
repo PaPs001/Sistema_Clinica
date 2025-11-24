@@ -11,18 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('disease_records', function (Blueprint $table) {
+        Schema::create('chronic_disease_record', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_record');
+            $table->unsignedBigInteger('id_record')->nullable();
             $table->foreign('id_record')
                 ->references('id')
                 ->on('medical_records')
                 ->onDelete('cascade');
-            $table->unsignedBigInteger('disease_id');
-            $table->foreign('disease_id')
+            $table->unsignedBigInteger('chronics_diseases_id')->nullable();
+            $table->foreign('chronics_diseases_id')
                 ->references('id')
-                ->on('disease');
-            $table->date('diagnosis_date');
+                ->on('chronics_diseases');
             $table->text('notes')->nullable();
             $table->timestamps();
         });

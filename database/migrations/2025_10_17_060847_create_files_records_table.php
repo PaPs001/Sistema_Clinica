@@ -23,7 +23,11 @@ return new class extends Migration
             $table->string('format');
             $table->float('file_size');
             $table->text('description');
-            $table->string('document_type');
+            $table->unsignedBigInteger('document_type_id')->nullable();
+            $table->foreign('document_type_id')
+                ->references('id')
+                ->on('document_types')
+                ->onDelete('set Null');
             $table->datetime('upload_date');
             $table->timestamps();
         });

@@ -25,13 +25,17 @@ return new class extends Migration
             $table->foreign('receptionist_id')
                 ->references('id')
                 ->on('recepcionist_users');
+            $table->unsignedBigInteger('services_id');
+            $table->foreign('services_id')
+                ->references('id')
+                ->on('services');
                 //si hubo cambios
             $table->date('appointment_date');
             $table->time('appointment_time');
             $table->enum('status', ['En curso', 'completada', 'cancelada', 'Sin confirmar', 'Confirmada', 'agendada'])->default('agendada');
             $table->string('reason');
             $table->string('notes');
-            $table->string('notifications');
+            $table->string('notifications')->nullable();
             $table->timestamps();
         });
     }

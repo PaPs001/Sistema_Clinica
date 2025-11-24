@@ -16,7 +16,7 @@ class treatment_record extends Model
         'notes',
         'status',
         'prescribed_by',
-        'prescription_date',
+        'appointment_id',
     ];
     //relacion completada a reporte medico
     public function medicalRecord(){

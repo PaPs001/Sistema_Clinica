@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('vital_signs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('medical_record_id')->nullable();
-            $table->foreign('medical_record_id')
+            $table->unsignedBigInteger('patient_id')->nullable();
+            $table->foreign('patient_id')
                 ->references('id')
-                ->on('medical_records');
+                ->on('patient_users');
             //nuevo campo
             $table->unsignedBigInteger('register_date');
             $table->foreign('register_date')

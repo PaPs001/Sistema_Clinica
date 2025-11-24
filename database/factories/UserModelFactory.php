@@ -29,6 +29,7 @@ class UserModelFactory extends Factory
             'password' => '12345',
             'address' => fake()->address(),
             'status' => 'active',
+            'genre' => $this->faker->randomElement(['hombre', 'mujer']),
             'typeUser_id' => rand(1,5),
         ];
     }

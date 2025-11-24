@@ -1,0 +1,224 @@
+
+.history-tabs {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e3e6ef;
+    padding-bottom: 10px;
+}
+
+.history-tabs .tab-btn {
+    background: #f5f7fa;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-weight: 600;
+    color: #1b2a4e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: 0.2s ease;
+    font-size: 14px;
+}
+
+.history-tabs .tab-btn i {
+    font-size: 16px;
+}
+
+.history-tabs .tab-btn:hover {
+    background: #e8edf5;
+}
+
+.history-tabs .tab-btn.active {
+    background: #1d2d50;
+    color: white;
+}
+
+
+/* ------------------------------ */
+/*     CONTENEDOR DE CADA TAB     */
+/* ------------------------------ */
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.2s ease-in-out;
+    padding: 5px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ------------------------------ */
+/*           ACCORDEON            */
+/* ------------------------------ */
+
+.accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.accordion-item {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    overflow: hidden;
+    border-left: 4px solid #1d2d50;
+}
+
+/* Header del acordeon */
+.accordion-header {
+    width: 100%;
+    background: #f0f2f7;
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: 0.2s;
+}
+
+.accordion-header:hover {
+    background: #e6e9f0;
+}
+
+.accordion-header i {
+    transition: transform 0.2s ease;
+}
+
+/* cuando el acordeón se abre */
+.accordion-item.open .accordion-header i {
+    transform: rotate(180deg);
+}
+
+/* Cuerpo del acordeón */
+.accordion-body {
+    padding: 18px;
+    display: none;
+    border-top: 1px solid #d4d8e0;
+    font-size: 14px;
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.accordion-item.open .accordion-body {
+    display: block;
+}
+
+
+/* ------------------------------ */
+/*          TARJETAS EXTRAS       */
+/* ------------------------------ */
+/* GRID QUE MUESTRA 4 POR FILA */
+.file-grid {
+    display: flex;
+    flex-direction: column;   /* Cada tarjeta una debajo de otra */
+    gap: 16px;
+    padding: 20px;
+}
+
+/* Tarjeta full width */
+.file-card {
+    width: 100%;              /* Ocupar todo el ancho */
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 12px 16px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+}
+
+/* Hover */
+.file-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Encabezado visible */
+.file-card-main {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.file-card .fecha {
+    font-size: 13px;
+    color: #555;
+}
+
+/* Body */
+.file-card-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .3s ease;
+}
+
+.file-card.expanded .file-card-body {
+    max-height: 200px;
+    margin-top: 8px;
+}
+
+/* Botones */
+.file-actions {
+    margin-top: 12px;
+    display: flex;
+    gap: 10px;
+}
+
+.file-actions button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.ver-btn {
+    background-color: #3498db;
+    color: white;
+}
+
+.descargar-btn {
+    background-color: #2ecc71;
+    color: white;
+}
+
+
+
+
+
+.file-card {
+    position: relative;  /* Permite poner imagen interna */
+    width: 100%;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 16px 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease;
+    overflow: hidden;
+}
+
+
+
+.file-card::after {
+    content: "";
+    position: absolute;
+    right: 15px;         /* Hacia la derecha */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 120px;        /* Tamaño del thumbnail */
+    height: 120px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.15;       /* 🔥 Transparencia */
+    pointer-events: none;
+}

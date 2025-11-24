@@ -1,3 +1,87 @@
+.sugerencias-lista {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.sugerencia-item {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.sugerencia-item:hover {
+    background-color: #f0f0f0;
+}
+
+
+
+
+
+
+.myPagination {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.myPageItem {
+    transition: transform 0.2s ease;
+}
+
+.myPageItem:hover {
+    transform: translateY(-2px);
+}
+
+.myPageLink {
+    display: block;
+    padding: 8px 14px;
+    font-size: 14px;
+    color: #4a4a4a;
+    background: #ffffff;
+    border: 1px solid #cfcfcf;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.2s ease;
+    box-shadow: 0px 2px 5px rgba(0,0,0,0.05);
+}
+
+.myPageItem.active .myPageLink {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+    font-weight: bold;
+    box-shadow: 0px 3px 10px rgba(0,123,255,0.3);
+}
+
+.myPageItem.disabled .myPageLink {
+    background: #e9e9e9;
+    border-color: #d4d4d4;
+    color: #9a9a9a;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.myPageLink:hover {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+
+
+
+
+
 
 .search-panel {
             background: white;

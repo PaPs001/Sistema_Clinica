@@ -13,26 +13,21 @@ return new class extends Migration
     {
         Schema::create('allergies_records', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('id_record');
+            $table->unsignedBigInteger('id_record')->nullable();
             $table->foreign('id_record')
                 ->references('id')
                 ->on('medical_records')
                 ->onDelete('cascade');
-            $table->unsignedBigInteger('allergie_id');
-            $table->foreign('allergie_id')
+            $table->unsignedBigInteger('allergie_allergene_id')->nullable();
+            $table->foreign('allergie_allergene_id')
                 ->references('id')
-                ->on('allergies');
-                //nuevo campo
-            $table->unsignedBigInteger('alergeno_id');
-            $table->foreign('alergeno_id')
-                ->references('id')
-                ->on('allergenes');
+                ->on('allergies_allergenes');
                 //nuevos campos
-            $table->enum('severity', ['Leve', 'Moderada', 'Grave']);
-            $table->enum('status', ['Activa', 'Inactiva']);
-            $table->text('symptoms');
-            $table->text('treatments');
-            $table->date('diagnosis_date');
+            $table->enum('severity', ['Leve', 'Moderada', 'Grave'])->nullable();
+            $table->enum('status', ['Activa', 'Inactiva'])->nullable();
+            $table->text('symptoms')->nullable();
+            $table->text('treatments')->nullable();
+            $table->date('diagnosis_date')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
         });

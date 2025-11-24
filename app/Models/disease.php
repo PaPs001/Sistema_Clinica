@@ -7,21 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class disease extends Model
 {
     //
-    protected $table = 'disease';
+    protected $table = 'chronics_diseases';
     protected $fillable = [
         'name',
     ];
 //listo
     public function diseaseRecords()
     {
-        return $this->hasMany(diseaseRecord::class, 'disease_id');
-    }
-//listo
-    public function treatmentDiseases(){
-        return $this->hasMany(tratment_disease::class, 'disease_id', 'id');
+        return $this->hasMany(diseaseRecord::class, 'chronics_diseases_id');
     }
 
-    public function consultDiseases(){
-        return $this->hasMany(consult_disease::class, 'disease_id', 'id');
+    public function consultDisease(){
+        return $this->hasMany(consult_disease::class, 'diagnosis_id');
     }
 }

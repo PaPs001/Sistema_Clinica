@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class usersType extends Model
+class usersType
 {
     //
     const ROLE_ADMIN = 1;

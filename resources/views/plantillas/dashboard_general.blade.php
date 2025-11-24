@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Pagina')</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/css/medic/general.css'])
+    @yield('scripts')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -17,6 +19,7 @@
                 </div>
                 <h2>Clinica Ultima Asignatura</h2>
                 <p>Módulo Médico</p>
+                <p>Bienvenido {{ Auth::user()->name }}</p>
             </div>
             
             <nav class="sidebar-nav">
@@ -32,7 +35,7 @@
                     <i class="fas fa-history"></i>
                     <span>Historial Médico</span>
                 </a>
-                <a href="{{ route('subir-documentos') }}" class="nav-item {{ request()->routeIs('subir-documentos') ? 'active' : '' }}">
+                <a href="{{ route('iniciar-Upload-files') }}" class="nav-item {{ request()->routeIs('iniciar-Upload-files') ? 'active' : '' }}">
                     <i class="fas fa-file-upload"></i>
                     <span>Subir Documentos</span>
                 </a>
@@ -42,7 +45,7 @@
                 </a>
                 <a href="{{ route('registro-alergias') }}" class="nav-item {{ request()->routeIs('registro-alergias') ? 'active' : '' }}">
                     <i class="fas fa-allergies"></i>
-                    <span>Alergias</span>
+                    <span>Antecedents Medicos</span>
                 </a>
             </nav>
             
