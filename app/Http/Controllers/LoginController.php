@@ -6,10 +6,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use App\Models\userModel;
+use App\Models\UserModel;
 use App\Models\usersType;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
 
 class LoginController extends Controller
 {
@@ -20,8 +18,14 @@ class LoginController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
+        $user = UserModel::where('email', $validation['email'])->first();
+
+        if ($user && Hash::check($validation['password'], $user->password)) {
+
+            Session::put('user_id', $user->id);
+            Session::put('first_name', $user->first_name);
+            Session::put('last_name', $user->last_name);
+            Session::put('typeUser_id', $user->typeUser_id);
 
             $user = Auth::user();
             if($user->status === 'inactive'){
