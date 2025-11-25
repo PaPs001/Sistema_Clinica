@@ -11,21 +11,21 @@ use Illuminate\Queue\SerializesModels;
 
 class NotificationMail extends Mailable
 {
-    public $paciente;
+    public $temporalPassword;
+    public $name;
     public $fecha;
-    public $motivo;
 
-    public function __construct($paciente, $fecha, $motivo)
+    public function __construct($temporalPassword, $name, $fecha)
     {
-        $this->paciente = $paciente;
+        $this->temporalPassword = $temporalPassword;
         $this->fecha = $fecha;
-        $this->motivo = $motivo;
+        $this->name = $name;
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Recordatorio de Cita Médica',
+            subject: 'Activacion de cuenta - Clinica UAC',
         );
     }
 

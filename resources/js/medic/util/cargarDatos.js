@@ -6,17 +6,24 @@ export async function cargarDatos({
     template,
     campos = {},
     limpio = true,
-    paginationContainer
+    paginationContainer,
+    onRender = null
 }) {
 
     const cont = document.querySelector(contenedor);
     const tmplt = document.querySelector(template);
     const pagination = document.querySelector(paginationContainer);
 
-    if (!cont || !tmplt) {
-        console.error("No se encontró el contenedor o el template");
-        return;
+    if (!cont) {
+    console.error(`No se encontró el contenedor: ${contenedor}`);
     }
+
+    if (!tmplt) {
+        console.error(`No se encontró el template: ${template}`);
+    }
+
+    if (!cont || !tmplt) return;
+
 
     async function cargarPagina(page = 1) {
         try {
@@ -58,6 +65,10 @@ export async function cargarDatos({
                 }
                 cont.appendChild(nodo);
             });
+            if (typeof onRender === "function") {
+                console.log("Ejecutando onRender...");
+                onRender(lista);
+            }
             if (data.current_page && data.last_page) {
                 pagination.innerHTML = data.pagination;
                 activadorLinksPaginador(pagination, cargarPagina);

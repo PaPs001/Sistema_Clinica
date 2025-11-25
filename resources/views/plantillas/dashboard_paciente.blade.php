@@ -19,6 +19,7 @@
                 </div>
                 <h2>Clinica Ultima Asignatura</h2>
                 <p>Módulo Paciente</p>
+                <p>Bienvenida {{ Auth::user()->name }} </p>
             </div>
             
             <nav class="sidebar-nav">

@@ -14,6 +14,9 @@ use App\Http\Controllers\passwordFirstLoginController;
 use App\Http\Controllers\ControladoresPaciente\HistorialPacienteController;
 use App\Http\Controllers\CorreoController;
 
+//Administrador
+use App\Http\Controllers\Administrador\RolesPermisosController;
+
 Route::get('/', function () {
     return view('LOGIN.login');
 })->name('login');
@@ -26,8 +29,14 @@ Route::middleware(['auth'])->group(function(){
 });
 
 Route::get('/correo-prueba', [CorreoController::class, 'pruebaCorreo']);
+Route::get('/probar-recordatorio', function () {
+    Artisan::call('app:recordatorios-citas');
 
-
+    return "Recordatorio ejecutado (si existen citas para mañana).";
+});
+Route::get('/prueba-mail', function (){
+    return view('PACIENTE.temporal');
+});
 //Rutas de paginas medico --------------------------------------------------------------
 Route::middleware(['auth', 'role:medic'])->group(function (){
     Route::get('/dashboard', function(){
@@ -61,10 +70,8 @@ Route::middleware(['auth', 'role:medic'])->group(function (){
 });
 //Rutas a paginas paciente ---------------------------------------------------------------
 Route::middleware(['auth', 'role:patient'])->group(function (){
-    Route::get('/dashboard-paciente', function(){
-        return view('PACIENTE.dashboard-paciente');
-    })->name('dashboard.paciente');
-    
+    Route::get('/listar-consultas-dashboard-paciente', [HistorialPacienteController::class, 'listarProximasConsultas'])->name('listado.consultas');
+    Route::get('/dashboard-paciente', [HistorialPacienteController::class, 'dashboard'])->name('dashboard.paciente');
     Route::get('/historial_Paciente', function(){
         return view('PACIENTE.mi-historial');
     })->name('historialPaciente');
@@ -86,12 +93,13 @@ Route::middleware(['auth', 'role:patient'])->group(function (){
     })->name('perfilPaciente');
 
     //logica Del modulo de paciente 
-
+    
     Route::get('/datos-historial-consulta', [HistorialPacienteController::class, 'datosConsulta'])->name('datos.historial.consulta')->middleware(['auth', 'role:patient']);
     Route::get('/archivos-Historial-Medico', [HistorialPacienteController::class, 'archivosHistorialMedico'])->name('archivos.Historial.Medico');
     Route::get('/datos-antecedentes-medicos', [HistorialPacienteController::class, 'datosAntecedentesMedicos'])->name('datos.Antecedentes.Medicos');
     Route::get('/verArchivo/{id}', [HistorialPacienteController::class, 'verArchivo'])->name('ver.Archivo');
     Route::get('/archivos/descargar/{id}', [HistorialPacienteController::class, 'descargarArchivos'])->name('descargar.archivos');
+    Route::get('/proximas-citas', [HistorialPacienteController::class, 'listarProximasConsultas'])->name('proximas.citas');
 });
 
 
@@ -113,15 +121,14 @@ Route::get('/control-accesos', function(){
     return view('ADMINISTRADOR.control-accesos');
 })->name('controlAccesos');
 
-Route::get('/gestion-roles', function(){
-    return view('ADMINISTRADOR.gestion-roles');
-})->name('gestionRoles');
+Route::get('/gestion-roles', [RolesPermisosController::class, 'gestionRolesPage'])->name('gestionRoles');
 
 Route::get('/respaldo-datos', function(){
     return view('ADMINISTRADOR.respaldo-datos');
 })->name('respaldoDatos');
 
-
+Route::get('/cargarDatos/Roles-permisos', [RolesPermisosController::class, 'cargarRolesPermisos'])->name('cargar.Roles.Permisos');
+Route::get('/cargarDatos/Usuarios-por-rol/{roleId}', [RolesPermisosController::class, 'getUserByRole'])->name('cargar.Usuarios.por.Rol');
 //Rutas a paginas recepcionista --------------------------------------------------------------
 Route::get('/dasboard-recepcionista', function(){
     return view('RECEPCIONISTA.dashboard-recepcionista');

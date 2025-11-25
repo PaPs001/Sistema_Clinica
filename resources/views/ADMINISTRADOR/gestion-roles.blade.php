@@ -24,7 +24,7 @@
                         </div>
                         <div class="stat-info">
                             <h3 id="totalRoles">0</h3>
-                            <p>Total de Roles</p>
+                            <p>Medicos</p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -33,7 +33,7 @@
                         </div>
                         <div class="stat-info">
                             <h3 id="activeRoles">0</h3>
-                            <p>Roles Activos</p>
+                            <p>Pacientes</p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -42,32 +42,24 @@
                         </div>
                         <div class="stat-info">
                             <h3 id="totalPermissions">0</h3>
-                            <p>Permisos Totales</p>
+                            <p>Enfermeras</p>
                         </div>
                     </div>
-                    <!--<div class="stat-card">
+                    <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stat-info">
                             <h3 id="totalUsers">0</h3>
-                            <p>Usuarios con Roles</p>
+                            <p>Recepcionistas</p>
                         </div>
-                    </div>-->
+                    </div>
                 </div>
 
                 <!-- Panel de Control -->
                 <div class="recent-section">
                     <h2>
                         <i class="fas fa-list"></i> Lista de Roles del Sistema
-                        <div class="section-actions">
-                            <button class="section-btn" onclick="openCreateRoleModal()">
-                                <i class="fas fa-plus"></i> Nuevo Rol
-                            </button>
-                            <button class="section-btn" onclick="exportRoles()">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                        </div>
                     </h2>
                     
                     <div class="appointments-table">
@@ -75,20 +67,89 @@
                             <thead>
                                 <tr>
                                     <th>Nombre del Rol</th>
-                                    <th>Descripción</th>
                                     <th>Permisos</th>
                                     <th>Usuarios</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
+                                    <th>Cambiar permisos</th>
                                 </tr>
                             </thead>
-                            <!--<tbody id="rolesTableBody">
-                                 Los roles se cargarán dinámicamente
+                            <tbody id="rolesTableBody">
                             </tbody>
--->
                         </table>
                     </div>
                 </div>
+                <template id="role-Template">
+                    <tr class="role-row" data-role-id="">
+                        <td class="role-name">
+                            <strong class="nombre-rol"></strong>
+                        </td>
+
+                        <td class="role-permissions">
+                            <span class="permisos-roles"></span>
+                        </td>
+
+                        <td class="role-users">
+                            <span class="usuarios-roles"></span>
+                        </td>
+
+                        <td class="role-actions">
+                            <button class="btn-edit" data-id="">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-view-users" data-role-id="">
+                                <i class="fas fa-eye"></i> Ver usuarios
+                            </button>
+                        </td>
+                    </tr>
+                </template>
+                <div class="pagination-container mt-3 text-center" id="paginationContainer-roles">
+                        <!-- Los controles de paginación se cargarán aquí -->
+                </div>
+                
+                <div class="recent-section">
+                    <h2>
+                        <i class="fas fa-list"></i> Usuarios por rol
+                    </h2>
+                    
+                    <div class="appointments-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Nombre Usuario</th>
+                                    <th>Rol</th>
+                                    <th>Status</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usuariosPorRolTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <template id="usuarioPorRol-Template">
+                    <tr class="role-row" data-role-id="">
+                        <td class="role-name">
+                            <strong class="nombre-usuario"></strong>
+                        </td>
+
+                        <td class="role-permissions">
+                            <span class="rol-usuario"></span>
+                        </td>
+
+                        <td class="role-users">
+                            <span class="status-usuario"></span>
+                        </td>
+
+                        <td class="role-actions">
+                            <button class="btn-edit" data-id="">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </template>
+                <div class="pagination-container mt-3 text-center" id="paginationContainer-usuarios-por-rol">
+                        <!-- Los controles de paginación se cargarán aquí -->
+                </div>
+
 
                 <!-- Quick Actions -->
                 <div class="quick-actions">
