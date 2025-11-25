@@ -2,8 +2,8 @@
 @section('title', 'Dashboard Paciente - Hospital Naval')
 @section('content')
             <header class="content-header">
-                <h1>¡Hola María!</h1>
-                <div class="header-actions">
+                <h1>¡Hola {{ Auth::user()->name }}</h1>
+                <!--<div class="header-actions">
                     <div class="search-box">
                         <input type="text" placeholder="Buscar en mis registros..." aria-label="Buscar en mis registros">
                         <i class="fas fa-search"></i>
@@ -12,11 +12,10 @@
                         <i class="fas fa-bell"></i>
                         <span class="notification-badge">2</span>
                     </div>
-                </div>
+                </div>-->
             </header>
 
-            <div class="content">
-                <!-- Estadísticas Rápidas -->
+           <!-- <div class="content">
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">
@@ -54,18 +53,14 @@
                             <p>Medicamentos Activos</p>
                         </div>
                     </div>
-                </div>
+                </div>-->
 
-                <!-- Próximas Citas -->
                 <div class="recent-section">
                     <h2>
                         Próximas Citas
                         <div class="section-actions">
                             <button class="section-btn" id="filter-appointments">
                                 <i class="fas fa-filter"></i> Filtrar
-                            </button>
-                            <button class="section-btn" id="export-appointments">
-                                <i class="fas fa-download"></i> Exportar
                             </button>
                         </div>
                     </h2>
@@ -76,64 +71,39 @@
                                     <th>Fecha y Hora</th>
                                     <th>Médico</th>
                                     <th>Especialidad</th>
-                                    <th>Ubicación</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="appointment-info">
-                                            <strong>20 Mar 2024</strong>
-                                            <span>10:30 AM</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="doctor-info">
-                                            <div class="doctor-avatar">
-                                                <i class="fas fa-user-md"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Dr. Carlos Ruiz</strong>
-                                                <span>Cardiólogo</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Cardiología</td>
-                                    <td>Consultorio 304</td>
-                                    <td>
-                                        <button class="btn-view" aria-label="Ver detalles de cita con Dr. Carlos Ruiz">Ver Detalles</button>
-                                        <button class="btn-cancel" aria-label="Cancelar cita con Dr. Carlos Ruiz">Cancelar</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="appointment-info">
-                                            <strong>25 Mar 2024</strong>
-                                            <span>03:15 PM</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="doctor-info">
-                                            <div class="doctor-avatar">
-                                                <i class="fas fa-user-md"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Dra. Ana Martínez</strong>
-                                                <span>Medicina General</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Medicina General</td>
-                                    <td>Consultorio 201</td>
-                                    <td>
-                                        <button class="btn-view" aria-label="Ver detalles de cita con Dra. Ana Martínez">Ver Detalles</button>
-                                        <button class="btn-cancel" aria-label="Cancelar cita con Dra. Ana Martínez">Cancelar</button>
-                                    </td>
-                                </tr>
+
+                            <tbody id="appointments-tbody">
                             </tbody>
                         </table>
                     </div>
+                        <template id="cita-template">
+                            <tr>
+                                <td>
+                                    <div class="appointment-info">
+                                        <strong class="fecha"></strong>
+                                        <span class="hora"></span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="doctor-info">
+                                        <div class="doctor-avatar"><i class="fas fa-user-md"></i></div>
+                                        <div>
+                                            <strong class="doctor-nombre"></strong>
+                                            <span class="doctor-servicio"></span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="doctor-especialidad"></td>
+                                <td>
+                                    <button class="btn-view">Ver Detalles</button>
+                                    <button class="btn-cancel">Cancelar</button>
+                                </td>
+                            </tr>
+                        </template>
+                    <div id="paginationContainer-appointments"></div>
                 </div>
 
                 <!-- Información de Salud -->
@@ -220,5 +190,5 @@
     </div>
 @endsection
 @section('scripts')
-    @vite(['resources/js/PACIENTE/script-paciente.js'])
+    @vite(['resources/js/PACIENTE/script-historial.js'])
 @endsection

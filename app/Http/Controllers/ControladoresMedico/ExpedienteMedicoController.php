@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\fileRecord;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NotificationMail;
 
 class ExpedienteMedicoController extends Controller
 {
@@ -50,20 +52,20 @@ class ExpedienteMedicoController extends Controller
             'status_alergia' => 'nullable|array',
             'status_alergia.*' => 'nullable|string|in:Activa,Inactiva',
             'sintomas_alergia' => 'nullable|array',
-            'sintomas_alergia.*' => 'nullable|string|max:500',
+            'sintomas_alergia.*' => 'nullable|string',
             'tratamiento_alergias' => 'nullable|array',
-            'tratamiento_alergias.*' => 'nullable|string|max:500',
+            'tratamiento_alergias.*' => 'nullable|string',
             'notas' => 'nullable|array',
-            'notas.*' => 'nullable|string|max:500',
+            'notas.*' => 'nullable|string',
             'enfermedades-cronicas' => 'nullable|array',
             'enfermedades-cronicas.*' => 'nullable|string|max:100',
             
             'fechaConsulta' => 'required|date',
-            'motivoConsulta' => 'required|string|max:500',
-            'sintomas' => 'required|string|max:500',
-            'exploracion' => 'required|string|max:500',
+            'motivoConsulta' => 'required|string|max:1000',
+            'sintomas' => 'required|string',
+            'exploracion' => 'required|string',
             'diagnostico_id' => 'required|integer',
-            'tratamiento' => 'required|string|max:500',
+            'tratamiento' => 'required|string',
         ]);
         Log::info('Validación completada exitosamente.');
     }
@@ -267,6 +269,20 @@ class ExpedienteMedicoController extends Controller
             ]);
             
             DB::commit();
+            $emailToSend = $patient->user->email;
+            $temporalPassword = $patient->userCode;
+            $name = $patient->user->name;
+            $fecha = Carbon::now()->toDateString();
+            $status = $patient->user->status;
+            if($status == 'inactive'){
+                Mail::to($emailToSend)
+                    ->send(new NotificationMail(
+                        $temporalPassword,
+                        $name,
+                        $fecha,
+                    ));
+            }
+            Log::info('Enviando correo a: ' . $emailToSend);
             Log::info('Datos guardados correctamente en la base de datos');
             return redirect()->back()->with('success', 'Registro guardado correctamente.');
         } catch (\Exception $e) {
@@ -275,6 +291,14 @@ class ExpedienteMedicoController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
+
+
+
+
+
+
+
 
     //Buscar pacientes en agregado de expedientes
     public function buscarPacientes(Request $request){
@@ -300,7 +324,7 @@ class ExpedienteMedicoController extends Controller
 
             if ($cita) {
                 $signos = vital_sign::where('patient_id', $p->id)
-                    ->where('appointment_id', $cita->id)
+                    ->where('register_date', $cita->id)
                     ->first();
             } else {
                 $signos = null;
@@ -346,7 +370,7 @@ class ExpedienteMedicoController extends Controller
 
             if ($cita) {
                 $signos = vital_sign::where('patient_id', $p->id)
-                    ->where('appointment_id', $cita->id)
+                    ->where('register_date', $cita->id)
                     ->first();
             } else {
                 $signos = null;

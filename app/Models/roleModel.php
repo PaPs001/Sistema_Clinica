@@ -15,4 +15,9 @@ class roleModel extends Model
     public function General_user(){
         return $this->hasMany(UserModel::class, 'typeUser_id');
     }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permissions::class, 'role_permission', 'role_id', 'permission_id');
+    }
 }

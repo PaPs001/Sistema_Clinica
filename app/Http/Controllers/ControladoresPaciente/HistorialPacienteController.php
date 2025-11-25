@@ -4,6 +4,11 @@ namespace App\Http\Controllers\ControladoresPaciente;
 use Illuminate\Support\Facades\Auth;
 use App\Models\patientUser;
 use App\Models\fileRecord;
+use App\Models\appointment;
+use Carbon\Carbon;  
+use Illuminate\Support\Facades\Log;
+use App\Models\medicalRecord;
+use App\Models\medicUser;
 
 use App\Http\Controllers\Controller;
 
@@ -114,5 +119,35 @@ class HistorialPacienteController extends Controller
         }
 
         return response()->download($ruta, $fileRecord->file_name);
+    }
+
+    public function listarProximasConsultas(Request $request){
+        $patient = Auth::user()->patient;
+
+        if (!$patient) {
+            return response()->json([
+                'data' => [],
+                'pagination' => '',
+            ]);
+        }
+
+        $proximasCitas = appointment::where('patient_id', $patient->id)
+            ->where('appointment_date', '>=', Carbon::today()->toDateString())
+            ->where('status', 'agendada')
+            ->with(['doctor', 'doctor.service', 'doctor.user'])
+            ->orderBy('appointment_date')
+            ->orderBy('appointment_time')
+            ->paginate(1);
+
+        return response()->json([
+            'data' => $proximasCitas->items(),
+            'current_page' => $proximasCitas->currentPage(),
+            'last_page' => $proximasCitas->lastPage(),
+            'pagination' => view('plantillas.pagination', ['paginator' => $proximasCitas])->render()
+        ]);
+    }
+
+    public function dashboard(){
+        return view('PACIENTE.dashboard-paciente');
     }
 }
