@@ -64,4 +64,10 @@ class UserModel extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function userPermissions(){
+        return $this->belongsToMany(Permissions::class, 'user_permissions', 'user_id', 'permission_id')
+                    ->withPivot('actions')
+                    ->withTimestamps();
+    }
 }

@@ -11,10 +11,8 @@ class CorreoController extends Controller
     //
     public function pruebaCorreo()
     {
-        // Correo al que quieres enviar la prueba
         $destinatario = "zavalalopezedgarsaul@gmail.com";
 
-        // Datos de prueba
         $paciente = "Paciente de prueba";
         $fecha = "2025-01-01";
         $motivo = "Prueba de funcionamiento del sistema de notificaciones";
