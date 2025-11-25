@@ -17,6 +17,8 @@ export default defineConfig({
                 'resources/css/RECEPCIONISTA/general.css',
                 'resources/js/auth_log/script.js', 
                 'resources/js/medic/script-medico.js',
+                'resources/js/medic/script-filtrar-expedientes.js',
+                'resources/css/medic/registro-expediente.css',
                 ],
             ssr: 'resources/js/ssr.tsx',
             refresh: true,
