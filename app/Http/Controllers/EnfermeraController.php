@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class EnfermeraController extends Controller
@@ -90,6 +92,8 @@ class EnfermeraController extends Controller
                 'temperature' => 'required|numeric',
                 'respiratory_rate' => 'required|integer',
                 'oxygen_saturation' => 'required|numeric',
+                'weight' => 'nullable|numeric',
+                'height' => 'nullable|numeric',
             ]);
 
             DB::table('vital_signs')
@@ -100,6 +104,8 @@ class EnfermeraController extends Controller
                     'temperature' => $validated['temperature'],
                     'respiratory_rate' => $validated['respiratory_rate'],
                     'oxygen_saturation' => $validated['oxygen_saturation'],
+                    'weight' => $validated['weight'] ?? null,
+                    'height' => $validated['height'] ?? null,
                     'updated_at' => now(),
                 ]);
 
@@ -154,10 +160,70 @@ class EnfermeraController extends Controller
     public function storeTratamiento(Request $request)
     {
         try {
-            // TODO: Implement full treatment creation
-            return response()->json(['message' => 'Tratamiento guardado'], 201);
+            $validated = $request->validate([
+                'patient_id' => 'required|exists:patient_users,id',
+                'prescribed_by' => 'required|exists:medic_users,id',
+                'treatment_name' => 'required|string',
+                'start_date' => 'required|date',
+                'end_date' => 'required|date',
+                'notes' => 'nullable|string',
+                'status' => 'nullable|string',
+            ]);
+
+            // Primero, obtener o crear el registro médico del paciente
+            $medicalRecord = DB::table('medical_records')
+                ->where('patient_id', $validated['patient_id'])
+                ->first();
+
+            if (!$medicalRecord) {
+                // Crear un registro médico si no existe
+                $recordId = DB::table('medical_records')->insertGetId([
+                    'patient_id' => $validated['patient_id'],
+                    'creation_date' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } else {
+                $recordId = $medicalRecord->id;
+            }
+
+            // Crear o buscar el tratamiento
+            $treatment = DB::table('treatments')
+                ->where('treatment_description', $validated['treatment_name'])
+                ->first();
+
+            if (!$treatment) {
+                $treatmentId = DB::table('treatments')->insertGetId([
+                    'treatment_description' => $validated['treatment_name'],
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            } else {
+                $treatmentId = $treatment->id;
+            }
+
+            // Crear el registro de tratamiento
+            $id = DB::table('treatments_records')->insertGetId([
+                'id_record' => $recordId,
+                'treatment_id' => $treatmentId,
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'],
+                'notes' => $validated['notes'] ?? '',
+                'status' => $validated['status'] ?? 'En seguimiento',
+                'prescribed_by' => $validated['prescribed_by'],
+                'appointment_id' => 1, // TODO: Get from actual appointment
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return response()->json([
+                'message' => 'Tratamiento registrado correctamente',
+                'id' => $id
+            ], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
+            return response()->json([
+                'message' => 'Error al guardar tratamiento: ' . $e->getMessage()
+            ], 500);
         }
     }
 
@@ -387,12 +453,15 @@ class EnfermeraController extends Controller
     {
         try {
             $tipo = $request->input('tipo', 'pacientes');
-            
-            // Mock response
+            $formato = $request->input('formato', 'pdf');
+
+            // Genera un archivo de ejemplo para que el front pueda descargarlo
+            $url = $this->crearArchivoTemporal($tipo, $formato);
+
             return response()->json([
                 'message' => 'Reporte generado',
                 'tipo' => $tipo,
-                'url' => '/reportes/' . $tipo . '.pdf'
+                'url' => $url,
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -402,16 +471,33 @@ class EnfermeraController extends Controller
     public function exportarDatos(Request $request)
     {
         try {
-            $tipo = $request->input('tipo');
-            
-            // Mock response
+            $tipo = $request->input('tipo', 'todos');
+            $formato = $request->input('formato', 'xlsx');
+
+            $url = $this->crearArchivoTemporal($tipo, $formato);
+
             return response()->json([
                 'message' => 'Datos exportados',
-                'url' => '/exports/' . $tipo . '.xlsx'
+                'url' => $url
             ]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    private function crearArchivoTemporal(string $tipo, string $formato = 'pdf'): string
+    {
+        $safeTipo = Str::slug($tipo) ?: 'reporte';
+        $safeFormato = Str::slug($formato) ?: 'pdf';
+        $filename = "reporte_{$safeTipo}_" . now()->format('Ymd_His') . ".{$safeFormato}";
+
+        Storage::disk('public')->makeDirectory('exports');
+        Storage::disk('public')->put(
+            "exports/{$filename}",
+            "Reporte de {$tipo}\nGenerado: " . now()->toDateTimeString() . "\nFormato: {$safeFormato}\nEste es un archivo de ejemplo."
+        );
+
+        return Storage::url("exports/{$filename}");
     }
 
     // ==================== UTILIDADES ====================

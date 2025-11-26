@@ -1,3 +1,4 @@
+import MedicationController from './MedicationController'
 import LoginController from './LoginController'
 import passwordFirstLoginController from './passwordFirstLoginController'
 import CorreoController from './CorreoController'
@@ -6,7 +7,8 @@ import ControladoresPaciente from './ControladoresPaciente'
 import Administrador from './Administrador'
 import EnfermeraController from './EnfermeraController'
 const Controllers = {
-    LoginController: Object.assign(LoginController, LoginController),
+    MedicationController: Object.assign(MedicationController, MedicationController),
+LoginController: Object.assign(LoginController, LoginController),
 passwordFirstLoginController: Object.assign(passwordFirstLoginController, passwordFirstLoginController),
 CorreoController: Object.assign(CorreoController, CorreoController),
 ControladoresMedico: Object.assign(ControladoresMedico, ControladoresMedico),

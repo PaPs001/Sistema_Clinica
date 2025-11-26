@@ -127,5 +127,6 @@
  
 @endsection
 @section('scripts')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @vite(['resources/js/ENFERMERA/script-signos.js'])
 @endsection

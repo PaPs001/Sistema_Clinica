@@ -96,15 +96,15 @@
                 <div class="quick-actions">
                     <h2>Acciones Rápidas</h2>
                     <div class="actions-grid">
-                        <a href="pacientes-enfermera.html" class="action-card">
+                        <a href="{{ route('pacientesEnfermera') }}" class="action-card">
                             <i class="fas fa-user-injured"></i>
                             <span>Gestión de Pacientes</span>
                         </a>
-                        <a href="medicamentos.html" class="action-card">
+                        <a href="{{ route('medicamentos') }}" class="action-card">
                             <i class="fas fa-pills"></i>
                             <span>Control de Medicamentos</span>
                         </a>
-                        <a href="signos-vitales.html" class="action-card">
+                        <a href="{{ route('signosVitales') }}" class="action-card">
                             <i class="fas fa-heartbeat"></i>
                             <span>Registrar Signos</span>
                         </a>
@@ -205,5 +205,6 @@
     </div>
 @endsection
 @section('scripts')
+<meta name="csrf-token" content="{{ csrf_token() }}">
 @vite(['resources/js/ENFERMERA/script-tratamientos.js'])
 @endsection

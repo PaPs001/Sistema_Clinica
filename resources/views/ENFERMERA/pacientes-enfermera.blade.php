@@ -96,15 +96,10 @@
                                     <td><span class="status-badge critical">Crítico</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn-view" title="Ver historial" aria-label="Ver historial de Carlos Ruiz">
-                                                <i class="fas fa-history"></i>
-                                            </button>
                                             <button class="btn-action" title="Signos vitales" aria-label="Registrar signos vitales de Carlos Ruiz">
                                                 <i class="fas fa-heartbeat"></i>
                                             </button>
-                                            <button class="btn-edit" title="Editar" aria-label="Editar información de Carlos Ruiz">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
+                                            
                                         </div>
                                     </td>
                                 </tr>
@@ -127,15 +122,10 @@
                                     <td><span class="status-badge warning">Grave</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn-view" title="Ver historial" aria-label="Ver historial de Ana López">
-                                                <i class="fas fa-history"></i>
-                                            </button>
                                             <button class="btn-action" title="Signos vitales" aria-label="Registrar signos vitales de Ana López">
                                                 <i class="fas fa-heartbeat"></i>
                                             </button>
-                                            <button class="btn-edit" title="Editar" aria-label="Editar información de Ana López">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
+                                            
                                         </div>
                                     </td>
                                 </tr>
@@ -158,15 +148,10 @@
                                     <td><span class="status-badge stable">Estable</span></td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn-view" title="Ver historial" aria-label="Ver historial de Miguel Torres">
-                                                <i class="fas fa-history"></i>
-                                            </button>
                                             <button class="btn-action" title="Signos vitales" aria-label="Registrar signos vitales de Miguel Torres">
                                                 <i class="fas fa-heartbeat"></i>
                                             </button>
-                                            <button class="btn-edit" title="Editar" aria-label="Editar información de Miguel Torres">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
+                                            
                                         </div>
                                     </td>
                                 </tr>

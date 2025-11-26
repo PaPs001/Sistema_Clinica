@@ -329,7 +329,8 @@ body {
     color: #721c24;
 }
 
-.btn-view-enfermera, .btn-cancel {
+.btn-view-enfermera,
+.btn-cancel {
     padding: 6px 12px;
     border: none;
     border-radius: 5px;
@@ -349,7 +350,8 @@ body {
     color: white;
 }
 
-.btn-view-enfermera:hover, .btn-cancel:hover {
+.btn-view-enfermera:hover,
+.btn-cancel:hover {
     opacity: 0.9;
     transform: translateY(-1px);
 }
@@ -439,38 +441,172 @@ body {
     .dashboard-container {
         flex-direction: column;
     }
-    
+
     .sidebar {
         width: 100%;
         height: auto;
     }
-    
+
     .health-info {
         grid-template-columns: 1fr;
     }
-    
+
     .content-header {
         flex-direction: column;
         gap: 15px;
         align-items: flex-start;
     }
-    
+
     .header-actions {
         width: 100%;
         justify-content: space-between;
     }
-    
+
     .filter-group {
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .filter-group select {
         width: 100%;
     }
-    
+
     .chart-legend {
         flex-direction: column;
         align-items: flex-start;
     }
+}
+
+/* Modal Styles */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    background: white;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    transform: scale(0.9);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active .modal {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    margin: 0;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s ease;
+}
+
+.close-modal:hover {
+    color: var(--danger-color);
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.form-actions .btn-cancel {
+    background: #6c757d;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-actions .btn-cancel:hover {
+    background: #5a6268;
+}
+
+.form-actions .btn-primary {
+    background: var(--primary-color);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.form-actions .btn-primary:hover {
+    background: var(--secondary-color);
 }
