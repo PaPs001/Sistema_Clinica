@@ -16,7 +16,7 @@
             </header>
 
             <div class="content">
-                <!-- Estadísticas -->
+                <!-- Estadísticas 
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon">
@@ -45,7 +45,7 @@
                             <p>Respaldos Exitosos</p>
                         </div>
                     </div>
-                    <!--<div class="stat-card">
+                    div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-clock"></i>
                         </div>
@@ -53,47 +53,15 @@
                             <h3 id="nextBackup">-</h3>
                             <p>Próximo Respaldo</p>
                         </div>
-                    </div>-->
-                </div>
+                    </div>
+                </div>-->
 
                 <!-- Acciones Principales -->
                 <div class="health-info">
                     <div class="info-card">
                         <h3><i class="fas fa-plus-circle"></i> Crear Respaldo Manual</h3>
                         <div class="backup-options">
-                            <div class="option-group">
-                                <label>Tipo de Respaldo:</label>
-                                <select id="backupType" class="setting-select">
-                                    <option value="full">Completo</option>
-                                    <option value="incremental">Incremental</option>
-                                    <option value="differential">Diferencial</option>
-                                </select>
-                            </div>
-                            <div class="option-group">
-                                <label>Base de Datos:</label>
-                                <select id="databaseSelect" class="setting-select">
-                                    <option value="all">Todas las Bases de Datos</option>
-                                    <option value="principal">Base de Datos Principal</option>
-                                    <option value="logs">Base de Logs</option>
-                                    <option value="config">Base de Configuración</option>
-                                </select>
-                            </div>
-                            <div class="option-group">
-                                <label>Destino:</label>
-                                <select id="backupDestination" class="setting-select">
-                                    <option value="local">Almacenamiento Local</option>
-                                    <option value="cloud">Nube (AWS S3)</option>
-                                    <option value="external">Disco Externo</option>
-                                </select>
-                            </div>
-                            <div class="option-group">
-                                <label>Compresión:</label>
-                                <select id="compressionLevel" class="setting-select">
-                                    <option value="none">Sin Compresión</option>
-                                    <option value="fast" selected>Rápida</option>
-                                    <option value="high">Alta Compresión</option>
-                                </select>
-                            </div>
+                            <p>Inicia un respaldo completo de la base de datos en este momento.</p
                             <form method="POST" action="{{ route('admin.backupDatabase') }}">
                                 @csrf
                                 <button type="submit" class="section-btn btn-success">
@@ -222,7 +190,7 @@
                 </div>
                  -->
 
-                <!-- Quick Actions -->
+                <!-- Quick Actions
                 <div class="quick-actions">
                     <h2><i class="fas fa-bolt"></i> Acciones Rápidas</h2>
                     <div class="actions-grid">
@@ -234,17 +202,17 @@
                             <i class="fas fa-undo"></i>
                             <span>Restaurar Datos</span>
                         </a>
-                        <!--<a href="#" class="action-card" onclick="manageStorage()">
+                        <a href="#" class="action-card" onclick="manageStorage()">
                             <i class="fas fa-hdd"></i>
                             <span>Gestionar Almacenamiento</span>
                         </a>-->
                         <!--<a href="#" class="action-card" onclick="showBackupLogs()">
                             <i class="fas fa-list-alt"></i>
                             <span>Ver Logs</span>
-                        </a>-->
+                        </a>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <div class="info-card" style="margin-top: 20px;">
                 <h3><i class="fas fa-exclamation-triangle"></i> Eliminar Base de Datos</h3>
                 <div class="backup-options">

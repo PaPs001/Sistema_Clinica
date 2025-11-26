@@ -13,15 +13,15 @@
                 <div class="filters-grid">
                     <div class="filter-item">
                         <label for="desde">Desde</label>
-                        <input type="date" id="desde" name="desde" value="{{ $filtros['desde'] ?? '' }}">
+                        <input type="date" id="desde" name="desde" value="{{ $filtros['desde'] ?? '' }}" class="filter-input">
                     </div>
                     <div class="filter-item">
                         <label for="hasta">Hasta</label>
-                        <input type="date" id="hasta" name="hasta" value="{{ $filtros['hasta'] ?? '' }}">
+                        <input type="date" id="hasta" name="hasta" value="{{ $filtros['hasta'] ?? '' }}" class="filter-input">
                     </div>
                     <div class="filter-item">
                         <label for="medic_id">Médico</label>
-                        <select id="medic_id" name="medic_id">
+                        <select id="medic_id" name="medic_id" class="filter-select">
                             <option value="">Todos</option>
                             @foreach($medicos as $medic)
                                 <option value="{{ $medic->id }}" {{ ($filtros['medic_id'] ?? '') == $medic->id ? 'selected' : '' }}>
@@ -30,10 +30,12 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="filter-actions">
-                        <button type="submit" class="btn btn-primary">Aplicar filtros</button>
-                        <a href="{{ route('reportes.pacientesAtendidos.export', request()->query()) }}" class="btn btn-primary">
-                            Exportar a Excel
+                    <div class="filter-actions section-actions">
+                        <button type="submit" class="section-btn">
+                            <i class="fas fa-filter"></i> Aplicar filtros
+                        </button>
+                        <a href="{{ route('reportes.pacientesAtendidos.export', request()->query()) }}" class="section-btn">
+                            <i class="fas fa-file-excel"></i> Exportar Excel
                         </a>
                     </div>
                 </div>

@@ -480,11 +480,17 @@ body {
     border-radius: 5px;
     cursor: pointer;
     font-size: 0.8rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     transition: all 0.3s ease;
 }
 
 .section-btn:hover {
     background: var(--secondary-color);
+    text-decoration: none;
     transform: translateY(-2px);
 }
 
@@ -813,6 +819,84 @@ th {
     border-top: 1px solid var(--border-color);
 }
 
+/* Filtros de reportes */
+.filters-form {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    align-items: flex-end;
+}
+
+.filter-item label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.filter-input,
+.filter-select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    background-color: #f8fafc;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.15);
+    background-color: #ffffff;
+}
+
+.filters-form .section-actions {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-color);
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+}
+
+/* Estilo personalizado para input de archivo de restauración */
+#backup_file {
+    font-size: 0.85rem;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 6px;
+    background-color: #f8fafc;
+}
+
+#backup_file::file-selector-button,
+#backup_file::-webkit-file-upload-button {
+    background: var(--primary-color);
+    color: #ffffff;
+    border: none;
+    padding: 8px 15px;
+    margin-right: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+#backup_file:hover::file-selector-button,
+#backup_file:hover::-webkit-file-upload-button {
+    background: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .dashboard-container {
@@ -880,6 +964,10 @@ th {
     }
     
     .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .filters-grid {
         grid-template-columns: 1fr;
     }
 }

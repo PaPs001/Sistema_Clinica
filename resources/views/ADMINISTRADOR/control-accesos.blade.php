@@ -240,6 +240,3 @@
         </div>
     </div>
 @endsection
-@section('scripts')
-    @vite(['resources/js/ADMINISTRATOR/control-accesos.js'])
-@endsection

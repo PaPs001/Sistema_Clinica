@@ -30,10 +30,10 @@
                     <i class="fas fa-user-shield"></i>
                     <span>Gestión de Roles</span>
                 </a>
-                <a href="{{ route('controlAccesos') }}" class="nav-item {{ request()->routeIs('controlAccesos') ? 'active' : '' }}">
+                <!--<a href="{{ route('controlAccesos') }}" class="nav-item {{ request()->routeIs('controlAccesos') ? 'active' : '' }}">
                     <i class="fas fa-lock"></i>
                     <span>Control de Accesos</span>
-                </a>
+                </a>-->
                 <a href="{{ route('respaldoDatos') }}" class="nav-item {{ request()->routeIs('respaldoDatos') ? 'active' : '' }}">
                     <i class="fas fa-database"></i>
                     <span>Respaldo de Datos</span>
