@@ -4,3 +4,7 @@
 @import './paginas/gestion-roles.css';
 @import './paginas/respaldo-datos.css';
 @import './paginas/style-admin.css';
+@import '../PACIENTE/paginas/paginador.css';
+
+/* Modal para roles del administrador */
+@import '../generales/modal-permisos.css';

@@ -22,6 +22,8 @@ class generalSeeders extends Seeder
             vitalSignsSeeder::class,
             allergieSeeder::class,
             diseaseSeeder::class,
+            MedicalRecordsSeeder::class,
+            initPermissionsSeeders::class,
         ]);
     }
 }

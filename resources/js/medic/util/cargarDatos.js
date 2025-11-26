@@ -37,6 +37,12 @@ export async function cargarDatos({
             lista.forEach(item => {
                 console.log("ITEM:", item);
                 const nodo = tmplt.content.cloneNode(true).firstElementChild;
+                if (item.id) {
+                    const btnView = nodo.querySelector('.btn-view-users');
+                    const btnEdit = nodo.querySelector('.btn-abrir-permisos');
+                    if (btnEdit) btnEdit.dataset.id = item.id;
+                    if (btnView) btnView.dataset.roleId = item.id;
+                }
                 const nombreArchivo = item.file_name || item.nombre || "";
                 const fileExt = nombreArchivo.toString().split('.').pop().toLowerCase();
                 const nodoCard = nodo.querySelector(".file-card");

@@ -13,6 +13,10 @@ RUN apt-get update && apt-get install -y \
 
 RUN a2enmod rewrite
 
+RUN apt-get update \
+    && apt-get install -y default-mysql-client \
+    && rm -rf /var/lib/apt/lists/*
+
 ENV APACHE_DOCUMENT_ROOT /var/www/public
 
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \

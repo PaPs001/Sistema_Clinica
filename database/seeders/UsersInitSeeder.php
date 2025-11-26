@@ -18,12 +18,48 @@ class UsersInitSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        $types = [1,2,3,4,5];
-        foreach($types as $type){
-            $user = UserModel::factory()->create(['typeUser_id' => $type]);
+        $staticUsers = [
+            [
+                'typeUser_id' => 1,
+                'email' => 'admin@example.test',
+                'password' => '12345',
+                'name' => 'Admin Demo',
+            ],
+            [
+                'typeUser_id' => 2,
+                'email' => 'medic@example.test',
+                'password' => '12345',
+                'name' => 'Médico Demo',
+            ],
+            [
+                'typeUser_id' => 3,
+                'email' => 'patient@example.test',
+                'password' => '12345',
+                'name' => 'Paciente Demo',
+            ],
+            [
+                'typeUser_id' => 4,
+                'email' => 'receptionist@example.test',
+                'password' => '12345',
+                'name' => 'Recepcionista Demo',
+            ],
+            [
+                'typeUser_id' => 5,
+                'email' => 'nurse@example.test',
+                'password' => '12345',
+                'name' => 'Enfermera Demo',
+            ],
+        ];
 
-             switch ($type) {
+        foreach ($staticUsers as $data) {
+            $user = UserModel::factory()->create([
+                'typeUser_id' => $data['typeUser_id'],
+                'email' => $data['email'],
+                'password' => $data['password'],
+                'name' => $data['name'],
+            ]);
+
+            switch ($data['typeUser_id']) {
                 case 1:
                     administratorUser::factory()->create(['userId' => $user->id]);
                     break;

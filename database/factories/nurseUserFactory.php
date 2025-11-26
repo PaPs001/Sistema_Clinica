@@ -19,7 +19,7 @@ class nurseUserFactory extends Factory
         return [
             //
             'userId' => null,
-            'turno' => $this->faker->randomElement(['Matutino', 'Vespertino']),
+            'turno' => $this->faker->randomElement(['matutino', 'vespertino']),
         ];
     }
 }

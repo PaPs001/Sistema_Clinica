@@ -94,13 +94,32 @@
                                     <option value="high">Alta Compresión</option>
                                 </select>
                             </div>
-                            <button class="section-btn btn-success" onclick="createManualBackup()">
-                                <i class="fas fa-play"></i> Iniciar Respaldo
-                            </button>
+                            <form method="POST" action="{{ route('admin.backupDatabase') }}">
+                                @csrf
+                                <button type="submit" class="section-btn btn-success">
+                                    <i class="fas fa-play"></i> Iniciar Respaldo de Base de Datos
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
-<!--
+                <div class="info-card" style="margin-top: 20px;">
+                    <h3><i class="fas fa-undo"></i> Restaurar Respaldo</h3>
+                    <div class="backup-options">
+                        <p>Selecciona un archivo <code>.sql</code> generado previamente y se restaurará la base de datos actual.</p>
+                        <form method="POST" action="{{ route('admin.restoreDatabase') }}" enctype="multipart/form-data">
+                            @csrf
+                            <div class="option-group">
+                                <label for="backup_file">Archivo de respaldo (.sql):</label>
+                                <input type="file" id="backup_file" name="backup_file" accept=".sql" required>
+                            </div>
+                            <button type="submit" class="section-btn btn-warning">
+                                <i class="fas fa-upload"></i> Restaurar desde respaldo
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <!--
                     <div class="info-card">
                         <h3><i class="fas fa-history"></i> Estado del Sistema</h3>
                         <div class="system-status">
@@ -134,9 +153,9 @@
                         </div>
                     </div>
                 </div>
--->
-
-
+                -->
+                
+                
                 <!-- Historial de Respaldos -->
                 <div class="recent-section">
                     <h2>
@@ -224,6 +243,21 @@
                             <span>Ver Logs</span>
                         </a>-->
                     </div>
+                </div>
+            </div>
+            <div class="info-card" style="margin-top: 20px;">
+                <h3><i class="fas fa-exclamation-triangle"></i> Eliminar Base de Datos</h3>
+                <div class="backup-options">
+                    <p style="color:#c0392b;">
+                        Cuidadito muchacho te metes con <strong>EL DIABOLO</strong>, vas a <strong>ELIMINAR TODA</strong>   la base de datos. Esta acción es <strong>IRREVERSIBLE</strong>.
+                    </p>
+                    <form method="POST" action="{{ route('admin.wipeDatabase') }}"
+                        onsubmit="return confirm('¿Seguro que quieres eliminar TODA la base de datos? Esta acción no se puede deshacer.');">
+                        @csrf
+                        <button type="submit" class="section-btn btn-danger">
+                            <i class="fas fa-trash-alt"></i> Eliminar Base de Datos
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -337,7 +371,4 @@
             </div>
         </div>
     </div>
-@endsection
-@section('scripts')
-@vite('resources/js/ADMINISTRATOR/respaldo-datos.js')
 @endsection

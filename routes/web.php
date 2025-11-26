@@ -14,8 +14,10 @@ use App\Http\Controllers\passwordFirstLoginController;
 use App\Http\Controllers\ControladoresPaciente\HistorialPacienteController;
 use App\Http\Controllers\CorreoController;
 
-//Administrador
+//controladores del administrador
 use App\Http\Controllers\Administrador\RolesPermisosController;
+use App\Http\Controllers\Administrador\AdminReportsController;
+use App\Http\Controllers\Administrador\AdminBackupController;
 
 Route::get('/', function () {
     return view('LOGIN.login');
@@ -105,81 +107,103 @@ Route::middleware(['auth', 'role:patient'])->group(function (){
 
 
 //Rutas a paginas administrador --------------------------------------------------------------
-Route::get('/dashboard-admin', function(){
-    return view('ADMINISTRADOR.dashboard-admin');
-})->name('dashboardAdmin');
+Route::middleware(['auth', 'role:admin'])->group(function (){
+    Route::get('/dashboard-admin', function(){
+        return view('ADMINISTRADOR.dashboard-admin');
+    })->name('dashboardAdmin');
 
-Route::get('/auditoria', function(){
-    return view('ADMINISTRADOR.auditoria');
-})->name('auditoria');
+    Route::get('/auditoria', function(){
+        return view('ADMINISTRADOR.auditoria');
+    })->name('auditoria');
 
-Route::get('/configuracion', function(){
-    return view('ADMINISTRADOR.configuracion');
-})->name('configuracion');
+    Route::get('/configuracion', function(){
+        return view('ADMINISTRADOR.configuracion');
+    })->name('configuracion');
 
-Route::get('/control-accesos', function(){
-    return view('ADMINISTRADOR.control-accesos');
-})->name('controlAccesos');
+    Route::get('/control-accesos', function(){
+        return view('ADMINISTRADOR.control-accesos');
+    })->name('controlAccesos');
 
-Route::get('/gestion-roles', [RolesPermisosController::class, 'gestionRolesPage'])->name('gestionRoles');
+    Route::get('/gestion-roles', [RolesPermisosController::class, 'gestionRolesPage'])->name('gestionRoles');
 
-Route::get('/respaldo-datos', function(){
-    return view('ADMINISTRADOR.respaldo-datos');
-})->name('respaldoDatos');
+    Route::get('/respaldo-datos', function(){
+        return view('ADMINISTRADOR.respaldo-datos');
+    })->name('respaldoDatos');
 
-Route::get('/cargarDatos/Roles-permisos', [RolesPermisosController::class, 'cargarRolesPermisos'])->name('cargar.Roles.Permisos');
-Route::get('/cargarDatos/Usuarios-por-rol/{roleId}', [RolesPermisosController::class, 'getUserByRole'])->name('cargar.Usuarios.por.Rol');
+    Route::get('/reportes/pacientes-atendidos', [AdminReportsController::class, 'pacientesAtendidos'])
+        ->name('reportes.pacientesAtendidos');
+    Route::get('/reportes/pacientes-atendidos/export', [AdminReportsController::class, 'exportPacientesAtendidos'])
+        ->name('reportes.pacientesAtendidos.export');
+
+    Route::post('/respaldo-datos/backup', [AdminBackupController::class, 'backupDatabase'])
+        ->name('admin.backupDatabase');
+
+    Route::post('/respaldo-datos/restore', [AdminBackupController::class, 'restoreDatabase'])
+        ->name('admin.restoreDatabase');
+
+    Route::post('/respaldo-datos/wipe', [AdminBackupController::class, 'wipeDatabase'])
+        ->name('admin.wipeDatabase');
+
+    Route::get('/cargarDatos/Roles-permisos', [RolesPermisosController::class, 'cargarRolesPermisos'])->name('cargar.Roles.Permisos');
+    Route::get('/cargarDatos/Usuarios-por-rol/{roleId}', [RolesPermisosController::class, 'getUserByRole'])->name('cargar.Usuarios.por.Rol');
+    Route::get('/cargarDatos/permisos/{roleId}', [RolesPermisosController::class, 'cargarPermisosPerRol'])->name('cargar.Permisos.por.Rol');
+    Route::post('/permisos/{currentRoleId}/guardar-permisos', [RolesPermisosController::class, 'cambiarPermisosPerRol'])->name('guardar.Permisos.por.Rol');
+});
+
 //Rutas a paginas recepcionista --------------------------------------------------------------
-Route::get('/dasboard-recepcionista', function(){
-    return view('RECEPCIONISTA.dashboard-recepcionista');
-})->name('dashboardRecepcionista');
+Route::middleware(['auth', 'role:receptionist'])->group(function (){
+    Route::get('/dasboard-recepcionista', function(){
+        return view('RECEPCIONISTA.dashboard-recepcionista');
+    })->name('dashboardRecepcionista');
 
-Route::get('/agenda', function(){
-    return view('RECEPCIONISTA.agenda');
-})->name('agenda');
+    Route::get('/agenda', function(){
+        return view('RECEPCIONISTA.agenda');
+    })->name('agenda');
 
-Route::get('/gestion-citas', function(){
-    return view('RECEPCIONISTA.gestion-citas');
-})->name('gestionCitas');
+    Route::get('/gestion-citas', function(){
+        return view('RECEPCIONISTA.gestion-citas');
+    })->name('gestionCitas');
 
-Route::get('/pacientes-recepcionista', function(){
-    return view('RECEPCIONISTA.pacientes-recepcion');
-})->name('pacientesRecepcionista');
+    Route::get('/pacientes-recepcionista', function(){
+        return view('RECEPCIONISTA.pacientes-recepcion');
+    })->name('pacientesRecepcionista');
 
-Route::get('/recordatorios', function(){
-    return view('RECEPCIONISTA.recordatorios');
-})->name('recordatorios');
+    Route::get('/recordatorios', function(){
+        return view('RECEPCIONISTA.recordatorios');
+    })->name('recordatorios');
 
-Route::get('/registro-paciente', function(){
-    return view('RECEPCIONISTA.registro-pacientes');
-})->name('registroPaciente');
-
+    Route::get('/registro-paciente', function(){
+        return view('RECEPCIONISTA.registro-pacientes');
+    })->name('registroPaciente');
+});
 
 //Rutas a paginas enfermera --------------------------------------------------------------
-Route::get('/dashboard-enfermera', function(){
-    return view('ENFERMERA.dashboard-enfermera');
-})->name('dashboardEnfermera');
+Route::middleware(['auth', 'role:nurse'])->group(function (){
+    Route::get('/dashboard-enfermera', function(){
+        return view('ENFERMERA.dashboard-enfermera');
+    })->name('dashboardEnfermera');
 
-Route::get('/citas-enfermera', function(){
-    return view('ENFERMERA.citas-enfermera');
-})->name('citasEnfermera');
+    Route::get('/citas-enfermera', function(){
+        return view('ENFERMERA.citas-enfermera');
+    })->name('citasEnfermera');
 
-Route::get('/medicamentos', function(){
-    return view('ENFERMERA.medicamentos');
-})->name('medicamentos');
+    Route::get('/medicamentos', function(){
+        return view('ENFERMERA.medicamentos');
+    })->name('medicamentos');
 
-Route::get('/pacientes-enfermera', function(){
-    return view('ENFERMERA.pacientes-enfermera');
-})->name('pacientesEnfermera');
+    Route::get('/pacientes-enfermera', function(){
+        return view('ENFERMERA.pacientes-enfermera');
+    })->name('pacientesEnfermera');
 
-Route::get('/reportes-enfermera', function(){
-    return view('ENFERMERA.reportes-enfermera');
-})->name('reportesEnfermera');
+    Route::get('/reportes-enfermera', function(){
+        return view('ENFERMERA.reportes-enfermera');
+    })->name('reportesEnfermera');
 
-Route::get('/signos-vitales', function(){
-    return view('ENFERMERA.signos-vitales');
-})->name('signosVitales');
+    Route::get('/signos-vitales', function(){
+        return view('ENFERMERA.signos-vitales');
+    })->name('signosVitales');
 
-Route::get('/tratamientos', function(){
-    return view('ENFERMERA.tratamientos');
-})->name('tratamientos');
+    Route::get('/tratamientos', function(){
+        return view('ENFERMERA.tratamientos');
+    })->name('tratamientos');
+});

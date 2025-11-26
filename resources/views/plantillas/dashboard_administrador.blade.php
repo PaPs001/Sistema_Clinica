@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Pagina')</title>
     @yield('scripts')
     @vite('resources/css/ADMINISTRADOR/general.css')
@@ -37,10 +38,10 @@
                     <i class="fas fa-database"></i>
                     <span>Respaldo de Datos</span>
                 </a>
-               <!-- <a href="reportes-admin.html" class="nav-item">
+                <a href="{{ route('reportes.pacientesAtendidos') }}" class="nav-item {{ request()->routeIs('reportes.pacientesAtendidos') ? 'active' : '' }}">
                     <i class="fas fa-chart-bar"></i>
                     <span>Reportes</span>
-                </a>-->
+                </a>
                 <!--<a href="{{ route('auditoria') }}" class="nav-item {{ request()->routeIs('auditoria') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Auditoría</span>

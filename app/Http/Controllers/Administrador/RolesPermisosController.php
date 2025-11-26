@@ -4,9 +4,14 @@ namespace App\Http\Controllers\administrador;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\roleModel;
 use App\Models\Permissions;
 use App\Models\UserModel;
+use App\Models\medicUser;
+use App\Models\patientUser;
+use App\Models\nurseUser;
+use App\Models\receptionistUser;
 
 class RolesPermisosController extends Controller
 {
@@ -33,12 +38,16 @@ class RolesPermisosController extends Controller
     }
 
     public function getUserByRole($roleId){
-        $role = roleModel::with('General_user')->findOrFail($roleId);
+        $role = roleModel::findOrFail($roleId);
 
+        $users = $role->General_user()->paginate(5);
         return response()->json([
-            'users' => $role->General_user,
             'name' => $role->name,
             'status' => $role->status ?? 'active',
+            'data' => $users->items(),
+            'current_page' => $users->currentPage(),
+            'last_page' => $users->lastPage(),
+            'pagination' => view('plantillas.pagination', ['paginator' => $users])->render()
         ]);
     }
 
@@ -57,7 +66,50 @@ class RolesPermisosController extends Controller
     }
 
     public function gestionRolesPage(){
-        return view('ADMINISTRADOR.gestion-roles');
+        $totalMedics = medicUser::count();
+        $totalPatients = patientUser::count();
+        $totalNurses = nurseUser::count();
+        $totalReceptionists = receptionistUser::count();
+
+        return view('ADMINISTRADOR.gestion-roles', [
+            'totalMedics' => $totalMedics,
+            'totalPatients' => $totalPatients,
+            'totalNurses' => $totalNurses,
+            'totalReceptionists' => $totalReceptionists,
+        ]);
     }
 
+    public function cargarPermisosPerRol($roleId){
+        $role = roleModel::with('permissions')->findOrFail($roleId);
+
+        $permissions = Permissions::all()->map(function($permission) use ($role) {
+            return [
+                'id' => $permission->id,
+                'name' => $permission->name_permission,
+                'asignado' => $role->permissions->contains($permission->id)
+            ];
+        });
+
+        return response()->json([
+            'data' => $permissions,
+        ]);
+    }
+
+    public function cambiarPermisosPerRol(Request $request, $roleId)
+    {
+        $role = roleModel::findOrFail($roleId);
+
+        $permissionIds = $request->input('permisos', []);
+
+        Log::info('Permisos recibidos desde el front', ['permisos' => $permissionIds]);
+
+        $role->permissions()->sync($permissionIds);
+
+        Log::info('Permisos actualizados para el rol', ['role_id' => $roleId]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Permisos actualizados correctamente',
+        ]);
+    }
 }

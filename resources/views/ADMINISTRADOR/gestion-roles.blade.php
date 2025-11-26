@@ -23,7 +23,7 @@
                             <i class="fas fa-user-tag"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="totalRoles">0</h3>
+                            <h3 id="totalRoles">{{ $totalMedics ?? 0 }}</h3>
                             <p>Medicos</p>
                         </div>
                     </div>
@@ -32,7 +32,7 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="activeRoles">0</h3>
+                            <h3 id="activeRoles">{{ $totalPatients ?? 0 }}</h3>
                             <p>Pacientes</p>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                             <i class="fas fa-key"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="totalPermissions">0</h3>
+                            <h3 id="totalPermissions">{{ $totalNurses ?? 0 }}</h3>
                             <p>Enfermeras</p>
                         </div>
                     </div>
@@ -50,7 +50,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="totalUsers">0</h3>
+                            <h3 id="totalUsers">{{ $totalReceptionists ?? 0 }}</h3>
                             <p>Recepcionistas</p>
                         </div>
                     </div>
@@ -92,8 +92,8 @@
                         </td>
 
                         <td class="role-actions">
-                            <button class="btn-edit" data-id="">
-                                <i class="fas fa-edit"></i>
+                            <button class="btn-abrir-permisos" data-id="">
+                                <i class="fas fa-edit"></i>Editar permisos
                             </button>
                             <button class="btn-view-users" data-role-id="">
                                 <i class="fas fa-eye"></i> Ver usuarios
@@ -149,6 +149,24 @@
                 <div class="pagination-container mt-3 text-center" id="paginationContainer-usuarios-por-rol">
                         <!-- Los controles de paginación se cargarán aquí -->
                 </div>
+                <template id="permiso-Template">
+                    <div class="permission-item">
+                        <input type="checkbox" class="perm-check">
+                        <label class="perm-name"></label>
+                    </div>
+                </template>
+
+                <div id="modalPermisos" class="modal">
+                    <div class="modal-content">
+                        <h2 id="modal-role-name"></h2>
+                            
+                        <div id="permissionsContainer"></div>
+
+                        <button id="btnGuardarPermisos">Guardar</button>
+                        <button id="btnCerrar" onclick="cerrarModalPermisos('#modalPermisos')">Cerrar</button>
+                    </div>
+                </div>
+
 
 
                 <!-- Quick Actions -->
@@ -174,45 +192,6 @@
                     </div>
                 </div>
             </div>
-    <!-- Modal para Crear/Editar Rol -->
-    <div class="modal-overlay" id="roleModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 id="modalTitle">Crear Nuevo Rol</h3>
-                <button class="close-modal" onclick="closeRoleModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="roleForm">
-                    <div style="margin-bottom: 20px;">
-                        <label for="roleName" style="display: block; margin-bottom: 5px; font-weight: 500;">Nombre del Rol:</label>
-                        <input type="text" id="roleName" required style="width: 100%; padding: 10px; border: 1px solid #e1e5e9; border-radius: 5px;">
-                    </div>
-                    
-                    <div style="margin-bottom: 20px;">
-                        <label for="roleDescription" style="display: block; margin-bottom: 5px; font-weight: 500;">Descripción:</label>
-                        <textarea id="roleDescription" rows="3" style="width: 100%; padding: 10px; border: 1px solid #e1e5e9; border-radius: 5px;"></textarea>
-                    </div>
-                    
-                    <!-- Permisos -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="color: #061175; margin-bottom: 15px; border-bottom: 2px solid #667eea; padding-bottom: 5px;">
-                            <i class="fas fa-key"></i> Permisos del Sistema
-                        </h4>
-                        <div class="permissions-grid" id="permissionsGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid #e1e5e9; border-radius: 5px;">
-                            <!-- Los permisos se cargarán dinámicamente -->
-                        </div>
-                    </div>
-
-                    <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #e1e5e9;">
-                        <button type="button" class="section-btn" style="background: #95a5a6;" onclick="closeRoleModal()">Cancelar</button>
-                        <button type="submit" class="section-btn">Guardar Rol</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
 @endsection
 @section('scripts')
 @vite('resources/js/ADMINISTRATOR/gestion-roles.js')

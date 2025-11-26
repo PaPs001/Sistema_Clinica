@@ -51,4 +51,13 @@ class patientUser extends Model
             'medic_id'  
         );
     }
+
+    public function getDisplayNameAttribute()
+    {
+        if ($this->user) {
+            return $this->user->name;
+        }
+
+        return $this->temporary_name ?: $this->DNI;
+    }
 }
