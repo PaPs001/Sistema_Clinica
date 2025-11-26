@@ -18,6 +18,7 @@ class UsersInitSeeder extends Seeder
      */
     public function run(): void
     {
+        // Usuarios fijos de ejemplo (uno por tipo)
         $staticUsers = [
             [
                 'typeUser_id' => 1,
@@ -78,27 +79,53 @@ class UsersInitSeeder extends Seeder
             }
         }
 
-        userModel::factory()->count(5)->create()->each(function ($user) {
-            $typeUserId = $user->typeUser_id;
+        /**
+         * Cantidades objetivo (además de los usuarios fijos anteriores):
+         * - 2 administradores
+         * - 7 médicos
+         * - 15 pacientes
+         * - 4 recepcionistas
+         * - 5 enfermeras
+         *
+         * Ya tenemos 1 de cada tipo en $staticUsers, así que aquí sólo
+         * creamos los restantes para llegar a esos totales.
+         */
+        $targets = [
+            1 => 2,  // administradores
+            2 => 7,  // médicos
+            3 => 15, // pacientes
+            4 => 4,  // recepcionistas
+            5 => 5,  // enfermeras
+        ];
 
-            switch ($typeUserId) {
-                case 1:
-                    administratorUser::factory()->create(['userId' => $user->id]);
-                    break;
-                case 2:
-                    medicUser::factory()->create(['userId' => $user->id]);
-                    break;
-                case 3:
-                    patientUser::factory()->create(['userId' => $user->id]);
-                    break;
-                case 4:
-                    receptionistUser::factory()->create(['userId' => $user->id]);
-                    break;
-                case 5:
-                    nurseUser::factory()->create(['userId' => $user->id]);
-                    break;
+        foreach ($targets as $typeUserId => $targetTotal) {
+            // Ya se creó 1 estático arriba
+            $extraToCreate = max(0, $targetTotal - 1);
+
+            for ($i = 0; $i < $extraToCreate; $i++) {
+                $user = UserModel::factory()->create([
+                    'typeUser_id' => $typeUserId,
+                ]);
+
+                switch ($typeUserId) {
+                    case 1:
+                        administratorUser::factory()->create(['userId' => $user->id]);
+                        break;
+                    case 2:
+                        medicUser::factory()->create(['userId' => $user->id]);
+                        break;
+                    case 3:
+                        patientUser::factory()->create(['userId' => $user->id]);
+                        break;
+                    case 4:
+                        receptionistUser::factory()->create(['userId' => $user->id]);
+                        break;
+                    case 5:
+                        nurseUser::factory()->create(['userId' => $user->id]);
+                        break;
+                }
             }
-        });
+        }
 
         patientUser::factory()->count(5)->temporaryData()->create();
     }

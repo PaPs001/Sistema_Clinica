@@ -14,8 +14,8 @@ class vitalSignsSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        $appointments = appointment::all();
+        // Signos vitales solo para citas completadas
+        $appointments = appointment::where('status', 'completada')->get();
 
         foreach ($appointments as $appointment){
             vital_sign::factory()->create([
