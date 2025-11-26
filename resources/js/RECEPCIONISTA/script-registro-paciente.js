@@ -215,12 +215,13 @@ function handleQuickRegistration(e) {
     const quickData = {
         name: formData.get('quick-name'),
         phone: formData.get('quick-phone'),
-        dob: formData.get('quick-dob')
+        dob: formData.get('quick-dob'),
+        is_quick_registration: true
     };
 
     // Validar datos mínimos
-    if (!quickData.name || !quickData.phone) {
-        showToast('Nombre y teléfono son obligatorios', 'error');
+    if (!quickData.name || !quickData.phone || !quickData.dob) {
+        showToast('Nombre, teléfono y fecha de nacimiento son obligatorios', 'error');
         return;
     }
 
@@ -230,26 +231,62 @@ function handleQuickRegistration(e) {
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registrando...';
     submitBtn.disabled = true;
 
-    console.log('Registro rápido de paciente:', quickData);
+    // Obtener CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    setTimeout(() => {
-        // Cerrar modal
-        document.getElementById('quick-registration-modal').classList.remove('active');
+    // Usar la misma ruta que el registro normal
+    const url = document.getElementById('patient-registration-form').action;
 
-        // Limpiar formulario rápido
-        e.target.reset();
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify(quickData)
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Cerrar modal
+                document.getElementById('quick-registration-modal').classList.remove('active');
 
-        // Restaurar botón
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
+                // Limpiar formulario rápido
+                e.target.reset();
 
-        // Mostrar notificación
-        showToast('Paciente registrado rápidamente', 'success');
+                // Mostrar notificación
+                showToast(data.message, 'success');
 
-        // Agregar a lista de recientes (datos mínimos)
-        addPatientToRecentList(quickData);
+                // Agregar a lista de recientes
+                // Si el backend devuelve el objeto creado, úsalo. Si no, usa quickData.
+                // El backend devuelve { success: true, message: ..., data: { id: ... } }
+                // Para la tarjeta necesitamos nombre, telefono, email (placeholder)
+                const newPatient = {
+                    name: quickData.name,
+                    phone: quickData.phone,
+                    email: 'Pendiente', // Placeholder
+                    created_at: new Date().toISOString()
+                };
+                addPatientToRecentList(newPatient);
 
-    }, 1500);
+                // Actualizar estadísticas si es posible (recargar página o fetch stats)
+                // Por ahora solo actualizamos la lista visual
+            } else {
+                showToast(data.message || 'Error al registrar paciente', 'error');
+                if (data.errors) {
+                    console.error('Errores de validación:', data.errors);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Ocurrió un error al procesar la solicitud', 'error');
+        })
+        .finally(() => {
+            // Restaurar botón
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
 }
 
 function validatePatientData(data) {

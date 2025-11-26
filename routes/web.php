@@ -140,9 +140,7 @@ Route::get('/gestion-citas', function(){
     return view('RECEPCIONISTA.gestion-citas');
 })->name('gestionCitas');
 
-Route::get('/pacientes-recepcionista', function(){
-    return view('RECEPCIONISTA.pacientes-recepcion');
-})->name('pacientesRecepcionista');
+Route::get('/pacientes-recepcionista', [App\Http\Controllers\PatientController::class, 'index'])->name('pacientesRecepcionista');
 
 Route::get('/recordatorios', function(){
     return view('RECEPCIONISTA.recordatorios');
@@ -151,6 +149,7 @@ Route::get('/recordatorios', function(){
 Route::get('/registro-paciente', [App\Http\Controllers\PatientController::class, 'create'])->name('registroPaciente');
 
 Route::post('/recepcionista/registrar-paciente', [App\Http\Controllers\PatientController::class, 'store'])->name('registrar.paciente.store');
+Route::post('/recepcionista/update-paciente/{id}', [App\Http\Controllers\PatientController::class, 'update'])->name('update.paciente');
 Route::post('/recepcionista/check-patient', [App\Http\Controllers\AppointmentController::class, 'checkPatient'])->name('check.patient');
 Route::post('/recepcionista/store-appointment', [App\Http\Controllers\AppointmentController::class, 'store'])->name('store.appointment');
 Route::get('/recepcionista/get-doctors', [App\Http\Controllers\AppointmentController::class, 'getDoctors'])->name('get.doctors');

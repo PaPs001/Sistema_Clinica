@@ -1,73 +1,66 @@
 @extends('plantillas.dashboard_recepcionista')
 @section('title', 'Gestión de Pacientes - Hospital Naval')
 @section('content')
-            <header class="content-header">
-                <h1>Gestión de Pacientes</h1>
-                <div class="header-actions">
-                    <!--<div class="search-box">
-                        <input type="text" placeholder="Buscar por nombre, teléfono o ID..." aria-label="Buscar pacientes">
-                        <i class="fas fa-search"></i>
-                    </div>-->
-                    <button class="section-btn" id="add-patient-btn">
-                        <i class="fas fa-user-plus"></i> Nuevo Paciente
-                    </button>
-                </div>
-            </header>
-
-            <div class="content">
-                <!-- Filtros y Estadísticas -->
-                <div class="patients-controls">
-                    <div class="filters-container">
-                        <div class="filter-group">
-                            <label for="status-filter">Estado:</label>
-                            <select id="status-filter">
-                                <option value="">Todos los estados</option>
-                                <option value="activo">Activo</option>
-                                <option value="inactivo">Inactivo</option>
-                                <option value="nuevo">Nuevo</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label for="date-filter">Fecha de Registro:</label>
-                            <select id="date-filter">
-                                <option value="">Todas las fechas</option>
-                                <option value="hoy">Hoy</option>
-                                <option value="semana">Esta semana</option>
-                                <option value="mes">Este mes</option>
-                                <option value="anio">Este año</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label for="sort-by">Ordenar por:</label>
-                            <select id="sort-by">
-                                <option value="nombre">Nombre A-Z</option>
-                                <option value="fecha">Fecha de Registro</option>
-                                <option value="reciente">Más Reciente</option>
-                                <option value="antiguo">Más Antiguo</option>
-                            </select>
-                        </div>
-                        
-                        <button class="section-btn" id="apply-filters">
-                            <i class="fas fa-filter"></i> Aplicar
-                        </button>
-                        <button class="section-btn btn-cancel" id="reset-filters">
-                            <i class="fas fa-redo"></i> Limpiar
-                        </button>
+            <form action="{{ route('pacientesRecepcionista') }}" method="GET" id="filter-form">
+                <header class="content-header">
+                    <h1>Gestión de Pacientes</h1>
+                    <div class="header-actions">
                     </div>
+                </header>
+
+                <div class="content">
+                    <!-- Filtros y Estadísticas -->
+                    <div class="patients-controls">
+                        <div class="filters-container">
+                            <div class="filter-group">
+                                <label for="status-filter">Estado:</label>
+                                <select id="status-filter" name="status">
+                                    <option value="">Todos los estados</option>
+                                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Activo</option>
+                                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactivo</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label for="date-filter">Fecha de Registro:</label>
+                                <select id="date-filter" name="date">
+                                    <option value="">Todas las fechas</option>
+                                    <option value="hoy" {{ request('date') == 'hoy' ? 'selected' : '' }}>Hoy</option>
+                                    <option value="semana" {{ request('date') == 'semana' ? 'selected' : '' }}>Esta semana</option>
+                                    <option value="mes" {{ request('date') == 'mes' ? 'selected' : '' }}>Este mes</option>
+                                    <option value="anio" {{ request('date') == 'anio' ? 'selected' : '' }}>Este año</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-group">
+                                <label for="sort-by">Ordenar por:</label>
+                                <select id="sort-by" name="sort">
+                                    <option value="nombre_asc" {{ request('sort') == 'nombre_asc' ? 'selected' : '' }}>Nombre A-Z</option>
+                                    <option value="nombre_desc" {{ request('sort') == 'nombre_desc' ? 'selected' : '' }}>Nombre Z-A</option>
+                                    <option value="fecha_desc" {{ request('sort') == 'fecha_desc' ? 'selected' : '' }}>Más Reciente</option>
+                                    <option value="fecha_asc" {{ request('sort') == 'fecha_asc' ? 'selected' : '' }}>Más Antiguo</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="section-btn" id="apply-filters">
+                                <i class="fas fa-filter"></i> Aplicar
+                            </button>
+                            <a href="{{ route('pacientesRecepcionista') }}" class="section-btn btn-cancel" id="reset-filters" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-redo"></i> Limpiar
+                            </a>
+                        </div>
                     
                     <div class="patients-stats">
                         <div class="stat-item">
-                            <span class="stat-number">2,847</span>
+                            <span class="stat-number">{{ $totalPatients }}</span>
                             <span class="stat-label">Total Pacientes</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">48</span>
+                            <span class="stat-number">{{ $newPatientsWeek }}</span>
                             <span class="stat-label">Esta Semana</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-number">12</span>
+                            <span class="stat-number">{{ $newPatientsToday }}</span>
                             <span class="stat-label">Hoy</span>
                         </div>
                     </div>
@@ -78,15 +71,7 @@
                     <h2>
                         <i class="fas fa-users"></i> Lista de Pacientes
                         <div class="section-actions">
-                            <button class="section-btn" id="export-patients">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                            <button class="section-btn" id="refresh-patients">
-                                <i class="fas fa-sync"></i> Actualizar
-                            </button>
-                            <button class="section-btn" id="bulk-actions">
-                                <i class="fas fa-cog"></i> Acciones
-                            </button>
+                            
                         </div>
                     </h2>
                     
@@ -100,313 +85,113 @@
                                     <th>Paciente</th>
                                     <th>Contacto</th>
                                     <th>Información</th>
-                                    <th>Última Visita</th>
+                                    <th>Fecha de Registro</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="patient-row" data-status="activo">
+                                @forelse($patients as $patient)
+                                <tr class="patient-row" data-status="{{ $patient->status }}">
                                     <td class="select-column">
-                                        <input type="checkbox" class="patient-select">
+                                        <input type="checkbox" class="patient-select" value="{{ $patient->id }}">
                                     </td>
                                     <td>
                                         <div class="patient-info-compact">
-                                            <div class="patient-avatar">
+                                            <div class="patient-avatar {{ $patient->status == 'inactive' ? 'inactive' : '' }}">
                                                 <i class="fas fa-user"></i>
                                             </div>
                                             <div class="patient-details">
-                                                <strong>Carlos Ruiz Hernández</strong>
-                                                <span>ID: CR-2847</span>
-                                                <span>65 años</span>
+                                                <strong>{{ $patient->name }}</strong>
+                                                <!--<span>ID: {{ $patient->id }}</span>-->
+                                                <span>{{ \Carbon\Carbon::parse($patient->birthdate)->age }} años</span>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="contact-info">
-                                            <p><i class="fas fa-phone"></i> 555-123-4567</p>
-                                            <p><i class="fas fa-envelope"></i> carlos.ruiz@email.com</p>
+                                            <p><i class="fas fa-phone"></i> {{ $patient->phone }}</p>
+                                            <p><i class="fas fa-envelope"></i> {{ $patient->email }}</p>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="medical-info">
-                                            <p><i class="fas fa-tint"></i> Tipo A+</p>
-                                            <p><i class="fas fa-allergies"></i> Sin alergias</p>
-                                            <p><i class="fas fa-file-medical"></i> Hipertensión</p>
+                                            <p><i class="fas fa-tint"></i> {{ $patient->genre }}</p>
+                                            <!-- Placeholders for data not in general_users -->
+                                            <!--<p><i class="fas fa-allergies"></i> Sin alergias</p>-->
+                                            <!--<p><i class="fas fa-file-medical"></i> Ninguna</p>-->
                                         </div>
                                     </td>
                                     <td>
                                         <div class="last-visit">
-                                            <strong>15 Nov 2023</strong>
-                                            <span>Dr. Elena Morales</span>
-                                            <span class="visit-type consulta">Consulta</span>
+                                            <strong>{{ $patient->created_at->format('d M Y') }}</strong>
+                                            <span>Registro</span>
+                                            <!--<span class="visit-type consulta">Consulta</span>-->
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="status-badge active">Activo</span>
+                                        <span class="status-badge {{ $patient->status == 'active' ? 'active' : 'inactive' }}">
+                                            {{ ucfirst($patient->status) }}
+                                        </span>
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <button class="btn-view" title="Ver perfil">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="btn-edit" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn-calendar" title="Agendar cita">
+                                            <a href="{{ route('gestionCitas') }}" class="btn-calendar" title="Agendar cita">
                                                 <i class="fas fa-calendar-plus"></i>
-                                            </button>
-                                            <button class="btn-message" title="Enviar mensaje">
-                                                <i class="fas fa-envelope"></i>
-                                            </button>
+                                            </a>
+                                           
                                         </div>
                                     </td>
                                 </tr>
-                                
-                                <tr class="patient-row" data-status="nuevo">
-                                    <td class="select-column">
-                                        <input type="checkbox" class="patient-select">
-                                    </td>
-                                    <td>
-                                        <div class="patient-info-compact">
-                                            <div class="patient-avatar new">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div class="patient-details">
-                                                <strong>Ana López García</strong>
-                                                <span>ID: AL-2848</span>
-                                                <span>42 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="contact-info">
-                                            <p><i class="fas fa-phone"></i> 555-987-6543</p>
-                                            <p><i class="fas fa-envelope"></i> ana.lopez@email.com</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="medical-info">
-                                            <p><i class="fas fa-tint"></i> Tipo O+</p>
-                                            <p><i class="fas fa-allergies"></i> Penicilina</p>
-                                            <p><i class="fas fa-file-medical"></i> Diabetes tipo 2</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="last-visit">
-                                            <strong>14 Nov 2023</strong>
-                                            <span>Dr. Roberto Silva</span>
-                                            <span class="visit-type control">Control</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge new">Nuevo</span>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="btn-view" title="Ver perfil">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="btn-edit" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn-calendar" title="Agendar cita">
-                                                <i class="fas fa-calendar-plus"></i>
-                                            </button>
-                                            <button class="btn-message" title="Enviar mensaje">
-                                                <i class="fas fa-envelope"></i>
-                                            </button>
-                                        </div>
-                                    </td>
+                                @empty
+                                <tr>
+                                    <td colspan="7" style="text-align: center; padding: 20px;">No se encontraron pacientes.</td>
                                 </tr>
-                                
-                                <tr class="patient-row" data-status="activo">
-                                    <td class="select-column">
-                                        <input type="checkbox" class="patient-select">
-                                    </td>
-                                    <td>
-                                        <div class="patient-info-compact">
-                                            <div class="patient-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div class="patient-details">
-                                                <strong>Miguel Torres Ramírez</strong>
-                                                <span>ID: MT-2849</span>
-                                                <span>38 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="contact-info">
-                                            <p><i class="fas fa-phone"></i> 555-456-7890</p>
-                                            <p><i class="fas fa-envelope"></i> miguel.torres@email.com</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="medical-info">
-                                            <p><i class="fas fa-tint"></i> Tipo B+</p>
-                                            <p><i class="fas fa-allergies"></i> Mariscos</p>
-                                            <p><i class="fas fa-file-medical"></i> Asma</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="last-visit">
-                                            <strong>10 Nov 2023</strong>
-                                            <span>Dra. Elena Morales</span>
-                                            <span class="visit-type emergencia">Urgencia</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge active">Activo</span>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="btn-view" title="Ver perfil">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="btn-edit" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn-calendar" title="Agendar cita">
-                                                <i class="fas fa-calendar-plus"></i>
-                                            </button>
-                                            <button class="btn-message" title="Enviar mensaje">
-                                                <i class="fas fa-envelope"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <tr class="patient-row" data-status="inactivo">
-                                    <td class="select-column">
-                                        <input type="checkbox" class="patient-select">
-                                    </td>
-                                    <td>
-                                        <div class="patient-info-compact">
-                                            <div class="patient-avatar inactive">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div class="patient-details">
-                                                <strong>Laura García Mendoza</strong>
-                                                <span>ID: LG-2850</span>
-                                                <span>29 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="contact-info">
-                                            <p><i class="fas fa-phone"></i> 555-321-0987</p>
-                                            <p><i class="fas fa-envelope"></i> laura.garcia@email.com</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="medical-info">
-                                            <p><i class="fas fa-tint"></i> Tipo AB+</p>
-                                            <p><i class="fas fa-allergies"></i> Sin alergias</p>
-                                            <p><i class="fas fa-file-medical"></i> Ninguna</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="last-visit">
-                                            <strong>05 Oct 2023</strong>
-                                            <span>Dr. Carlos Mendoza</span>
-                                            <span class="visit-type consulta">Consulta</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge inactive">Inactivo</span>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="btn-view" title="Ver perfil">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="btn-edit" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn-calendar" title="Agendar cita">
-                                                <i class="fas fa-calendar-plus"></i>
-                                            </button>
-                                            <button class="btn-message" title="Enviar mensaje">
-                                                <i class="fas fa-envelope"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <tr class="patient-row" data-status="activo">
-                                    <td class="select-column">
-                                        <input type="checkbox" class="patient-select">
-                                    </td>
-                                    <td>
-                                        <div class="patient-info-compact">
-                                            <div class="patient-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div class="patient-details">
-                                                <strong>Juan Pérez Castro</strong>
-                                                <span>ID: JP-2851</span>
-                                                <span>55 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="contact-info">
-                                            <p><i class="fas fa-phone"></i> 555-654-3210</p>
-                                            <p><i class="fas fa-envelope"></i> juan.perez@email.com</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="medical-info">
-                                            <p><i class="fas fa-tint"></i> Tipo A-</p>
-                                            <p><i class="fas fa-allergies"></i> Ibuprofeno</p>
-                                            <p><i class="fas fa-file-medical"></i> Artritis</p>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="last-visit">
-                                            <strong>12 Nov 2023</strong>
-                                            <span>Dra. Elena Morales</span>
-                                            <span class="visit-type control">Control</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="status-badge active">Activo</span>
-                                    </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <button class="btn-view" title="Ver perfil">
-                                                <i class="fas fa-eye"></i>
-                                            </button>
-                                            <button class="btn-edit" title="Editar">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn-calendar" title="Agendar cita">
-                                                <i class="fas fa-calendar-plus"></i>
-                                            </button>
-                                            <button class="btn-message" title="Enviar mensaje">
-                                                <i class="fas fa-envelope"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
                     
                     <!-- Paginación -->
                     <div class="pagination">
-                        <button class="pagination-btn" disabled>
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="pagination-btn active">1</button>
-                        <button class="pagination-btn">2</button>
-                        <button class="pagination-btn">3</button>
-                        <span class="pagination-ellipsis">...</span>
-                        <button class="pagination-btn">10</button>
-                        <button class="pagination-btn">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
+                        @if ($patients->onFirstPage())
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        @else
+                            <a href="{{ $patients->previousPageUrl() }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        @endif
+
+                        {{-- Pagination Elements --}}
+                        @foreach ($patients->links()->elements as $element)
+                            {{-- "Three Dots" Separator --}}
+                            @if (is_string($element))
+                                <span class="pagination-ellipsis">{{ $element }}</span>
+                            @endif
+
+                            {{-- Array Of Links --}}
+                            @if (is_array($element))
+                                @foreach ($element as $page => $url)
+                                    @if ($page == $patients->currentPage())
+                                        <button class="pagination-btn active">{{ $page }}</button>
+                                    @else
+                                        <a href="{{ $url }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">{{ $page }}</a>
+                                    @endif
+                                @endforeach
+                            @endif
+                        @endforeach
+
+                        @if ($patients->hasMorePages())
+                            <a href="{{ $patients->nextPageUrl() }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        @else
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        @endif
                     </div>
                 </div>
 

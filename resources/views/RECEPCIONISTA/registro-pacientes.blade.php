@@ -215,14 +215,7 @@
                                 <p><i class="fas fa-envelope"></i> {{ $patient->email }}</p>
                                 <p><i class="fas fa-calendar"></i> Registrado {{ $patient->created_at->diffForHumans() }}</p>
                             </div>
-                            <div class="patient-actions">
-                                <button class="btn-view" aria-label="Ver detalles de {{ $patient->name }}">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn-cancel" aria-label="Editar {{ $patient->name }}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </div>
+                            
                         </div>
                         @empty
                         <div class="no-records" style="grid-column: 1/-1; text-align: center; padding: 20px;">

@@ -13,6 +13,75 @@ use App\Models\UserModel;
 
 class PatientController extends Controller
 {
+    public function index(Request $request)
+    {
+        $query = UserModel::where('typeUser_id', 3);
+
+        // Search by name or phone
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by date
+        if ($request->filled('date')) {
+            switch ($request->date) {
+                case 'hoy':
+                    $query->whereDate('created_at', Carbon::today());
+                    break;
+                case 'semana':
+                    $query->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()]);
+                    break;
+                case 'mes':
+                    $query->whereMonth('created_at', Carbon::now()->month)
+                          ->whereYear('created_at', Carbon::now()->year);
+                    break;
+                case 'anio':
+                    $query->whereYear('created_at', Carbon::now()->year);
+                    break;
+            }
+        }
+
+        // Sorting
+        if ($request->filled('sort')) {
+            switch ($request->sort) {
+                case 'nombre_asc':
+                    $query->orderBy('name', 'asc');
+                    break;
+                case 'nombre_desc':
+                    $query->orderBy('name', 'desc');
+                    break;
+                case 'fecha_asc':
+                    $query->orderBy('created_at', 'asc');
+                    break;
+                case 'fecha_desc':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                default:
+                    $query->orderBy('created_at', 'desc');
+            }
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $patients = $query->paginate(5)->withQueryString();
+
+        // Calculate stats (keep these global or filtered? Usually global stats are preferred for the dashboard feel, but let's keep them global for now as per previous request)
+        $totalPatients = UserModel::where('typeUser_id', 3)->count();
+        $newPatientsWeek = UserModel::where('typeUser_id', 3)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count();
+        $newPatientsToday = UserModel::where('typeUser_id', 3)->whereDate('created_at', Carbon::today())->count();
+
+        return view('RECEPCIONISTA.pacientes-recepcion', compact('patients', 'totalPatients', 'newPatientsWeek', 'newPatientsToday'));
+    }
+
     public function create()
     {
         // Fetch recent patients (limit 3 for the cards)
@@ -36,26 +105,31 @@ class PatientController extends Controller
     {
         Log::info('PatientController@store: Recibiendo solicitud', $request->all()); // DEBUG LOG
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|max:255|unique:general_users,email',
-            'phone' => 'required|string|max:20',
-            'dob' => 'required|date',
-            'gender' => 'required|in:M,F,O,N',
-            'id_number' => 'required|string|max:50', // Mapped from 'id' in frontend
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'state' => 'required|string|max:100',
-            'zip' => 'required|string|max:20',
-            'blood_type' => 'nullable|string|max:5',
-            'allergies' => 'nullable|string',
-            'medications' => 'nullable|string',
-            'conditions' => 'nullable|string',
-            'notes' => 'nullable|string',
-        ]);
+        $isQuickRegistration = $request->input('is_quick_registration', false);
+
+        if ($isQuickRegistration) {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'phone' => 'required|string|max:20',
+                'dob' => 'required|date',
+            ]);
+        } else {
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'email' => 'nullable|email|max:255|unique:general_users,email',
+                'phone' => 'required|string|max:20',
+                'dob' => 'required|date',
+                'gender' => 'required|in:M,F,O,N',
+                'id_number' => 'required|string|max:50',
+                'address' => 'required|string|max:255',
+                'city' => 'required|string|max:100',
+                'state' => 'required|string|max:100',
+                'zip' => 'required|string|max:20',
+            ]);
+        }
 
         if ($validator->fails()) {
-            Log::error('PatientController@store: Error de validación', $validator->errors()->toArray()); // DEBUG LOG
+            Log::error('PatientController@store: Error de validación', $validator->errors()->toArray());
             return response()->json([
                 'success' => false,
                 'message' => 'Error de validación',
@@ -66,26 +140,52 @@ class PatientController extends Controller
         try {
             DB::beginTransaction();
 
-            $patientId = DB::table('general_users')->insertGetId([
+            // Prepare data for insertion
+            $data = [
                 'name' => $request->name,
-                'email' => $request->email,
                 'phone' => $request->phone,
                 'birthdate' => $request->dob,
-                'genre' => $this->mapGender($request->gender),
-                'address' => $request->address . ', ' . $request->city . ', ' . $request->state . ' ' . $request->zip,
-                'password' => Hash::make($request->phone), // Default password is phone number
+                'password' => Hash::make($request->phone),
                 'typeUser_id' => 3, // Paciente
                 'status' => 'active',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
-            ]);
+            ];
 
-            // Note: We are not using a separate patients table as per instructions to only use general_users for now
-            // If there were a patients table, we would insert here using $patientId
+            if ($isQuickRegistration) {
+                // Fill defaults for quick registration
+                $data['email'] = 'sin_email_' . time() . '@sistema.local'; // Dummy unique email
+                $data['address'] = 'Sin dirección registrada';
+                $data['genre'] = 'hombre'; // Default, user can update later
+                // Note: 'id_number' is not in general_users table based on migration I saw earlier?
+                // Wait, I saw the migration:
+                // $table->string('name');
+                // $table->date('birthdate');
+                // $table->string('phone');
+                // $table->string('email');
+                // $table->string('password');
+                // $table->string('address');
+                // $table->enum('genre', ['hombre', 'mujer']);
+                // $table->enum('status', ['active', 'inactive'])->default('inactive');
+                // $table->unsignedBigInteger('typeUser_id')->nullable();
+                
+                // There is NO 'id_number' column in general_users! 
+                // The previous validation had 'id_number' => 'required', but it wasn't being inserted into general_users.
+                // It might have been for a separate 'patients' table that doesn't exist yet or I missed it.
+                // The previous insert code was:
+                // 'address' => $request->address . ', ' . $request->city . ...
+                
+            } else {
+                $data['email'] = $request->email;
+                $data['address'] = $request->address . ', ' . $request->city . ', ' . $request->state . ' ' . $request->zip;
+                $data['genre'] = $this->mapGender($request->gender);
+            }
+
+            $patientId = DB::table('general_users')->insertGetId($data);
 
             DB::commit();
 
-            Log::info('PatientController@store: Paciente registrado con ID: ' . $patientId); // DEBUG LOG
+            Log::info('PatientController@store: Paciente registrado con ID: ' . $patientId);
 
             return response()->json([
                 'success' => true,
@@ -95,10 +195,46 @@ class PatientController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('PatientController@store: Excepción al registrar: ' . $e->getMessage()); // DEBUG LOG
+            Log::error('PatientController@store: Excepción al registrar: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al registrar paciente: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            DB::table('general_users')
+                ->where('id', $id)
+                ->update([
+                    'status' => $request->status,
+                    'updated_at' => Carbon::now(),
+                ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Estado del paciente actualizado exitosamente'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('PatientController@update: Error al actualizar: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar estado'
             ], 500);
         }
     }
