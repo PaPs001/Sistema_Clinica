@@ -291,7 +291,8 @@
     justify-content: center;
 }
 
-.action-buttons button {
+.action-buttons button,
+.action-buttons a {
     width: 32px;
     height: 32px;
     border: none;
@@ -302,6 +303,7 @@
     justify-content: center;
     transition: all 0.3s ease;
     font-size: 0.8rem;
+    text-decoration: none;
 }
 
 .btn-view {

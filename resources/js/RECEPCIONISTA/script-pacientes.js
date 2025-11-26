@@ -1,17 +1,17 @@
 // script-pacientes.js - Funcionalidades para Gestión de Pacientes
 console.log('Script de pacientes cargado correctamente');
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM completamente cargado - Módulo Pacientes');
-    
+
     try {
         // Inicializar componentes
         initializePatientsManagement();
         setupEventListeners();
         loadPatientsData();
-        
+
         console.log('Gestión de pacientes inicializada correctamente');
-        
+
     } catch (error) {
         console.error('Error al inicializar gestión de pacientes:', error);
     }
@@ -21,10 +21,10 @@ function initializePatientsManagement() {
     // Configurar fecha actual en filtros
     const today = new Date();
     updateDateFilters(today);
-    
+
     // Inicializar datos de ejemplo
     initializeSamplePatients();
-    
+
     // Configurar selección múltiple
     setupBulkSelection();
 }
@@ -33,70 +33,70 @@ function setupEventListeners() {
     // Botón nuevo paciente
     const addPatientBtn = document.getElementById('add-patient-btn');
     if (addPatientBtn) {
-        addPatientBtn.addEventListener('click', function() {
+        addPatientBtn.addEventListener('click', function () {
             window.location.href = 'registro-pacientes.html';
         });
     }
-    
+
     // Filtros
     const applyFiltersBtn = document.getElementById('apply-filters');
     const resetFiltersBtn = document.getElementById('reset-filters');
-    
+
     if (applyFiltersBtn) {
         applyFiltersBtn.addEventListener('click', applyPatientFilters);
     }
-    
+
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', resetPatientFilters);
     }
-    
+
     // Búsqueda
     const searchInput = document.querySelector('.search-box input');
     if (searchInput) {
         searchInput.addEventListener('input', searchPatients);
     }
-    
+
     // Ordenamiento
     const sortSelect = document.getElementById('sort-by');
     if (sortSelect) {
         sortSelect.addEventListener('change', sortPatients);
     }
-    
+
     // Botones de acción
     setupActionButtons();
-    
+
     // Botones de exportar y actualizar
     const exportPatientsBtn = document.getElementById('export-patients');
     const refreshPatientsBtn = document.getElementById('refresh-patients');
     const bulkActionsBtn = document.getElementById('bulk-actions');
-    
+
     if (exportPatientsBtn) {
         exportPatientsBtn.addEventListener('click', exportPatientsData);
     }
-    
+
     if (refreshPatientsBtn) {
         refreshPatientsBtn.addEventListener('click', refreshPatientsList);
     }
-    
+
     if (bulkActionsBtn) {
         bulkActionsBtn.addEventListener('click', showBulkActionsMenu);
     }
-    
+
     // Paginación
     setupPagination();
-    
+
     // Modal de perfil
     const profileModal = document.getElementById('patient-profile-modal');
     const closeModalBtn = profileModal?.querySelector('.close-modal');
-    
+
     if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', function() {
+        closeModalBtn.addEventListener('click', function () {
             profileModal.classList.remove('active');
         });
     }
-    
+
     if (profileModal) {
-        profileModal.addEventListener('click', function(e) {
+        profileModal.addEventListener('click', function (e) {
             if (e.target === profileModal) {
                 profileModal.classList.remove('active');
             }
@@ -107,9 +107,9 @@ function setupEventListeners() {
 function setupBulkSelection() {
     const selectAllCheckbox = document.getElementById('select-all');
     const patientCheckboxes = document.querySelectorAll('.patient-select');
-    
+
     if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener('change', function() {
+        selectAllCheckbox.addEventListener('change', function () {
             const isChecked = this.checked;
             patientCheckboxes.forEach(checkbox => {
                 checkbox.checked = isChecked;
@@ -120,20 +120,20 @@ function setupBulkSelection() {
                     row.classList.remove('selected');
                 }
             });
-            
+
             updateBulkActionsState();
         });
     }
-    
+
     patientCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
             const row = this.closest('.patient-row');
             if (this.checked) {
                 row.classList.add('selected');
             } else {
                 row.classList.remove('selected');
             }
-            
+
             updateSelectAllState();
             updateBulkActionsState();
         });
@@ -145,7 +145,7 @@ function updateSelectAllState() {
     const patientCheckboxes = document.querySelectorAll('.patient-select');
     const checkedCount = document.querySelectorAll('.patient-select:checked').length;
     const totalCount = patientCheckboxes.length;
-    
+
     if (selectAllCheckbox) {
         selectAllCheckbox.checked = checkedCount === totalCount;
         selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
@@ -155,7 +155,7 @@ function updateSelectAllState() {
 function updateBulkActionsState() {
     const checkedCount = document.querySelectorAll('.patient-select:checked').length;
     const bulkActionsBtn = document.getElementById('bulk-actions');
-    
+
     if (bulkActionsBtn) {
         if (checkedCount > 0) {
             bulkActionsBtn.innerHTML = `<i class="fas fa-cog"></i> Acciones (${checkedCount})`;
@@ -171,38 +171,59 @@ function setupActionButtons() {
     // Botones de ver perfil
     const viewButtons = document.querySelectorAll('.btn-view');
     viewButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const row = this.closest('.patient-row');
             const patientName = row.querySelector('.patient-details strong').textContent;
             const patientId = row.querySelector('.patient-details span').textContent.replace('ID: ', '');
             showPatientProfile(patientName, patientId, row);
         });
     });
-    
+
     // Botones de editar
     const editButtons = document.querySelectorAll('.btn-edit');
     editButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const row = this.closest('.patient-row');
-            const patientName = row.querySelector('.patient-details strong').textContent;
-            editPatient(patientName);
+        btn.addEventListener('click', function () {
+            const patientId = this.dataset.id;
+            const name = this.dataset.name;
+            const phone = this.dataset.phone;
+            const email = this.dataset.email;
+            const status = this.dataset.status;
+
+            openEditModal(patientId, name, phone, email, status);
         });
     });
-    
+
+    // Formulario de edición
+    const editForm = document.getElementById('edit-patient-form');
+    if (editForm) {
+        editForm.addEventListener('submit', handleEditFormSubmit);
+    }
+
+    // Cerrar modal de edición
+    const editModal = document.getElementById('edit-patient-modal');
+    if (editModal) {
+        const closeBtns = editModal.querySelectorAll('.close-modal');
+        closeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                editModal.classList.remove('active');
+            });
+        });
+    }
+
     // Botones de agendar cita
     const calendarButtons = document.querySelectorAll('.btn-calendar');
     calendarButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const row = this.closest('.patient-row');
             const patientName = row.querySelector('.patient-details strong').textContent;
             scheduleAppointment(patientName);
         });
     });
-    
+
     // Botones de enviar mensaje
     const messageButtons = document.querySelectorAll('.btn-message');
     messageButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const row = this.closest('.patient-row');
             const patientName = row.querySelector('.patient-details strong').textContent;
             sendMessageToPatient(patientName);
@@ -213,17 +234,17 @@ function setupActionButtons() {
 function setupPagination() {
     const paginationBtns = document.querySelectorAll('.pagination-btn:not(:disabled)');
     paginationBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             if (this.classList.contains('active')) return;
-            
+
             // Remover clase active de todos los botones
             document.querySelectorAll('.pagination-btn').forEach(b => {
                 b.classList.remove('active');
             });
-            
+
             // Agregar clase active al botón clickeado
             this.classList.add('active');
-            
+
             // Simular cambio de página
             const pageNumber = this.textContent.trim();
             if (!isNaN(pageNumber) || pageNumber.includes('...')) {
@@ -245,32 +266,32 @@ function updateDateFilters(date) {
 function applyPatientFilters() {
     const statusFilter = document.getElementById('status-filter').value;
     const dateFilter = document.getElementById('date-filter').value;
-    
+
     console.log('Aplicando filtros - Estado:', statusFilter, 'Fecha:', dateFilter);
-    
+
     const patientRows = document.querySelectorAll('.patient-row');
     let visibleRows = 0;
-    
+
     patientRows.forEach(row => {
         const patientStatus = row.getAttribute('data-status');
         let showRow = true;
-        
+
         // Filtrar por estado
         if (statusFilter && patientStatus !== statusFilter) {
             showRow = false;
         }
-        
+
         // Filtrar por fecha (simulado)
         if (dateFilter && !matchesDateFilter(row, dateFilter)) {
             showRow = false;
         }
-        
+
         row.style.display = showRow ? '' : 'none';
         if (showRow) visibleRows++;
     });
-    
+
     console.log(`Mostrando ${visibleRows} pacientes con los filtros aplicados`);
-    
+
     if (visibleRows === 0) {
         showToast('No se encontraron pacientes con los criterios seleccionados', 'warning');
     } else {
@@ -289,24 +310,24 @@ function resetPatientFilters() {
     document.getElementById('status-filter').value = '';
     document.getElementById('date-filter').value = '';
     document.getElementById('sort-by').value = 'nombre';
-    
+
     const patientRows = document.querySelectorAll('.patient-row');
     patientRows.forEach(row => {
         row.style.display = '';
     });
-    
+
     showToast('Filtros restablecidos', 'success');
 }
 
 function searchPatients(e) {
     const searchTerm = e.target.value.toLowerCase();
     const patientRows = document.querySelectorAll('.patient-row');
-    
+
     patientRows.forEach(row => {
         const patientName = row.querySelector('.patient-details strong').textContent.toLowerCase();
         const patientId = row.querySelector('.patient-details span').textContent.toLowerCase();
         const patientPhone = row.querySelector('.contact-info p:first-child').textContent.toLowerCase();
-        
+
         if (patientName.includes(searchTerm) || patientId.includes(searchTerm) || patientPhone.includes(searchTerm)) {
             row.style.display = '';
         } else {
@@ -318,10 +339,10 @@ function searchPatients(e) {
 function sortPatients(e) {
     const sortBy = e.target.value;
     console.log('Ordenando pacientes por:', sortBy);
-    
+
     // Simular ordenamiento
     showToast(`Pacientes ordenados por ${getSortCriteriaName(sortBy)}`, 'success');
-    
+
     // En una implementación real, aquí se ordenaría la lista
 }
 
@@ -337,22 +358,22 @@ function getSortCriteriaName(criteria) {
 
 function showPatientProfile(patientName, patientId, row) {
     console.log('Mostrando perfil de:', patientName, patientId);
-    
+
     const modal = document.getElementById('patient-profile-modal');
     const profileContent = modal.querySelector('.patient-profile');
-    
+
     // Simular carga de datos del paciente
     profileContent.innerHTML = `
         <div class="profile-loading">
             <i class="fas fa-spinner fa-spin"></i> Cargando perfil del paciente...
         </div>
     `;
-    
+
     // Simular delay de carga
     setTimeout(() => {
         profileContent.innerHTML = getPatientProfileHTML(patientName, patientId, row);
     }, 1000);
-    
+
     modal.classList.add('active');
 }
 
@@ -360,7 +381,7 @@ function getPatientProfileHTML(patientName, patientId, row) {
     const contactInfo = row.querySelector('.contact-info').innerHTML;
     const medicalInfo = row.querySelector('.medical-info').innerHTML;
     const lastVisit = row.querySelector('.last-visit').innerHTML;
-    
+
     return `
         <div class="profile-header">
             <div class="profile-avatar">
@@ -432,17 +453,73 @@ function getPatientProfileHTML(patientName, patientId, row) {
 function editPatient(patientName) {
     console.log('Editando paciente:', patientName);
     showToast(`Editando perfil de ${patientName}`, 'success');
-    
+
     // Cerrar modal si está abierto
     document.getElementById('patient-profile-modal').classList.remove('active');
-    
+
     // En una implementación real, redirigiría a la página de edición
+}
+
+function openEditModal(id, name, phone, email, status) {
+    const modal = document.getElementById('edit-patient-modal');
+    if (!modal) return;
+
+    document.getElementById('edit-patient-id').value = id;
+    document.getElementById('edit-name-display').value = name;
+    // Phone and Email fields are removed from modal, so we don't set them
+    document.getElementById('edit-status').value = status;
+
+    modal.classList.add('active');
+}
+
+function handleEditFormSubmit(e) {
+    e.preventDefault();
+
+    const form = e.target;
+    const formData = new FormData(form);
+    const patientId = formData.get('id');
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+    submitBtn.disabled = true;
+
+    fetch(`/recepcionista/update-paciente/${patientId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify(Object.fromEntries(formData))
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showToast(data.message, 'success');
+                document.getElementById('edit-patient-modal').classList.remove('active');
+                // Recargar la página para ver los cambios
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            } else {
+                showToast(data.message || 'Error al actualizar paciente', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Ocurrió un error al procesar la solicitud', 'error');
+        })
+        .finally(() => {
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
 }
 
 function scheduleAppointment(patientName) {
     console.log('Agendando cita para:', patientName);
     showToast(`Redirigiendo para agendar cita para ${patientName}`, 'success');
-    
+
     // En una implementación real, redirigiría a la página de agendar citas
     setTimeout(() => {
         window.location.href = 'gestion-citas.html';
@@ -457,7 +534,7 @@ function sendMessageToPatient(patientName) {
 function exportPatientsData() {
     console.log('Exportando datos de pacientes...');
     showToast('Generando archivo de exportación...', 'success');
-    
+
     setTimeout(() => {
         showToast('Datos de pacientes exportados exitosamente', 'success');
     }, 2000);
@@ -466,10 +543,10 @@ function exportPatientsData() {
 function refreshPatientsList() {
     const refreshBtn = document.getElementById('refresh-patients');
     const originalText = refreshBtn.innerHTML;
-    
+
     refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
     refreshBtn.disabled = true;
-    
+
     setTimeout(() => {
         loadPatientsData();
         refreshBtn.innerHTML = originalText;
@@ -480,12 +557,12 @@ function refreshPatientsList() {
 
 function showBulkActionsMenu() {
     const checkedCount = document.querySelectorAll('.patient-select:checked').length;
-    
+
     if (checkedCount === 0) {
         showToast('Seleccione al menos un paciente para realizar acciones', 'warning');
         return;
     }
-    
+
     // Crear menú de acciones
     const menu = document.createElement('div');
     menu.style.cssText = `
@@ -498,7 +575,7 @@ function showBulkActionsMenu() {
         z-index: 1000;
         min-width: 200px;
     `;
-    
+
     menu.innerHTML = `
         <div class="bulk-menu-header">
             <strong>Acciones para ${checkedCount} pacientes</strong>
@@ -516,61 +593,61 @@ function showBulkActionsMenu() {
             <i class="fas fa-trash"></i> Eliminar Seleccionados
         </div>
     `;
-    
+
     const bulkActionsBtn = document.getElementById('bulk-actions');
     const rect = bulkActionsBtn.getBoundingClientRect();
-    
+
     menu.style.top = `${rect.bottom + 5}px`;
     menu.style.left = `${rect.left}px`;
-    
+
     document.body.appendChild(menu);
-    
+
     // Cerrar menú al hacer clic fuera
-    const closeMenu = function(e) {
+    const closeMenu = function (e) {
         if (!menu.contains(e.target) && e.target !== bulkActionsBtn) {
             document.body.removeChild(menu);
             document.removeEventListener('click', closeMenu);
         }
     };
-    
+
     setTimeout(() => {
         document.addEventListener('click', closeMenu);
     }, 100);
 }
 
 // Funciones de acciones masivas
-window.sendBulkMessages = function() {
+window.sendBulkMessages = function () {
     const selectedCount = document.querySelectorAll('.patient-select:checked').length;
     showToast(`Enviando mensajes a ${selectedCount} pacientes`, 'success');
 };
 
-window.exportSelectedPatients = function() {
+window.exportSelectedPatients = function () {
     const selectedCount = document.querySelectorAll('.patient-select:checked').length;
     showToast(`Exportando ${selectedCount} pacientes seleccionados`, 'success');
 };
 
-window.changeStatusBulk = function() {
+window.changeStatusBulk = function () {
     const selectedCount = document.querySelectorAll('.patient-select:checked').length;
     showToast(`Cambiando estado de ${selectedCount} pacientes`, 'success');
 };
 
-window.deleteSelectedPatients = function() {
+window.deleteSelectedPatients = function () {
     const selectedCount = document.querySelectorAll('.patient-select:checked').length;
-    
+
     if (confirm(`¿Está seguro de que desea eliminar ${selectedCount} pacientes seleccionados?`)) {
         showToast(`${selectedCount} pacientes eliminados`, 'success');
         // En una implementación real, aquí se eliminarían los pacientes
     }
 };
 
-window.closePatientProfile = function() {
+window.closePatientProfile = function () {
     document.getElementById('patient-profile-modal').classList.remove('active');
 };
 
 function loadPage(pageNumber) {
     console.log('Cargando página:', pageNumber);
     showToast(`Cargando página ${pageNumber}...`, 'success');
-    
+
     // En una implementación real, cargaría los datos de la página
 }
 
@@ -602,18 +679,18 @@ function showToast(message, type = 'success') {
     if (existingToast) {
         existingToast.remove();
     }
-    
+
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
-    
+
     document.body.appendChild(toast);
-    
+
     // Animación de entrada
     setTimeout(() => {
         toast.classList.add('show');
     }, 100);
-    
+
     // Auto-remover después de 3 segundos
     setTimeout(() => {
         toast.classList.remove('show');

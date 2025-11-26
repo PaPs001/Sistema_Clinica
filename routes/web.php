@@ -167,9 +167,7 @@ Route::middleware(['auth', 'role:admin'])->group(function (){
 
 //Rutas a paginas recepcionista --------------------------------------------------------------
 Route::middleware(['auth', 'role:receptionist'])->group(function (){
-    Route::get('/dasboard-recepcionista', function(){
-        return view('RECEPCIONISTA.dashboard-recepcionista');
-    })->name('dashboardRecepcionista');
+    Route::get('/dasboard-recepcionista', [App\Http\Controllers\ReceptionistController::class, 'dashboard'])->name('dashboardRecepcionista');
 
     Route::get('/agenda', function(){
         return view('RECEPCIONISTA.agenda');
@@ -179,17 +177,25 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (){
         return view('RECEPCIONISTA.gestion-citas');
     })->name('gestionCitas');
 
-    Route::get('/pacientes-recepcionista', function(){
-        return view('RECEPCIONISTA.pacientes-recepcion');
-    })->name('pacientesRecepcionista');
+    Route::get('/registro-paciente', function(){
+        return view('RECEPCIONISTA.registro-pacientes');
+    })->name('registroPaciente');
+    Route::get('/pacientes-recepcionista', [App\Http\Controllers\PatientController::class, 'index'])->name('pacientesRecepcionista');
 
     Route::get('/recordatorios', function(){
         return view('RECEPCIONISTA.recordatorios');
     })->name('recordatorios');
 
-    Route::get('/registro-paciente', function(){
-        return view('RECEPCIONISTA.registro-pacientes');
-    })->name('registroPaciente');
+    Route::get('/registro-paciente', [App\Http\Controllers\PatientController::class, 'create'])->name('registroPaciente');
+
+    Route::post('/recepcionista/registrar-paciente', [App\Http\Controllers\PatientController::class, 'store'])->name('registrar.paciente.store');
+    Route::post('/recepcionista/update-paciente/{id}', [App\Http\Controllers\PatientController::class, 'update'])->name('update.paciente');
+    Route::post('/recepcionista/check-patient', [App\Http\Controllers\AppointmentController::class, 'checkPatient'])->name('check.patient');
+    Route::post('/recepcionista/store-appointment', [App\Http\Controllers\AppointmentController::class, 'store'])->name('store.appointment');
+    Route::get('/recepcionista/get-doctors', [App\Http\Controllers\AppointmentController::class, 'getDoctors'])->name('get.doctors');
+    Route::get('/recepcionista/get-appointments', [App\Http\Controllers\AppointmentController::class, 'index'])->name('get.appointments');
+    Route::post('/recepcionista/cancel-appointment/{id}', [App\Http\Controllers\AppointmentController::class, 'cancel'])->name('cancel.appointment');
+    Route::post('/recepcionista/update-appointment-status/{id}', [App\Http\Controllers\AppointmentController::class, 'updateStatus'])->name('update.appointment.status');
 });
 
 //Rutas a paginas enfermera --------------------------------------------------------------
