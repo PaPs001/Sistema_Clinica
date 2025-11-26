@@ -250,4 +250,7 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+@vite(['resources/js/ENFERMERA/script-medicamentos.js'])
 @endsection 

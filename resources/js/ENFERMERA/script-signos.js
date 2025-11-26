@@ -1,41 +1,121 @@
-// script-signos.js
-document.addEventListener('DOMContentLoaded', function() {
+// script-signos.js - FUNCIONALIDAD COMPLETA
+document.addEventListener('DOMContentLoaded', function () {
     console.log('Página Signos Vitales cargada');
-    
+
+    // Cargar signos vitales al iniciar
+    cargarSignosVitales();
+
+    // Cargar lista de pacientes
+    cargarPacientes();
+
     // Botón nuevo registro
     const nuevoRegistroBtn = document.getElementById('nuevo-registro');
     if (nuevoRegistroBtn) {
         nuevoRegistroBtn.addEventListener('click', showNewVitalSignsForm);
     }
-    
+
     // Filtros
     const filterPatient = document.getElementById('filter-patient');
     const filterDate = document.getElementById('filter-date');
-    
+
     if (filterPatient) {
-        filterPatient.addEventListener('change', filterVitalSigns);
+        filterPatient.addEventListener('change', cargarSignosVitales);
     }
-    
+
     if (filterDate) {
-        filterDate.addEventListener('change', filterVitalSigns);
+        filterDate.addEventListener('change', cargarSignosVitales);
     }
-    
-    // Botones de acción en la tabla
-    setupTableActions();
-    
-    // Navegación activa
-    const currentPage = window.location.pathname.split('/').pop();
-    const navItems = document.querySelectorAll('.nav-item');
-    
-    navItems.forEach(item => {
-        if (item.getAttribute('href') === currentPage) {
-            item.classList.add('active');
-        } else {
-            item.classList.remove('active');
-        }
-    });
 });
 
+// Cargar lista de pacientes para el select
+async function cargarPacientes() {
+    try {
+        const response = await fetch('/api/pacientes');
+        if (response.ok) {
+            const pacientes = await response.json();
+            window.pacientesData = pacientes; // Guardar para uso global
+        }
+    } catch (error) {
+        console.error('Error al cargar pacientes:', error);
+    }
+}
+
+// Cargar signos vitales desde la API
+async function cargarSignosVitales() {
+    const tbody = document.querySelector('.vitals-table tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Cargando...</td></tr>';
+
+    try {
+        const filterPatient = document.getElementById('filter-patient')?.value || '';
+        const filterDate = document.getElementById('filter-date')?.value || 'today';
+
+        const params = new URLSearchParams();
+        if (filterPatient) params.append('patient_id', filterPatient);
+        if (filterDate) params.append('date_filter', filterDate);
+
+        const response = await fetch(`/api/signos-vitales?${params}`);
+
+        if (response.ok) {
+            const signos = await response.json();
+            renderSignosVitales(signos);
+        } else {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">Error al cargar datos</td></tr>';
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: red;">Error de conexión</td></tr>';
+    }
+}
+
+// Renderizar signos vitales en la tabla
+function renderSignosVitales(signos) {
+    const tbody = document.querySelector('.vitals-table tbody');
+
+    if (signos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No hay registros</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = '';
+
+    signos.forEach(signo => {
+        const row = document.createElement('tr');
+
+        // Determinar si los valores son críticos
+        const presionClass = esPresionCritica(signo.blood_pressure) ? 'high' : '';
+        const tempClass = signo.temperature > 38 ? 'high' : '';
+
+        row.innerHTML = `
+            <td>
+                <div class="patient-info">
+                    <div class="patient-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <strong>${signo.patient_name}</strong>
+                        <span>Habitación N/A</span>
+                    </div>
+                </div>
+            </td>
+            <td>${formatearHora(signo.created_at)}</td>
+            <td><span class="vital-reading ${presionClass}">${signo.blood_pressure || 'N/A'}</span></td>
+            <td><span class="vital-reading">${signo.heart_rate} lpm</span></td>
+            <td><span class="vital-reading ${tempClass}">${signo.temperature}°C</span></td>
+            <td><span class="vital-reading">${signo.respiratory_rate} rpm</span></td>
+            <td><span class="vital-reading">${signo.oxygen_saturation}%</span></td>
+            <td>
+                <button class="btn-view-enfermera" onclick="editarSignos(${signo.id})">Editar</button>
+                <button class="btn-cancel" onclick="eliminarSignos(${signo.id})">Eliminar</button>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+// Mostrar formulario de nuevo registro
 function showNewVitalSignsForm() {
     const formHTML = `
         <div class="modal-overlay active">
@@ -47,37 +127,34 @@ function showNewVitalSignsForm() {
                 <div class="modal-body">
                     <form id="new-vitals-form">
                         <div class="form-group">
-                            <label>Paciente</label>
-                            <select required>
+                            <label>Paciente *</label>
+                            <select id="patient-select" required>
                                 <option value="">Seleccionar paciente</option>
-                                <option value="1">Carlos Ruiz - Hab. 304</option>
-                                <option value="2">Ana López - Hab. 205</option>
-                                <option value="3">Miguel Torres - Hab. 102</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Presión Arterial (mmHg)</label>
-                            <input type="text" placeholder="Ej: 120/80" required>
+                            <label>Presión Arterial (mmHg) *</label>
+                            <input type="text" id="blood-pressure" placeholder="Ej: 120/80" required>
                         </div>
                         <div class="form-group">
-                            <label>Frecuencia Cardíaca (lpm)</label>
-                            <input type="number" placeholder="Ej: 75" required>
+                            <label>Frecuencia Cardíaca (lpm) *</label>
+                            <input type="number" id="heart-rate" placeholder="Ej: 75" required>
                         </div>
                         <div class="form-group">
-                            <label>Temperatura (°C)</label>
-                            <input type="number" step="0.1" placeholder="Ej: 36.8" required>
+                            <label>Temperatura (°C) *</label>
+                            <input type="number" id="temperature" step="0.1" placeholder="Ej: 36.8" required>
                         </div>
                         <div class="form-group">
-                            <label>Frecuencia Respiratoria (rpm)</label>
-                            <input type="number" placeholder="Ej: 16" required>
+                            <label>Frecuencia Respiratoria (rpm) *</label>
+                            <input type="number" id="respiratory-rate" placeholder="Ej: 16" required>
                         </div>
                         <div class="form-group">
-                            <label>Sat. Oxígeno (%)</label>
-                            <input type="number" placeholder="Ej: 98" required>
+                            <label>Sat. Oxígeno (%) *</label>
+                            <input type="number" id="oxygen-saturation" placeholder="Ej: 98" required>
                         </div>
                         <div class="form-group">
                             <label>Observaciones</label>
-                            <textarea rows="3" placeholder="Notas adicionales..."></textarea>
+                            <textarea id="notes" rows="3" placeholder="Notas adicionales..."></textarea>
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn-cancel">Cancelar</button>
@@ -88,111 +165,116 @@ function showNewVitalSignsForm() {
             </div>
         </div>
     `;
-    
+
     document.body.insertAdjacentHTML('beforeend', formHTML);
+
+    // Cargar pacientes en el select
+    const select = document.getElementById('patient-select');
+    if (window.pacientesData) {
+        window.pacientesData.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.textContent = p.name;
+            select.appendChild(option);
+        });
+    }
+
     setupVitalsModal();
 }
 
+// Configurar modal
 function setupVitalsModal() {
     const modal = document.querySelector('.modal-overlay');
     const closeBtn = modal.querySelector('.close-modal');
     const cancelBtn = modal.querySelector('.btn-cancel');
     const form = document.getElementById('new-vitals-form');
-    
+
     closeBtn.addEventListener('click', () => modal.remove());
     cancelBtn.addEventListener('click', () => modal.remove());
-    
+
     modal.addEventListener('click', (e) => {
         if (e.target === modal) modal.remove();
     });
-    
-    form.addEventListener('submit', (e) => {
+
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        // Obtener datos del formulario
-        const formData = new FormData(form);
-        const patientSelect = form.querySelector('select');
-        const patientText = patientSelect.options[patientSelect.selectedIndex].text;
-        
-        alert(`Signos vitales registrados exitosamente para: ${patientText}`);
-        modal.remove();
-        
-        // Aquí se agregaría el nuevo registro a la tabla
-        addNewVitalSignsRecord(formData, patientText);
+
+        const payload = {
+            patient_id: document.getElementById('patient-select').value,
+            blood_pressure: document.getElementById('blood-pressure').value,
+            heart_rate: document.getElementById('heart-rate').value,
+            temperature: document.getElementById('temperature').value,
+            respiratory_rate: document.getElementById('respiratory-rate').value,
+            oxygen_saturation: document.getElementById('oxygen-saturation').value,
+            notes: document.getElementById('notes').value
+        };
+
+        try {
+            const response = await fetch('/api/signos-vitales', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                alert('Signos vitales registrados exitosamente');
+                modal.remove();
+                cargarSignosVitales(); // Recargar tabla
+            } else {
+                const error = await response.json();
+                alert('Error al guardar: ' + (error.message || 'Error desconocido'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error de conexión al guardar signos vitales');
+        }
     });
 }
 
-function setupTableActions() {
-    // Botones editar
-    const editButtons = document.querySelectorAll('.btn-view');
-    editButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const row = this.closest('tr');
-            const patientName = row.querySelector('.patient-info strong').textContent;
-            editVitalSigns(patientName, row);
+// Editar signos vitales
+async function editarSignos(id) {
+    alert('Función de edición en desarrollo. ID: ' + id);
+    // TODO: Implementar edición completa
+}
+
+// Eliminar signos vitales
+async function eliminarSignos(id) {
+    if (!confirm('¿Estás seguro de eliminar este registro?')) return;
+
+    try {
+        const response = await fetch(`/api/signos-vitales/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+            }
         });
-    });
-    
-    // Botones eliminar
-    const deleteButtons = document.querySelectorAll('.btn-cancel');
-    deleteButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const row = this.closest('tr');
-            const patientName = row.querySelector('.patient-info strong').textContent;
-            deleteVitalSigns(patientName, row);
-        });
-    });
-}
 
-function editVitalSigns(patientName, row) {
-    alert(`Editando signos vitales de: ${patientName}\n\nEsta funcionalidad abriría el formulario con los datos actuales.`);
-}
-
-function deleteVitalSigns(patientName, row) {
-    if (confirm(`¿Estás seguro de eliminar el registro de signos vitales de ${patientName}?`)) {
-        row.style.opacity = '0.5';
-        setTimeout(() => {
-            row.remove();
-            alert('Registro eliminado exitosamente.');
-        }, 500);
+        if (response.ok) {
+            alert('Registro eliminado exitosamente');
+            cargarSignosVitales(); // Recargar tabla
+        } else {
+            alert('Error al eliminar');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error de conexión');
     }
 }
 
-function filterVitalSigns() {
-    const patientFilter = document.getElementById('filter-patient').value;
-    const dateFilter = document.getElementById('filter-date').value;
-    
-    const rows = document.querySelectorAll('.vitals-table tbody tr');
-    let visibleCount = 0;
-    
-    rows.forEach(row => {
-        let showRow = true;
-        
-        // Filtrar por paciente
-        if (patientFilter) {
-            const patientSelect = row.querySelector('.patient-info strong').textContent.toLowerCase();
-            const filterPatientName = document.getElementById('filter-patient').options[document.getElementById('filter-patient').selectedIndex].text.toLowerCase();
-            showRow = showRow && patientSelect.includes(filterPatientName.split(' ')[0].toLowerCase());
-        }
-        
-        // Filtrar por fecha (simulado)
-        if (dateFilter && showRow) {
-            // En una implementación real, aquí se compararían las fechas
-            showRow = showRow && true; // Simulación
-        }
-        
-        row.style.display = showRow ? '' : 'none';
-        if (showRow) visibleCount++;
-    });
-    
-    console.log(`Mostrando ${visibleCount} registros de signos vitales`);
+// Utilidades
+function formatearHora(datetime) {
+    if (!datetime) return 'N/A';
+    const date = new Date(datetime);
+    return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 }
 
-function addNewVitalSignsRecord(formData, patientText) {
-    // Esta función agregaría el nuevo registro a la tabla
-    // Por ahora, solo mostramos un mensaje
-    console.log('Agregando nuevo registro:', formData, patientText);
-    
-    // En una implementación real, aquí se agregaría la nueva fila a la tabla
-    // con los datos del formulario
+function esPresionCritica(presion) {
+    if (!presion) return false;
+    const partes = presion.split('/');
+    if (partes.length !== 2) return false;
+    const sistolica = parseInt(partes[0]);
+    return sistolica > 140;
 }

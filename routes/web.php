@@ -183,3 +183,39 @@ Route::get('/signos-vitales', function(){
 Route::get('/tratamientos', function(){
     return view('ENFERMERA.tratamientos');
 })->name('tratamientos');
+
+// ==================== API ROUTES FOR ENFERMERA ====================
+
+// Signos Vitales
+Route::get('/api/signos-vitales', [App\Http\Controllers\EnfermeraController::class, 'getSignos'])->name('api.signos.index');
+Route::post('/api/signos-vitales', [App\Http\Controllers\EnfermeraController::class, 'storeSignos'])->name('api.signos.store');
+Route::put('/api/signos-vitales/{id}', [App\Http\Controllers\EnfermeraController::class, 'updateSignos'])->name('api.signos.update');
+Route::delete('/api/signos-vitales/{id}', [App\Http\Controllers\EnfermeraController::class, 'deleteSignos'])->name('api.signos.delete');
+
+// Tratamientos
+Route::get('/api/tratamientos', [App\Http\Controllers\EnfermeraController::class, 'getTratamientos'])->name('api.tratamientos.index');
+Route::post('/api/tratamientos', [App\Http\Controllers\EnfermeraController::class, 'storeTratamiento'])->name('api.tratamientos.store');
+Route::put('/api/tratamientos/{id}', [App\Http\Controllers\EnfermeraController::class, 'updateTratamiento'])->name('api.tratamientos.update');
+Route::delete('/api/tratamientos/{id}', [App\Http\Controllers\EnfermeraController::class, 'deleteTratamiento'])->name('api.tratamientos.delete');
+
+// Citas
+Route::get('/api/citas', [App\Http\Controllers\EnfermeraController::class, 'getCitas'])->name('api.citas.index');
+Route::post('/api/citas', [App\Http\Controllers\EnfermeraController::class, 'storeCita'])->name('api.citas.store');
+Route::put('/api/citas/{id}', [App\Http\Controllers\EnfermeraController::class, 'updateCita'])->name('api.citas.update');
+Route::delete('/api/citas/{id}', [App\Http\Controllers\EnfermeraController::class, 'deleteCita'])->name('api.citas.delete');
+
+// Pacientes
+Route::get('/api/pacientes', [App\Http\Controllers\EnfermeraController::class, 'getPacientes'])->name('api.pacientes.index');
+Route::get('/api/pacientes/{id}/historial', [App\Http\Controllers\EnfermeraController::class, 'getHistorialPaciente'])->name('api.pacientes.historial');
+
+// Dashboard
+Route::get('/api/alertas', [App\Http\Controllers\EnfermeraController::class, 'getAlertas'])->name('api.alertas');
+Route::get('/api/tareas', [App\Http\Controllers\EnfermeraController::class, 'getTareas'])->name('api.tareas');
+
+// Reportes
+Route::post('/api/reportes/generar', [App\Http\Controllers\EnfermeraController::class, 'generarReporte'])->name('api.reportes.generar');
+Route::post('/api/exportar', [App\Http\Controllers\EnfermeraController::class, 'exportarDatos'])->name('api.exportar');
+
+// Utilidades
+Route::get('/api/medicos', [App\Http\Controllers\EnfermeraController::class, 'getMedicos'])->name('api.medicos');
+Route::get('/api/servicios', [App\Http\Controllers\EnfermeraController::class, 'getServicios'])->name('api.servicios');

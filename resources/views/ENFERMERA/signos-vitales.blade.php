@@ -127,5 +127,5 @@
  
 @endsection
 @section('scripts')
-@vite(['resources/js/ENFERMERA/paginas/script-signos.js'])
+@vite(['resources/js/ENFERMERA/script-signos.js'])
 @endsection
