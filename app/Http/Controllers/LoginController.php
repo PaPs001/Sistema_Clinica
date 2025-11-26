@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
-use App\Models\userModel;
+use App\Models\UserModel;
 use App\Models\usersType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
