@@ -34,7 +34,7 @@ class AdminBackupController extends Controller
         $filePath = $directory . DIRECTORY_SEPARATOR . $fileName;
         ///Borar el disabled de ssl-mode una vez se tenga certificado en vps
         $command = sprintf(
-            '/usr/bin/mysqldump --skip-ssl --no-tablespaces --user=%s --password=%s --host=%s --port=%d %s > %s 2>&1',
+            '/usr/bin/mysqldump --no-tablespaces --user=%s --password=%s --host=%s --port=%d %s > %s 2>&1',
             escapeshellarg($username),
             escapeshellarg($password),
             escapeshellarg($host),
@@ -82,7 +82,7 @@ class AdminBackupController extends Controller
         $fullPath = storage_path('app/' . $storedPath);
 
         $command = sprintf(
-            "/usr/bin/mysql --skip-ssl --no-tablespaces --user=%s --password=%s --host=%s --port=%d %s < %s 2>&1",
+            "/usr/bin/mysql --no-tablespaces --user=%s --password=%s --host=%s --port=%d %s < %s 2>&1",
             escapeshellarg($username),
             escapeshellarg($password),
             escapeshellarg($host),
