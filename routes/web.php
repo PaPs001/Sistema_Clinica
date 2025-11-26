@@ -124,30 +124,45 @@ Route::middleware(['auth', 'role:admin'])->group(function (){
         return view('ADMINISTRADOR.control-accesos');
     })->name('controlAccesos');
 
-    Route::get('/gestion-roles', [RolesPermisosController::class, 'gestionRolesPage'])->name('gestionRoles');
+    Route::get('/gestion-roles', [RolesPermisosController::class, 'gestionRolesPage'])
+        ->name('gestionRoles')
+        ->middleware('admin.permission:administrar_roles');
 
     Route::get('/respaldo-datos', function(){
         return view('ADMINISTRADOR.respaldo-datos');
-    })->name('respaldoDatos');
+    })->name('respaldoDatos')->middleware('admin.permission:crear_reportes');
 
     Route::get('/reportes/pacientes-atendidos', [AdminReportsController::class, 'pacientesAtendidos'])
-        ->name('reportes.pacientesAtendidos');
+        ->name('reportes.pacientesAtendidos')
+        ->middleware('admin.permission:ver_reportes');
     Route::get('/reportes/pacientes-atendidos/export', [AdminReportsController::class, 'exportPacientesAtendidos'])
-        ->name('reportes.pacientesAtendidos.export');
+        ->name('reportes.pacientesAtendidos.export')
+        ->middleware('admin.permission:descargar_reportes,ver_reportes');
 
     Route::post('/respaldo-datos/backup', [AdminBackupController::class, 'backupDatabase'])
-        ->name('admin.backupDatabase');
+        ->name('admin.backupDatabase')
+        ->middleware('admin.permission:crear_reportes');
 
     Route::post('/respaldo-datos/restore', [AdminBackupController::class, 'restoreDatabase'])
-        ->name('admin.restoreDatabase');
+        ->name('admin.restoreDatabase')
+        ->middleware('admin.permission:crear_reportes');
 
     Route::post('/respaldo-datos/wipe', [AdminBackupController::class, 'wipeDatabase'])
-        ->name('admin.wipeDatabase');
+        ->name('admin.wipeDatabase')
+        ->middleware('admin.permission:crear_reportes');
 
-    Route::get('/cargarDatos/Roles-permisos', [RolesPermisosController::class, 'cargarRolesPermisos'])->name('cargar.Roles.Permisos');
-    Route::get('/cargarDatos/Usuarios-por-rol/{roleId}', [RolesPermisosController::class, 'getUserByRole'])->name('cargar.Usuarios.por.Rol');
-    Route::get('/cargarDatos/permisos/{roleId}', [RolesPermisosController::class, 'cargarPermisosPerRol'])->name('cargar.Permisos.por.Rol');
-    Route::post('/permisos/{currentRoleId}/guardar-permisos', [RolesPermisosController::class, 'cambiarPermisosPerRol'])->name('guardar.Permisos.por.Rol');
+    Route::get('/cargarDatos/Roles-permisos', [RolesPermisosController::class, 'cargarRolesPermisos'])
+        ->name('cargar.Roles.Permisos')
+        ->middleware('admin.permission:administrar_roles');
+    Route::get('/cargarDatos/Usuarios-por-rol/{roleId}', [RolesPermisosController::class, 'getUserByRole'])
+        ->name('cargar.Usuarios.por.Rol')
+        ->middleware('admin.permission:ver_usuarios');
+    Route::get('/cargarDatos/permisos/{roleId}', [RolesPermisosController::class, 'cargarPermisosPerRol'])
+        ->name('cargar.Permisos.por.Rol')
+        ->middleware('admin.permission:administrar_roles');
+    Route::post('/permisos/{currentRoleId}/guardar-permisos', [RolesPermisosController::class, 'cambiarPermisosPerRol'])
+        ->name('guardar.Permisos.por.Rol')
+        ->middleware('admin.permission:asignar_permisos');
 });
 
 //Rutas a paginas recepcionista --------------------------------------------------------------

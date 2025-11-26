@@ -34,9 +34,11 @@
                         <button type="submit" class="section-btn">
                             <i class="fas fa-filter"></i> Aplicar filtros
                         </button>
-                        <a href="{{ route('reportes.pacientesAtendidos.export', request()->query()) }}" class="section-btn">
-                            <i class="fas fa-file-excel"></i> Exportar Excel
-                        </a>
+                        @if(auth()->user() && auth()->user()->hasPermission('descargar_reportes'))
+                            <a href="{{ route('reportes.pacientesAtendidos.export', request()->query()) }}" class="section-btn">
+                                <i class="fas fa-file-excel"></i> Exportar Excel
+                            </a>
+                        @endif
                     </div>
                 </div>
             </form>

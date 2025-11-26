@@ -57,6 +57,7 @@
                 </div>-->
 
                 <!-- Acciones Principales -->
+                @if(auth()->user() && auth()->user()->hasPermission('crear_reportes'))
                 <div class="health-info">
                     <div class="info-card">
                         <h3><i class="fas fa-plus-circle"></i> Crear Respaldo Manual</h3>
@@ -87,6 +88,7 @@
                         </form>
                     </div>
                 </div>
+                @endif
                 <!--
                     <div class="info-card">
                         <h3><i class="fas fa-history"></i> Estado del Sistema</h3>
@@ -124,7 +126,7 @@
                 -->
                 
                 
-                <!-- Historial de Respaldos -->
+                <!-- Historial de Respaldos 
                 <div class="recent-section">
                     <h2>
                         <i class="fas fa-history"></i> Historial de Respaldos
@@ -152,11 +154,11 @@
                                 </tr>
                             </thead>
                             <tbody id="backupsTableBody">
-                                <!-- Los respaldos se cargarán dinámicamente -->
+                                Los respaldos se cargarán dinámicamente
                             </tbody>
                         </table>
                     </div>
-                </div>
+                </div>-->
 
                 <!-- Programación Automática
                 <div class="recent-section">

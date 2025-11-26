@@ -84,7 +84,7 @@
                         </td>
 
                         <td class="role-permissions">
-                            <span class="permisos-roles"></span>
+                            <div class="permissions-list permisos-roles"></div>
                         </td>
 
                         <td class="role-users">
@@ -92,12 +92,16 @@
                         </td>
 
                         <td class="role-actions">
-                            <button class="btn-abrir-permisos" data-id="">
-                                <i class="fas fa-edit"></i>Editar permisos
-                            </button>
-                            <button class="btn-view-users" data-role-id="">
-                                <i class="fas fa-eye"></i> Ver usuarios
-                            </button>
+                            @if(auth()->user() && auth()->user()->hasPermission('asignar_permisos'))
+                                <button class="btn-action btn-permissions btn-abrir-permisos" data-id="">
+                                    <i class="fas fa-edit"></i><span>Editar permisos</span>
+                                </button>
+                            @endif
+                            @if(auth()->user() && auth()->user()->hasPermission('ver_usuarios'))
+                                <button class="btn-action btn-secondary btn-view-users" data-role-id="">
+                                    <i class="fas fa-eye"></i><span>Ver usuarios</span>
+                                </button>
+                            @endif
                         </td>
                     </tr>
                 </template>
@@ -117,7 +121,6 @@
                                     <th>Nombre Usuario</th>
                                     <th>Rol</th>
                                     <th>Status</th>
-                                    <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody id="usuariosPorRolTableBody">
@@ -137,12 +140,6 @@
 
                         <td class="role-users">
                             <span class="status-usuario"></span>
-                        </td>
-
-                        <td class="role-actions">
-                            <button class="btn-edit" data-id="">
-                                <i class="fas fa-edit"></i>
-                            </button>
                         </td>
                     </tr>
                 </template>
@@ -164,31 +161,6 @@
 
                         <button id="btnGuardarPermisos">Guardar</button>
                         <button id="btnCerrar" onclick="cerrarModalPermisos('#modalPermisos')">Cerrar</button>
-                    </div>
-                </div>
-
-
-
-                <!-- Quick Actions -->
-                <div class="quick-actions">
-                    <h2><i class="fas fa-bolt"></i> Acciones Rápidas</h2>
-                    <div class="actions-grid">
-                        <a href="#" class="action-card" onclick="openCreateRoleModal()">
-                            <i class="fas fa-plus-circle"></i>
-                            <span>Crear Nuevo Rol</span>
-                        </a>
-                        <!--<a href="#" class="action-card" onclick="showPermissionsMatrix()">
-                            <i class="fas fa-table"></i>
-                            <span>Matriz de Permisos</span>
-                        </a>-->
-                        <a href="#" class="action-card" onclick="exportRoleReport()">
-                            <i class="fas fa-file-export"></i>
-                            <span>Exportar Reporte</span>
-                        </a>
-                        <!--<a href="#" class="action-card" onclick="showRoleAudit()">
-                            <i class="fas fa-history"></i>
-                            <span>Auditoría de Roles</span>
-                        </a>-->
                     </div>
                 </div>
             </div>

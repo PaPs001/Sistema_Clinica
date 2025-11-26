@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\usersType;
 
 class UserModel extends Authenticatable
 {
@@ -52,6 +53,40 @@ class UserModel extends Authenticatable
     public function administrator()
     {
         return $this->hasOne(administratorUser::class, 'user_id');
+    }
+
+    public function isAdmin(): bool
+    {
+        return (int) $this->typeUser_id === usersType::ROLE_ADMIN;
+    }
+
+    public function hasPermission(string $permission): bool
+    {
+        if (! $this->isAdmin()) {
+            return false;
+        }
+
+        $directPermission = $this->userPermissions()
+            ->where('permissions.name_permission', $permission)
+            ->exists();
+
+        if ($directPermission) {
+            return true;
+        }
+
+        if ($this->relationLoaded('role')) {
+            $role = $this->role;
+        } else {
+            $role = $this->role()->first();
+        }
+
+        if (! $role) {
+            return false;
+        }
+
+        return $role->permissions()
+            ->where('permissions.name_permission', $permission)
+            ->exists();
     }
 
     protected $hidden = [

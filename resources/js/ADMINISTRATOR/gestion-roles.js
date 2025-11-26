@@ -8,7 +8,29 @@ document.addEventListener('DOMContentLoaded', function() {
         paginationContainer: '#paginationContainer-roles',
         campos: {
             '.nombre-rol': item => item.name,
-            '.permisos-roles': item => item.permissions ?? 'N/A',
+            '.permisos-roles': item => el => {
+                el.innerHTML = '';
+
+                let permisosRaw = item.permissions;
+                let permisosArray = [];
+
+                if (Array.isArray(permisosRaw)) {
+                    permisosArray = permisosRaw;
+                } else if (typeof permisosRaw === 'string') {
+                    permisosArray = permisosRaw.split(',').map(p => p.trim()).filter(Boolean);
+                } else if (permisosRaw != null) {
+                    permisosArray = [String(permisosRaw)];
+                }
+
+                permisosArray.forEach(perm => {
+                    const nombrePermiso = typeof perm === 'string' ? perm : perm.name ?? '';
+                    if (!nombrePermiso) return;
+                    const span = document.createElement('span');
+                    span.classList.add('permission-tag');
+                    span.textContent = nombrePermiso;
+                    el.appendChild(span);
+                });
+            },
             '.usuarios-roles': item => item.users_count ?? 'N/A',
         },
         onRender: function() {

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class AdminBackupController extends Controller
 {
@@ -32,9 +34,8 @@ class AdminBackupController extends Controller
         }
 
         $filePath = $directory . DIRECTORY_SEPARATOR . $fileName;
-        ///Borar el disabled de ssl-mode una vez se tenga certificado en vps
         $command = sprintf(
-            '/usr/bin/mysqldump --skip-ssl --no-tablespaces --user=%s --password=%s --host=%s --port=%d %s > %s 2>&1',
+            '/usr/bin/mysqldump --no-tablespaces --add-drop-table --user=%s --password=%s --host=%s --port=%d %s > %s 2>&1',
             escapeshellarg($username),
             escapeshellarg($password),
             escapeshellarg($host),
@@ -75,6 +76,12 @@ class AdminBackupController extends Controller
         $port = $config['port'] ?? 3306;
 
         $file = $request->file('backup_file');
+        $originalName = $file->getClientOriginalName();
+
+        if (!Str::startsWith($originalName, 'backup_' . $database . '_') || !Str::endsWith($originalName, '.sql')) {
+            return back()->with('error', 'Solo se pueden restaurar respaldos generados por el sistema (backup_' . $database . '_YYYYMMDD_HHMMSS.sql).');
+        }
+
         $storedPath = $file->storeAs(
             'backups/restores',
             'restore_' . now()->format('Ymd_His') . '.sql'
@@ -82,7 +89,7 @@ class AdminBackupController extends Controller
         $fullPath = storage_path('app/' . $storedPath);
 
         $command = sprintf(
-            "/usr/bin/mysql --skip-ssl --no-tablespaces --user=%s --password=%s --host=%s --port=%d %s < %s 2>&1",
+            "/usr/bin/mysql --user=%s --password=%s --host=%s --port=%d %s < %s 2>&1",
             escapeshellarg($username),
             escapeshellarg($password),
             escapeshellarg($host),
@@ -91,11 +98,21 @@ class AdminBackupController extends Controller
             escapeshellarg($fullPath)
         );
 
-        Log::info('Comando restore', ['cmd' => $command]);
+        Log::warning('Comando restore', [
+            'cmd' => $command,
+            'user_id' => Auth::id(),
+            'user_email' => optional(Auth::user())->email,
+            'original_file' => $originalName,
+            'stored_path' => $storedPath,
+        ]);
         $exitCode = null;
         $output = [];
         exec($command, $output, $exitCode);
-        Log::info('Restore output', ['exitCode' => $exitCode, 'output' => $output]);
+        Log::warning('Restore output', [
+            'exitCode' => $exitCode,
+            'output' => $output,
+            'user_id' => Auth::id(),
+        ]);
 
         if ($exitCode !== 0) {
             return back()->with('error', 'No se pudo restaurar la base de datos. Revisa el archivo y los logs para más detalles.');

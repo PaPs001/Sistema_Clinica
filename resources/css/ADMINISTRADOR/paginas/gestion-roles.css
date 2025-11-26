@@ -392,15 +392,19 @@ th {
 .permissions-list {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
+    gap: 6px;
+    max-width: 100%;
 }
 
 .permission-tag {
-    background: var(--accent-color);
-    color: white;
-    padding: 2px 8px;
-    border-radius: 10px;
-    font-size: 0.7em;
+    background: rgba(102, 126, 234, 0.1);
+    color: var(--primary-color);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    white-space: nowrap;
 }
 
 /* Badges de estado */

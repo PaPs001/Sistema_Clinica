@@ -22,26 +22,38 @@
             </div>
             
             <nav class="sidebar-nav">
-                <a href="{{ route('dashboardAdmin') }}" class="nav-item {{ request()->routeIs('dashboardAdmin') ? 'active' : '' }}">
+                @php($adminUser = auth()->user())
+                <!--<a href="{{ route('dashboardAdmin') }}" class="nav-item {{ request()->routeIs('dashboardAdmin') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
-                </a>
-                <a href="{{ route('gestionRoles') }}" class="nav-item {{ request()->routeIs('gestionRoles') ? 'active' : '' }}">
-                    <i class="fas fa-user-shield"></i>
-                    <span>Gestión de Roles</span>
-                </a>
+                </a>-->
+
+                @if($adminUser && $adminUser->hasPermission('administrar_roles'))
+                    <a href="{{ route('gestionRoles') }}" class="nav-item {{ request()->routeIs('gestionRoles') ? 'active' : '' }}">
+                        <i class="fas fa-user-shield"></i>
+                        <span>Gestión de Roles</span>
+                    </a>
+                @endif
+
                 <!--<a href="{{ route('controlAccesos') }}" class="nav-item {{ request()->routeIs('controlAccesos') ? 'active' : '' }}">
                     <i class="fas fa-lock"></i>
                     <span>Control de Accesos</span>
                 </a>-->
-                <a href="{{ route('respaldoDatos') }}" class="nav-item {{ request()->routeIs('respaldoDatos') ? 'active' : '' }}">
-                    <i class="fas fa-database"></i>
-                    <span>Respaldo de Datos</span>
-                </a>
-                <a href="{{ route('reportes.pacientesAtendidos') }}" class="nav-item {{ request()->routeIs('reportes.pacientesAtendidos') ? 'active' : '' }}">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Reportes</span>
-                </a>
+
+                @if($adminUser && $adminUser->hasPermission('crear_reportes'))
+                    <a href="{{ route('respaldoDatos') }}" class="nav-item {{ request()->routeIs('respaldoDatos') ? 'active' : '' }}">
+                        <i class="fas fa-database"></i>
+                        <span>Respaldo de Datos</span>
+                    </a>
+                @endif
+
+                @if($adminUser && $adminUser->hasPermission('ver_reportes'))
+                    <a href="{{ route('reportes.pacientesAtendidos') }}" class="nav-item {{ request()->routeIs('reportes.pacientesAtendidos') ? 'active' : '' }}">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Reportes</span>
+                    </a>
+                @endif
+
                 <!--<a href="{{ route('auditoria') }}" class="nav-item {{ request()->routeIs('auditoria') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Auditoría</span>

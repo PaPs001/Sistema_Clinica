@@ -34,7 +34,7 @@ class archivosMedicosController extends Controller
             ->get();
         return view('MEDICO.subir-documentos', compact('tiposDocumentos'));
     }
-    //Funcion para subir archivos
+    //esta funcion sube los archivos y guarda la informacion de su ubicacion
     public function subirArchivos(Request $request){
         Log::info('Datos recibidos del formulario:', $request->all());
         try{

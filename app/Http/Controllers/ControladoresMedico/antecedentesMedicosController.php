@@ -133,11 +133,7 @@ class antecedentesMedicosController extends Controller
 
                 Log::info("Registro de enfermedad crónica creado:", $chronic->toArray());
 
-                Log::info("===== FIN ITERACIÓN $i =====");
             }
-
-            Log::info('===== FIN CORRECTO storeAlergias =====');
-
             return redirect()->back()->with('success', 'Registro guardado correctamente.');
 
         } catch (\Exception $e) {
