@@ -150,9 +150,7 @@ Route::get('/recordatorios', function(){
     return view('RECEPCIONISTA.recordatorios');
 })->name('recordatorios');
 
-Route::get('/registro-paciente', function(){
-    return view('RECEPCIONISTA.registro-pacientes');
-})->name('registroPaciente');
+Route::get('/registro-paciente', [App\Http\Controllers\PatientController::class, 'create'])->name('registroPaciente');
 
 Route::post('/recepcionista/registrar-paciente', [App\Http\Controllers\PatientController::class, 'store'])->name('registrar.paciente.store');
 Route::post('/recepcionista/check-patient', [App\Http\Controllers\AppointmentController::class, 'checkPatient'])->name('check.patient');

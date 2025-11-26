@@ -9,8 +9,29 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log; // Import Log
 use Carbon\Carbon;
 
+use App\Models\UserModel;
+
 class PatientController extends Controller
 {
+    public function create()
+    {
+        // Fetch recent patients (limit 3 for the cards)
+        $recentPatients = UserModel::where('typeUser_id', 3) // 3 is likely patient role
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
+
+        // Calculate stats
+        $stats = [
+            'today' => UserModel::where('typeUser_id', 3)->whereDate('created_at', Carbon::today())->count(),
+            'week' => UserModel::where('typeUser_id', 3)->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->count(),
+            'month' => UserModel::where('typeUser_id', 3)->whereMonth('created_at', Carbon::now()->month)->count(),
+            'total' => UserModel::where('typeUser_id', 3)->count(),
+        ];
+
+        return view('RECEPCIONISTA.registro-pacientes', compact('recentPatients', 'stats'));
+    }
+
     public function store(Request $request)
     {
         Log::info('PatientController@store: Recibiendo solicitud', $request->all()); // DEBUG LOG

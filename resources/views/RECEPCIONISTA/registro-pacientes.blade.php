@@ -204,65 +204,31 @@
                     </h2>
                     
                     <div class="recent-patients-grid">
+                        @forelse($recentPatients as $patient)
                         <div class="recent-patient-card">
                             <div class="patient-avatar">
                                 <i class="fas fa-user"></i>
                             </div>
                             <div class="patient-details">
-                                <h4>Carlos Ruiz Hernández</h4>
-                                <p><i class="fas fa-phone"></i> 555-123-4567</p>
-                                <p><i class="fas fa-envelope"></i> carlos.ruiz@email.com</p>
-                                <p><i class="fas fa-calendar"></i> Registrado hoy, 08:30 AM</p>
+                                <h4>{{ $patient->name }}</h4>
+                                <p><i class="fas fa-phone"></i> {{ $patient->phone }}</p>
+                                <p><i class="fas fa-envelope"></i> {{ $patient->email }}</p>
+                                <p><i class="fas fa-calendar"></i> Registrado {{ $patient->created_at->diffForHumans() }}</p>
                             </div>
                             <div class="patient-actions">
-                                <button class="btn-view" aria-label="Ver detalles de Carlos Ruiz">
+                                <button class="btn-view" aria-label="Ver detalles de {{ $patient->name }}">
                                     <i class="fas fa-eye"></i>
                                 </button>
-                                <button class="btn-cancel" aria-label="Editar Carlos Ruiz">
+                                <button class="btn-cancel" aria-label="Editar {{ $patient->name }}">
                                     <i class="fas fa-edit"></i>
                                 </button>
                             </div>
                         </div>
-                        
-                        <div class="recent-patient-card">
-                            <div class="patient-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="patient-details">
-                                <h4>Ana López García</h4>
-                                <p><i class="fas fa-phone"></i> 555-987-6543</p>
-                                <p><i class="fas fa-envelope"></i> ana.lopez@email.com</p>
-                                <p><i class="fas fa-calendar"></i> Registrado ayer, 02:15 PM</p>
-                            </div>
-                            <div class="patient-actions">
-                                <button class="btn-view" aria-label="Ver detalles de Ana López">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn-cancel" aria-label="Editar Ana López">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </div>
+                        @empty
+                        <div class="no-records" style="grid-column: 1/-1; text-align: center; padding: 20px;">
+                            <p>No hay pacientes registrados recientemente.</p>
                         </div>
-                        
-                        <div class="recent-patient-card">
-                            <div class="patient-avatar">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="patient-details">
-                                <h4>Miguel Torres Ramírez</h4>
-                                <p><i class="fas fa-phone"></i> 555-456-7890</p>
-                                <p><i class="fas fa-envelope"></i> miguel.torres@email.com</p>
-                                <p><i class="fas fa-calendar"></i> Registrado hace 2 días, 10:45 AM</p>
-                            </div>
-                            <div class="patient-actions">
-                                <button class="btn-view" aria-label="Ver detalles de Miguel Torres">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                                <button class="btn-cancel" aria-label="Editar Miguel Torres">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                            </div>
-                        </div>
+                        @endforelse
                     </div>
                 </div>
 
@@ -273,7 +239,7 @@
                             <i class="fas fa-user-plus"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>12</h3>
+                            <h3>{{ $stats['today'] }}</h3>
                             <p>Registrados Hoy</p>
                         </div>
                     </div>
@@ -282,7 +248,7 @@
                             <i class="fas fa-users"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>48</h3>
+                            <h3>{{ $stats['week'] }}</h3>
                             <p>Esta Semana</p>
                         </div>
                     </div>
@@ -291,7 +257,7 @@
                             <i class="fas fa-chart-line"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>189</h3>
+                            <h3>{{ $stats['month'] }}</h3>
                             <p>Este Mes</p>
                         </div>
                     </div>
@@ -300,7 +266,7 @@
                             <i class="fas fa-database"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>2,847</h3>
+                            <h3>{{ number_format($stats['total']) }}</h3>
                             <p>Total Registrados</p>
                         </div>
                     </div>
