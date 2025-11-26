@@ -18,7 +18,6 @@ class UsersInitSeeder extends Seeder
      */
     public function run(): void
     {
-        // Usuarios fijos de ejemplo (uno por tipo)
         $staticUsers = [
             [
                 'typeUser_id' => 1,
@@ -79,17 +78,6 @@ class UsersInitSeeder extends Seeder
             }
         }
 
-        /**
-         * Cantidades objetivo (además de los usuarios fijos anteriores):
-         * - 2 administradores
-         * - 7 médicos
-         * - 15 pacientes
-         * - 4 recepcionistas
-         * - 5 enfermeras
-         *
-         * Ya tenemos 1 de cada tipo en $staticUsers, así que aquí sólo
-         * creamos los restantes para llegar a esos totales.
-         */
         $targets = [
             1 => 2,  // administradores
             2 => 7,  // médicos
@@ -99,7 +87,6 @@ class UsersInitSeeder extends Seeder
         ];
 
         foreach ($targets as $typeUserId => $targetTotal) {
-            // Ya se creó 1 estático arriba
             $extraToCreate = max(0, $targetTotal - 1);
 
             for ($i = 0; $i < $extraToCreate; $i++) {

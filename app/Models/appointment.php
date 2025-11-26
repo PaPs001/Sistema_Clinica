@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 
-class Appointment extends Model
+class appointment extends Model
 {
     //
     use HasFactory;

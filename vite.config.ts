@@ -33,6 +33,29 @@ export default defineConfig({
                 'resources/js/RECEPCIONISTA/script-recepcionista.js',
                 'resources/js/RECEPCIONISTA/script-recordatorios.js',
                 'resources/js/RECEPCIONISTA/script-registro-paciente.js',
+                'resources/css/app.css',
+                'resources/js/app.js',
+                // ENFERMERA - Dashboard
+                'resources/css/ENFERMERA/paginas/style-enfermera.css',
+                'resources/js/ENFERMERA/script-enfermera.js',
+                // ENFERMERA - Pacientes
+                'resources/css/ENFERMERA/paginas/style-pacientes.css',
+                'resources/js/ENFERMERA/script-pacientes.js',
+                // ENFERMERA - Signos Vitales
+                'resources/css/ENFERMERA/paginas/style-signos.css',
+                'resources/js/ENFERMERA/script-signos.js',
+                // ENFERMERA - Tratamientos
+                'resources/css/ENFERMERA/paginas/style-tratamientos.css',
+                'resources/js/ENFERMERA/script-tratamientos.js',
+                // ENFERMERA - Citas
+                'resources/css/ENFERMERA/paginas/style-citas.css',
+                'resources/js/ENFERMERA/paginas/script-citas.js',
+                // ENFERMERA - Medicamentos
+                'resources/css/ENFERMERA/paginas/style-medicamentos.css',
+                'resources/js/ENFERMERA/script-medicamentos.js',
+                // ENFERMERA - Reportes
+                'resources/css/ENFERMERA/paginas/style-reportes.css',
+                'resources/js/ENFERMERA/script-reportes.js',
                 ],
             ssr: 'resources/js/ssr.tsx',
             refresh: true,

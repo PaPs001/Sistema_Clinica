@@ -1,7 +1,11 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
+<<<<<<< HEAD
  * @see app/Http/Controllers/LoginController.php:16
+=======
+ * @see app/Http/Controllers/LoginController.php:13
+>>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
 export const LoginRequest = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +20,11 @@ LoginRequest.definition = {
 
 /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
+<<<<<<< HEAD
  * @see app/Http/Controllers/LoginController.php:16
+=======
+ * @see app/Http/Controllers/LoginController.php:13
+>>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
 LoginRequest.url = (options?: RouteQueryOptions) => {
@@ -25,7 +33,11 @@ LoginRequest.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
+<<<<<<< HEAD
  * @see app/Http/Controllers/LoginController.php:16
+=======
+ * @see app/Http/Controllers/LoginController.php:13
+>>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
 LoginRequest.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +47,11 @@ LoginRequest.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
     /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
+<<<<<<< HEAD
  * @see app/Http/Controllers/LoginController.php:16
+=======
+ * @see app/Http/Controllers/LoginController.php:13
+>>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
     const LoginRequestForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -45,7 +61,11 @@ LoginRequest.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
             /**
 * @see \App\Http\Controllers\LoginController::LoginRequest
+<<<<<<< HEAD
  * @see app/Http/Controllers/LoginController.php:16
+=======
+ * @see app/Http/Controllers/LoginController.php:13
+>>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
         LoginRequestForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

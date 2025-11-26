@@ -24,7 +24,6 @@ function initializeAppointmentManagement() {
     if (dateFilter) {
         dateFilter.value = today;
     }
-
     // Inicializar datos de ejemplo
     initializeSampleData();
 }
@@ -321,7 +320,6 @@ function validateAppointmentData(data) {
         showToast('No puede agendar citas en fechas pasadas', 'error');
         return false;
     }
-
     return true;
 }
 
@@ -424,7 +422,6 @@ function applyAppointmentFilters() {
                 showRow = false;
             }
         }
-
         // Filtrar por médico
         if (doctorFilter && showRow) {
             const doctorName = row.cells[2].textContent;
@@ -432,7 +429,6 @@ function applyAppointmentFilters() {
                 showRow = false;
             }
         }
-
         // Filtrar por estado
         if (statusFilter && showRow) {
             const statusBadge = row.querySelector('.status-badge');
@@ -444,7 +440,6 @@ function applyAppointmentFilters() {
                 'completada': 'completada',
                 'cancelada': 'cancelada'
             };
-
             if (status !== statusMap[statusFilter]) {
                 showRow = false;
             }
@@ -465,12 +460,10 @@ function resetAppointmentFilters() {
     document.getElementById('date-filter').value = '';
     document.getElementById('doctor-filter').value = '';
     document.getElementById('status-filter').value = '';
-
     const tableRows = document.querySelectorAll('.appointments-table tbody tr');
     tableRows.forEach(row => {
         row.style.display = '';
     });
-
     showToast('Filtros restablecidos', 'success');
 }
 
@@ -480,7 +473,6 @@ function showAppointmentDetails(patientName, row) {
     const room = row.cells[3].textContent;
     const type = row.cells[4].querySelector('.type-badge').textContent;
     const status = row.cells[5].querySelector('.status-badge').textContent;
-
     const modal = document.createElement('div');
     modal.style.cssText = `
         position: fixed;
@@ -497,7 +489,6 @@ function showAppointmentDetails(patientName, row) {
         max-height: 80vh;
         overflow-y: auto;
     `;
-
     modal.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 style="color: var(--primary-color); margin: 0;">Detalles de Cita</h3>
@@ -709,14 +700,12 @@ function completeAppointment(patientName, row) {
     const statusBadge = row.querySelector('.status-badge');
     statusBadge.textContent = 'Completada';
     statusBadge.className = 'status-badge completed';
-
     // Cambiar texto del botón
     const completeBtn = row.querySelector('.btn-cancel');
     if (completeBtn) {
         completeBtn.textContent = 'Completada';
         completeBtn.disabled = true;
     }
-
     showToast(`Cita de ${patientName} marcada como completada`, 'success');
     updateAppointmentStats();
 }
@@ -795,7 +784,6 @@ function exportAppointments() {
             fecha: new Date().toLocaleDateString(),
             citas: getAppointmentsForExport()
         };
-
         console.log('Datos para exportar:', exportData);
     }, 2000);
 }
@@ -827,7 +815,6 @@ function getDateContext(date) {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-
     if (date.toDateString() === today.toDateString()) {
         return 'Hoy';
     } else if (date.toDateString() === tomorrow.toDateString()) {
@@ -864,7 +851,6 @@ function showToast(message, type = 'success') {
     setTimeout(() => {
         toast.classList.add('show');
     }, 100);
-
     // Auto-remover después de 3 segundos
     setTimeout(() => {
         toast.classList.remove('show');

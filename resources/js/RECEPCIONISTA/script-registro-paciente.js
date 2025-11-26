@@ -24,13 +24,11 @@ function initializePatientRegistration() {
         const today = new Date().toISOString().split('T')[0];
         dobInput.max = today;
     }
-
     // Configurar formato de teléfono
     const phoneInput = document.getElementById('patient-phone');
     if (phoneInput) {
         phoneInput.addEventListener('input', formatPhoneNumber);
     }
-
     // Inicializar datos de ejemplo
     initializeSampleData();
 }
@@ -41,13 +39,11 @@ function setupEventListeners() {
     if (registrationForm) {
         registrationForm.addEventListener('submit', handlePatientRegistration);
     }
-
     // Botón limpiar formulario
     const clearFormBtn = document.getElementById('clear-form');
     if (clearFormBtn) {
         clearFormBtn.addEventListener('click', clearRegistrationForm);
     }
-
     // Registro rápido
     const quickRegistrationBtn = document.getElementById('quick-registration-btn');
     const quickRegistrationModal = document.getElementById('quick-registration-modal');
@@ -125,7 +121,6 @@ function setupRecentPatientsActions() {
 
 function handlePatientRegistration(e) {
     e.preventDefault();
-
     // Obtener datos del formulario
     const formData = new FormData(e.target);
     const patientData = {
@@ -146,12 +141,10 @@ function handlePatientRegistration(e) {
         notes: formData.get('patient-notes'),
         consent: formData.get('patient-consent') === 'on'
     };
-
     // Validar datos
     if (!validatePatientData(patientData)) {
         return;
     }
-
     // Mostrar loading
     const submitBtn = document.getElementById('submit-patient');
     const originalText = submitBtn.innerHTML;
@@ -161,7 +154,6 @@ function handlePatientRegistration(e) {
     // Obtener CSRF token
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    console.log('Enviando datos al servidor:', patientData); // DEBUG LOG
 
     // Obtener URL del formulario
     const url = e.target.action;
@@ -206,11 +198,6 @@ function handlePatientRegistration(e) {
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         });
-}
-
-function handleQuickRegistration(e) {
-    e.preventDefault();
-
     const formData = new FormData(e.target);
     const quickData = {
         name: formData.get('quick-name'),
@@ -291,7 +278,6 @@ function handleQuickRegistration(e) {
 
 function validatePatientData(data) {
     let isValid = true;
-
     // Validar campos obligatorios
     if (!data.name) {
         showFieldError('patient-name', 'El nombre es obligatorio');
@@ -299,21 +285,18 @@ function validatePatientData(data) {
     } else {
         clearFieldError('patient-name');
     }
-
     if (!data.phone) {
         showFieldError('patient-phone', 'El teléfono es obligatorio');
         isValid = false;
     } else {
         clearFieldError('patient-phone');
     }
-
     if (!data.dob) {
         showFieldError('patient-dob', 'La fecha de nacimiento es obligatoria');
         isValid = false;
     } else {
         clearFieldError('patient-dob');
     }
-
     if (!data.gender) {
         showFieldError('patient-gender', 'El género es obligatorio');
         isValid = false;
@@ -327,19 +310,16 @@ function validatePatientData(data) {
     } else {
         clearFieldError('patient-id');
     }
-
     if (!data.address) {
         showFieldError('patient-address', 'La dirección es obligatoria');
         isValid = false;
     } else {
         clearFieldError('patient-address');
     }
-
     if (!data.consent) {
         showToast('Debe obtener el consentimiento del paciente', 'error');
         isValid = false;
     }
-
     // Validar formato de email si se proporciona
     if (data.email && !isValidEmail(data.email)) {
         showFieldError('patient-email', 'El formato del email no es válido');
@@ -347,7 +327,6 @@ function validatePatientData(data) {
     } else if (data.email) {
         clearFieldError('patient-email');
     }
-
     return isValid;
 }
 
@@ -362,7 +341,6 @@ function showFieldError(fieldId, message) {
     if (existingError) {
         existingError.remove();
     }
-
     // Agregar nuevo mensaje de error
     const errorElement = document.createElement('div');
     errorElement.className = 'error-message';
@@ -400,7 +378,6 @@ function formatPhoneNumber(e) {
 function addPatientToRecentList(patientData) {
     const recentGrid = document.querySelector('.recent-patients-grid');
     if (!recentGrid) return;
-
     const patientCard = document.createElement('div');
     patientCard.className = 'recent-patient-card';
     patientCard.innerHTML = `
@@ -446,7 +423,6 @@ function clearRegistrationForm() {
     if (confirm('¿Está seguro de que desea limpiar todo el formulario? Se perderán todos los datos no guardados.')) {
         document.getElementById('patient-registration-form').reset();
         showToast('Formulario limpiado', 'success');
-
         // Limpiar errores
         document.querySelectorAll('.form-group.error').forEach(group => {
             group.classList.remove('error');
@@ -460,7 +436,6 @@ function clearRegistrationForm() {
 
 function viewPatientDetails(patientName) {
     console.log('Viendo detalles de:', patientName);
-
     const modal = document.createElement('div');
     modal.style.cssText = `
         position: fixed;
@@ -477,7 +452,6 @@ function viewPatientDetails(patientName) {
         max-height: 80vh;
         overflow-y: auto;
     `;
-
     modal.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 style="color: var(--primary-color); margin: 0;">Detalles del Paciente</h3>
@@ -529,12 +503,10 @@ function editPatient(patientName) {
 function searchPatients(e) {
     const searchTerm = e.target.value.toLowerCase();
     const patientCards = document.querySelectorAll('.recent-patient-card');
-
     patientCards.forEach(card => {
         const patientName = card.querySelector('h4').textContent.toLowerCase();
         const patientPhone = card.querySelector('p:nth-child(2)').textContent.toLowerCase();
         const patientEmail = card.querySelector('p:nth-child(3)').textContent.toLowerCase();
-
         if (patientName.includes(searchTerm) || patientPhone.includes(searchTerm) || patientEmail.includes(searchTerm)) {
             card.style.display = 'flex';
         } else {
@@ -546,7 +518,6 @@ function searchPatients(e) {
 function exportPatientsData() {
     console.log('Exportando datos de pacientes...');
     showToast('Generando archivo de exportación...', 'success');
-
     setTimeout(() => {
         showToast('Datos de pacientes exportados exitosamente', 'success');
     }, 2000);
@@ -606,7 +577,6 @@ function showToast(message, type = 'success') {
     setTimeout(() => {
         toast.classList.add('show');
     }, 100);
-
     // Auto-remover después de 3 segundos
     setTimeout(() => {
         toast.classList.remove('show');

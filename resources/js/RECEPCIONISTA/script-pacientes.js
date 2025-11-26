@@ -55,7 +55,6 @@ function setupEventListeners() {
     if (searchInput) {
         searchInput.addEventListener('input', searchPatients);
     }
-
     // Ordenamiento
     const sortSelect = document.getElementById('sort-by');
     if (sortSelect) {
@@ -133,7 +132,6 @@ function setupBulkSelection() {
             } else {
                 row.classList.remove('selected');
             }
-
             updateSelectAllState();
             updateBulkActionsState();
         });
@@ -145,7 +143,6 @@ function updateSelectAllState() {
     const patientCheckboxes = document.querySelectorAll('.patient-select');
     const checkedCount = document.querySelectorAll('.patient-select:checked').length;
     const totalCount = patientCheckboxes.length;
-
     if (selectAllCheckbox) {
         selectAllCheckbox.checked = checkedCount === totalCount;
         selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
@@ -155,7 +152,6 @@ function updateSelectAllState() {
 function updateBulkActionsState() {
     const checkedCount = document.querySelectorAll('.patient-select:checked').length;
     const bulkActionsBtn = document.getElementById('bulk-actions');
-
     if (bulkActionsBtn) {
         if (checkedCount > 0) {
             bulkActionsBtn.innerHTML = `<i class="fas fa-cog"></i> Acciones (${checkedCount})`;
@@ -280,7 +276,6 @@ function applyPatientFilters() {
         if (statusFilter && patientStatus !== statusFilter) {
             showRow = false;
         }
-
         // Filtrar por fecha (simulado)
         if (dateFilter && !matchesDateFilter(row, dateFilter)) {
             showRow = false;
@@ -310,24 +305,20 @@ function resetPatientFilters() {
     document.getElementById('status-filter').value = '';
     document.getElementById('date-filter').value = '';
     document.getElementById('sort-by').value = 'nombre';
-
     const patientRows = document.querySelectorAll('.patient-row');
     patientRows.forEach(row => {
         row.style.display = '';
     });
-
     showToast('Filtros restablecidos', 'success');
 }
 
 function searchPatients(e) {
     const searchTerm = e.target.value.toLowerCase();
     const patientRows = document.querySelectorAll('.patient-row');
-
     patientRows.forEach(row => {
         const patientName = row.querySelector('.patient-details strong').textContent.toLowerCase();
         const patientId = row.querySelector('.patient-details span').textContent.toLowerCase();
         const patientPhone = row.querySelector('.contact-info p:first-child').textContent.toLowerCase();
-
         if (patientName.includes(searchTerm) || patientId.includes(searchTerm) || patientPhone.includes(searchTerm)) {
             row.style.display = '';
         } else {
@@ -368,12 +359,10 @@ function showPatientProfile(patientName, patientId, row) {
             <i class="fas fa-spinner fa-spin"></i> Cargando perfil del paciente...
         </div>
     `;
-
     // Simular delay de carga
     setTimeout(() => {
         profileContent.innerHTML = getPatientProfileHTML(patientName, patientId, row);
     }, 1000);
-
     modal.classList.add('active');
 }
 
@@ -381,7 +370,6 @@ function getPatientProfileHTML(patientName, patientId, row) {
     const contactInfo = row.querySelector('.contact-info').innerHTML;
     const medicalInfo = row.querySelector('.medical-info').innerHTML;
     const lastVisit = row.querySelector('.last-visit').innerHTML;
-
     return `
         <div class="profile-header">
             <div class="profile-avatar">
@@ -534,7 +522,6 @@ function sendMessageToPatient(patientName) {
 function exportPatientsData() {
     console.log('Exportando datos de pacientes...');
     showToast('Generando archivo de exportación...', 'success');
-
     setTimeout(() => {
         showToast('Datos de pacientes exportados exitosamente', 'success');
     }, 2000);
@@ -557,12 +544,10 @@ function refreshPatientsList() {
 
 function showBulkActionsMenu() {
     const checkedCount = document.querySelectorAll('.patient-select:checked').length;
-
     if (checkedCount === 0) {
         showToast('Seleccione al menos un paciente para realizar acciones', 'warning');
         return;
     }
-
     // Crear menú de acciones
     const menu = document.createElement('div');
     menu.style.cssText = `
@@ -575,7 +560,6 @@ function showBulkActionsMenu() {
         z-index: 1000;
         min-width: 200px;
     `;
-
     menu.innerHTML = `
         <div class="bulk-menu-header">
             <strong>Acciones para ${checkedCount} pacientes</strong>
@@ -609,7 +593,6 @@ function showBulkActionsMenu() {
             document.removeEventListener('click', closeMenu);
         }
     };
-
     setTimeout(() => {
         document.addEventListener('click', closeMenu);
     }, 100);
@@ -647,7 +630,6 @@ window.closePatientProfile = function () {
 function loadPage(pageNumber) {
     console.log('Cargando página:', pageNumber);
     showToast(`Cargando página ${pageNumber}...`, 'success');
-
     // En una implementación real, cargaría los datos de la página
 }
 
@@ -690,7 +672,6 @@ function showToast(message, type = 'success') {
     setTimeout(() => {
         toast.classList.add('show');
     }, 100);
-
     // Auto-remover después de 3 segundos
     setTimeout(() => {
         toast.classList.remove('show');
