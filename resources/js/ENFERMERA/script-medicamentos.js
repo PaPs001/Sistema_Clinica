@@ -19,6 +19,41 @@ function inicializarApp() {
     configurarEventos();
 }
 
+function mostrarToast({ title, message, type = 'success' }) {
+    const prev = document.querySelector('.toast-alert');
+    prev?.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `toast-alert ${type}`;
+    toast.innerHTML = `
+        <div class="toast-header">
+            <strong>${title}</strong>
+            <button class="toast-close" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="toast-body">
+            ${message}
+        </div>
+    `;
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        min-width: 280px;
+        max-width: 360px;
+        background: #fff;
+        border: 1px solid ${type === 'success' ? '#28a745' : '#dc3545'};
+        border-radius: 8px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        z-index: 10000;
+        overflow: hidden;
+        font-family: 'Segoe UI', sans-serif;
+    `;
+    document.body.appendChild(toast);
+
+    toast.querySelector('.toast-close')?.addEventListener('click', () => toast.remove());
+    setTimeout(() => toast.remove(), 2500);
+}
+
 function configurarEventos() {
     // Botón nuevo medicamento
     const nuevoBtn = document.getElementById('nuevo-medicamento-btn');
@@ -416,11 +451,19 @@ async function eliminarMedicamento(id) {
             throw new Error(message);
         }
 
-        mostrarNotificacion('Medicamento eliminado', 'success');
+        mostrarToast({
+            title: 'Medicamento eliminado',
+            message: `El registro #${id} fue eliminado correctamente.`,
+            type: 'success'
+        });
         cargarMedicamentos();
     } catch (error) {
         console.error('Error:', error);
-        mostrarNotificacion('Error al eliminar el medicamento: ' + error.message, 'error');
+        mostrarToast({
+            title: 'Error al eliminar',
+            message: error.message || 'No se pudo eliminar el medicamento.',
+            type: 'error'
+        });
     }
 }
 
@@ -563,8 +606,6 @@ document.head.appendChild(notifyStyle);
 window.editarMedicamento = editarMedicamento;
 window.verDetalles = verDetalles;
 window.eliminarMedicamento = eliminarMedicamento;
-
-
 
 
 
