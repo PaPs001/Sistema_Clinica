@@ -158,6 +158,9 @@ Route::post('/recepcionista/registrar-paciente', [App\Http\Controllers\PatientCo
 Route::post('/recepcionista/check-patient', [App\Http\Controllers\AppointmentController::class, 'checkPatient'])->name('check.patient');
 Route::post('/recepcionista/store-appointment', [App\Http\Controllers\AppointmentController::class, 'store'])->name('store.appointment');
 Route::get('/recepcionista/get-doctors', [App\Http\Controllers\AppointmentController::class, 'getDoctors'])->name('get.doctors');
+Route::get('/recepcionista/get-appointments', [App\Http\Controllers\AppointmentController::class, 'index'])->name('get.appointments');
+Route::post('/recepcionista/cancel-appointment/{id}', [App\Http\Controllers\AppointmentController::class, 'cancel'])->name('cancel.appointment');
+Route::post('/recepcionista/update-appointment-status/{id}', [App\Http\Controllers\AppointmentController::class, 'updateStatus'])->name('update.appointment.status');
 
 
 //Rutas a paginas enfermera --------------------------------------------------------------

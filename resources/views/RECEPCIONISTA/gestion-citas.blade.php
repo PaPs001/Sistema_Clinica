@@ -81,141 +81,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="time-slot">
-                                            <strong>15 Nov, 08:30 AM</strong>
-                                            <span>Hoy</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="patient-info">
-                                            <div class="patient-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Carlos Ruiz</strong>
-                                                <span>65 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Dra. Elena Morales</td>
-                                    <td>405</td>
-                                    <td><span class="type-badge consulta">Consulta</span></td>
-                                    <td><span class="status-badge confirmed">Confirmada</span></td>
-                                    <td>
-                                        <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
-                                        <button class="btn-cancel" aria-label="Cancelar cita">Cancelar</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="time-slot">
-                                            <strong>15 Nov, 09:15 AM</strong>
-                                            <span>Hoy</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="patient-info">
-                                            <div class="patient-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Ana López</strong>
-                                                <span>42 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Dr. Roberto Silva</td>
-                                    <td>208</td>
-                                    <td><span class="type-badge control">Control</span></td>
-                                    <td><span class="status-badge in-progress">En consulta</span></td>
-                                    <td>
-                                        <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
-                                        <button class="btn-cancel" aria-label="Finalizar cita">Finalizar</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="time-slot">
-                                            <strong>15 Nov, 10:00 AM</strong>
-                                            <span>Hoy</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="patient-info">
-                                            <div class="patient-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Miguel Torres</strong>
-                                                <span>38 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Dra. Elena Morales</td>
-                                    <td>405</td>
-                                    <td><span class="type-badge emergencia">Urgencia</span></td>
-                                    <td><span class="status-badge waiting">En espera</span></td>
-                                    <td>
-                                        <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
-                                        <button class="btn-cancel" aria-label="Cancelar cita">Cancelar</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="time-slot">
-                                            <strong>16 Nov, 11:30 AM</strong>
-                                            <span>Mañana</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="patient-info">
-                                            <div class="patient-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Laura García</strong>
-                                                <span>29 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Dr. Carlos Mendoza</td>
-                                    <td>301</td>
-                                    <td><span class="type-badge consulta">Consulta</span></td>
-                                    <td><span class="status-badge confirmed">Confirmada</span></td>
-                                    <td>
-                                        <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
-                                        <button class="btn-cancel" aria-label="Cancelar cita">Cancelar</button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="time-slot">
-                                            <strong>16 Nov, 02:15 PM</strong>
-                                            <span>Mañana</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="patient-info">
-                                            <div class="patient-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Juan Pérez</strong>
-                                                <span>55 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Dra. Elena Morales</td>
-                                    <td>405</td>
-                                    <td><span class="type-badge control">Control</span></td>
-                                    <td><span class="status-badge pending">Pendiente</span></td>
-                                    <td>
-                                        <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
-                                        <button class="btn-cancel" aria-label="Cancelar cita">Cancelar</button>
-                                    </td>
-                                </tr>
+                                <!-- Las citas se cargarán dinámicamente -->
                             </tbody>
                         </table>
                     </div>
@@ -228,7 +94,7 @@
                             <i class="fas fa-calendar-day"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>24</h3>
+                            <h3 id="stat-citas-hoy">0</h3>
                             <p>Citas Hoy</p>
                         </div>
                     </div>
@@ -237,7 +103,7 @@
                             <i class="fas fa-calendar-check"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>18</h3>
+                            <h3 id="stat-confirmadas">0</h3>
                             <p>Confirmadas</p>
                         </div>
                     </div>
@@ -246,8 +112,8 @@
                             <i class="fas fa-user-clock"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>3</h3>
-                            <p>En Espera</p>
+                            <h3 id="stat-agendadas">0</h3>
+                            <p>Citas Agendadas</p>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -255,7 +121,7 @@
                             <i class="fas fa-calendar-times"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>2</h3>
+                            <h3 id="stat-canceladas">0</h3>
                             <p>Canceladas</p>
                         </div>
                     </div>

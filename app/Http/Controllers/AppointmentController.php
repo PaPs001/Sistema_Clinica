@@ -165,4 +165,115 @@ class AppointmentController extends Controller
             ], 500);
         }
     }
+
+    public function index(Request $request)
+    {
+        try {
+            $query = Appointment::with(['patient.user', 'doctor.user'])
+                ->orderBy('appointment_date', 'desc')
+                ->orderBy('appointment_time', 'asc');
+
+            // Apply filters
+            if ($request->has('date') && $request->date) {
+                $query->where('appointment_date', $request->date);
+            }
+
+            if ($request->has('doctor_id') && $request->doctor_id) {
+                // Filter by the doctor's USER ID (general_users id)
+                // We need to query the relationship
+                $query->whereHas('doctor', function ($q) use ($request) {
+                    $q->where('userId', $request->doctor_id);
+                });
+            }
+
+            if ($request->has('status') && $request->status) {
+                $query->where('status', $request->status);
+            }
+
+            $appointments = $query->get();
+
+            $formattedAppointments = $appointments->map(function ($appointment) {
+                $patientName = 'Desconocido';
+                if ($appointment->patient) {
+                    if ($appointment->patient->is_Temporary) {
+                        $patientName = $appointment->patient->temporary_name;
+                    } elseif ($appointment->patient->user) {
+                        $patientName = $appointment->patient->user->name;
+                    }
+                }
+
+                $doctorName = 'Por asignar';
+                if ($appointment->doctor && $appointment->doctor->user) {
+                    $doctorName = $appointment->doctor->user->name;
+                }
+
+                return [
+                    'id' => $appointment->id,
+                    'date' => $appointment->appointment_date,
+                    'time' => $appointment->appointment_time,
+                    'patient_name' => $patientName,
+                    'doctor_name' => $doctorName,
+                    'type' => $appointment->reason, // Using reason as type based on store method
+                    'status' => $appointment->status,
+                    'notes' => $appointment->notes,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'appointments' => $formattedAppointments
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error fetching appointments: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener citas'
+            ], 500);
+        }
+    }
+
+    public function cancel($id)
+    {
+        try {
+            $appointment = Appointment::findOrFail($id);
+            $appointment->status = 'cancelada';
+            $appointment->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Cita cancelada exitosamente'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error cancelling appointment: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al cancelar la cita: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        try {
+            // Updated to match DB enum: ['En curso', 'completada', 'cancelada', 'Sin confirmar', 'Confirmada', 'agendada']
+            $request->validate([
+                'status' => 'required|in:agendada,Confirmada,En curso,completada,cancelada,Sin confirmar'
+            ]);
+
+            $appointment = Appointment::findOrFail($id);
+            $appointment->status = $request->status;
+            $appointment->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Estado actualizado exitosamente'
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error updating appointment status: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el estado'
+            ], 500);
+        }
+    }
 }
