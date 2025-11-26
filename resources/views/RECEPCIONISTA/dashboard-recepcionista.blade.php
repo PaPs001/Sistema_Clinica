@@ -23,7 +23,7 @@
                             <i class="fas fa-calendar-day"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>24</h3>
+                            <h3>{{ $citasHoy }}</h3>
                             <p>Citas Hoy</p>
                         </div>
                     </div>
@@ -32,26 +32,26 @@
                             <i class="fas fa-user-plus"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>5</h3>
+                            <h3>{{ $nuevosPacientes }}</h3>
                             <p>Nuevos Pacientes</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
+                            <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>3</h3>
-                            <p>En Espera</p>
+                            <h3>{{ $completadas }}</h3>
+                            <p>Completadas</p>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">
-                            <i class="fas fa-phone"></i>
+                            <i class="fas fa-times-circle"></i>
                         </div>
                         <div class="stat-info">
-                            <h3>12</h3>
-                            <p>Llamadas Pendientes</p>
+                            <h3>{{ $canceladas }}</h3>
+                            <p>Canceladas</p>
                         </div>
                     </div>
                 </div>
@@ -83,11 +83,12 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @forelse($todaysAppointments as $appointment)
                                 <tr>
                                     <td>
                                         <div class="time-slot">
-                                            <strong>08:30 AM</strong>
-                                            <span>Próxima</span>
+                                            <strong>{{ \Carbon\Carbon::parse($appointment->appointment_time)->format('h:i A') }}</strong>
+                                            <!--<span>Próxima</span>-->
                                         </div>
                                     </td>
                                     <td>
@@ -96,74 +97,52 @@
                                                 <i class="fas fa-user"></i>
                                             </div>
                                             <div>
-                                                <strong>Carlos Ruiz</strong>
-                                                <span>65 años</span>
+                                                <strong>
+                                                    @if($appointment->patient && $appointment->patient->user)
+                                                        {{ $appointment->patient->user->name }}
+                                                    @elseif($appointment->patient && $appointment->patient->is_Temporary)
+                                                        {{ $appointment->patient->temporary_name }}
+                                                    @else
+                                                        Desconocido
+                                                    @endif
+                                                </strong>
+                                                <!--<span>65 años</span>-->
                                             </div>
                                         </div>
                                     </td>
-                                    <td>Dra. Elena Morales</td>
-                                    <td>405</td>
-                                    <td><span class="type-badge consulta">Consulta</span></td>
-                                    <td><span class="status-badge confirmed">Confirmada</span></td>
                                     <td>
-                                        <button class="btn-view" aria-label="Registrar llegada de Carlos Ruiz">Llegada</button>
-                                        <button class="btn-cancel" aria-label="Reagendar cita de Carlos Ruiz">Reagendar</button>
+                                        @if($appointment->doctor && $appointment->doctor->user)
+                                            {{ $appointment->doctor->user->name }}
+                                        @else
+                                            Por asignar
+                                        @endif
+                                    </td>
+                                    <td>-</td> <!-- Consultorio not in DB yet -->
+                                    <td><span class="type-badge consulta">{{ $appointment->reason }}</span></td>
+                                    <td>
+                                        @php
+                                            $statusClass = match(strtolower($appointment->status)) {
+                                                'confirmada' => 'confirmed',
+                                                'en curso' => 'in-progress',
+                                                'en consulta' => 'in-progress',
+                                                'completada' => 'completed',
+                                                'cancelada' => 'cancelled',
+                                                'agendada' => 'waiting',
+                                                default => 'pending'
+                                            };
+                                        @endphp
+                                        <span class="status-badge {{ $statusClass }}">{{ ucfirst($appointment->status) }}</span>
+                                    </td>
+                                    <td>
+                                        <!-- Actions can be added here, maybe link to management page -->
+                                        <a href="{{ route('gestionCitas') }}" class="btn-view" aria-label="Gestionar cita">Gestionar</a>
                                     </td>
                                 </tr>
+                                @empty
                                 <tr>
-                                    <td>
-                                        <div class="time-slot">
-                                            <strong>09:15 AM</strong>
-                                            <span>En curso</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="patient-info">
-                                            <div class="patient-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Ana López</strong>
-                                                <span>42 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Dr. Roberto Silva</td>
-                                    <td>208</td>
-                                    <td><span class="type-badge control">Control</span></td>
-                                    <td><span class="status-badge in-progress">En consulta</span></td>
-                                    <td>
-                                        <button class="btn-view" aria-label="Ver detalles de Ana López">Detalles</button>
-                                        <button class="btn-cancel" aria-label="Finalizar cita de Ana López">Finalizar</button>
-                                    </td>
+                                    <td colspan="7" style="text-align: center;">No hay citas programadas para hoy.</td>
                                 </tr>
-                                <tr>
-                                    <td>
-                                        <div class="time-slot">
-                                            <strong>10:00 AM</strong>
-                                            <span>Próxima</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="patient-info">
-                                            <div class="patient-avatar">
-                                                <i class="fas fa-user"></i>
-                                            </div>
-                                            <div>
-                                                <strong>Miguel Torres</strong>
-                                                <span>38 años</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Dra. Elena Morales</td>
-                                    <td>405</td>
-                                    <td><span class="type-badge emergencia">Urgencia</span></td>
-                                    <td><span class="status-badge waiting">En espera</span></td>
-                                    <td>
-                                        <button class="btn-view" aria-label="Llamar a Miguel Torres">Llamar</button>
-                                        <button class="btn-cancel" aria-label="Cancelar cita de Miguel Torres">Cancelar</button>
-                                    </td>
-                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

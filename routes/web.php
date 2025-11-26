@@ -130,9 +130,7 @@ Route::get('/respaldo-datos', function(){
 Route::get('/cargarDatos/Roles-permisos', [RolesPermisosController::class, 'cargarRolesPermisos'])->name('cargar.Roles.Permisos');
 Route::get('/cargarDatos/Usuarios-por-rol/{roleId}', [RolesPermisosController::class, 'getUserByRole'])->name('cargar.Usuarios.por.Rol');
 //Rutas a paginas recepcionista --------------------------------------------------------------
-Route::get('/dasboard-recepcionista', function(){
-    return view('RECEPCIONISTA.dashboard-recepcionista');
-})->name('dashboardRecepcionista');
+Route::get('/dasboard-recepcionista', [App\Http\Controllers\ReceptionistController::class, 'dashboard'])->name('dashboardRecepcionista');
 
 Route::get('/agenda', function(){
     return view('RECEPCIONISTA.agenda');
