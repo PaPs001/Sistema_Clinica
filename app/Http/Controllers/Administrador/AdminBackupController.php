@@ -82,7 +82,7 @@ class AdminBackupController extends Controller
         $fullPath = storage_path('app/' . $storedPath);
 
         $command = sprintf(
-            "/usr/bin/mysql --no-tablespaces --user=%s --password=%s --host=%s --port=%d %s < %s 2>&1",
+            "/usr/bin/mysql --user=%s --password=%s --host=%s --port=%d %s < %s 2>&1",
             escapeshellarg($username),
             escapeshellarg($password),
             escapeshellarg($host),
