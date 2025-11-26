@@ -23,10 +23,10 @@
             </div>
             
             <nav class="sidebar-nav">
-                <a href="{{ route('dashboardMedico') }}" class="nav-item {{ request()->routeIs('dashboardMedico') ? 'active' : '' }}">
+                <!--<a href="{{ route('dashboardMedico') }}" class="nav-item {{ request()->routeIs('dashboardMedico') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
-                </a>
+                </a>-->
                 <a href="{{ route('registro-expediente') }}" class="nav-item {{ request()->routeIs('registro-expediente') ? 'active' : '' }}">
                     <i class="fas fa-file-medical"></i>
                     <span>Nuevo Expediente</span>

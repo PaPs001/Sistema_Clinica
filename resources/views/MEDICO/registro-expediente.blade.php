@@ -1,25 +1,26 @@
 @extends('plantillas.dashboard_general')
 @section('title', 'Registro de Expediente Médico - Hospital Naval')
-@section('content')
-            <header class="content-header">
-                <h1>Registro de Expediente Médico</h1>
-                <!--<div class="header-actions">
-                    <div class="search-box">
-                        <input type="text" placeholder="Buscar paciente...">
-                        <i class="fas fa-search"></i>
-                    </div>
-                </div>-->
-            </header>
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
 
-            <div class="content">
+@section('styles')
+@vite(['resources/css/medic/registro-expediente.css'])
+@endsection
+
+@section('content')
+<header class="content-header">
+    <h1>Registro de Expediente Médico</h1>
+</header>
+@if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+<div class="content">
     <div class="form-container">
         <form id="expedienteForm" class="medical-form" method="post" action="{{ route('save_medical_record') }}">
             @csrf
+            
+            <!-- Información del Paciente -->
             <div class="form-section">
                 <h3><i class="fas fa-user"></i> Información del Paciente</h3>
                 <div class="form-grid">
@@ -83,27 +84,42 @@
                 </div>
             </div>
 
+            <!-- Antecedentes Médicos - ESTRUCTURA HORIZONTAL CORRECTA -->
             <div class="form-section">
                 <h3><i class="fas fa-stethoscope"></i> Antecedentes Médicos</h3>
-                <button type="button" class="btn-primary" onclick="agregarAlergia()">Agregar alergia</button>
-                <div class="form-grid">
-                    <h3><i class="fas fa-plus-circle"></i> Registrar Nueva Alergia</h3>
-                    <template id="template-alergia">
-                        @include('plantillas.formularios.form-alergia')
-                    </template>
-                </div>
-                <div id="contenedorAlergias"></div>
-                    <button type="button" class="btn-primary" onclick="agregarCronica()">Agregar enfermedad crónica</button>
-                    <div class="form-group full-width">
-                        <h3><i class="fas fa-heartbeat"></i> Registrar Enfermedad Crónica</h3>
-                        <template id="template-cronica">
-                            @include('plantillas.formularios.form-enfermedades-cronicas')
-                        </template>
-                        <div id="contenedorCronicas"></div>
+                
+                <!-- CONTENEDOR HORIZONTAL PARA BOTONES -->
+                <div class="medical-buttons-horizontal">
+                    <div class="medical-button-item">
+                        <h4><i class="fas fa-allergies"></i> Alergia</h4>
+                        <button type="button" class="btn-primary" onclick="agregarAlergia()">
+                            <i class="fas fa-plus"></i> Agregar alergia
+                        </button>
+                    </div>
+
+                    <div class="medical-button-item">
+                        <h4><i class="fas fa-heartbeat"></i> Enfermedad crónica</h4>
+                        <button type="button" class="btn-primary" onclick="agregarCronica()">
+                            <i class="fas fa-plus"></i> Agregar enfermedad crónica
+                        </button>
                     </div>
                 </div>
+
+                <!-- CONTENEDORES DE FORMULARIOS DINÁMICOS (aparecerán aquí) -->
+                <div id="contenedorAlergias"></div>
+                <div id="contenedorCronicas"></div>
+
+                <!-- TEMPLATES (ocultos hasta que se usen) -->
+                <template id="template-alergia">
+                    @include('plantillas.formularios.form-alergia')
+                </template>
+
+                <template id="template-cronica">
+                    @include('plantillas.formularios.form-enfermedades-cronicas')
+                </template>
             </div>
 
+            <!-- Consulta Actual -->
             <div class="form-section">
                 <h3><i class="fas fa-notes-medical"></i> Consulta Actual</h3>
                 <div class="form-grid">
@@ -126,12 +142,12 @@
                 </div>
             </div>
 
+            <!-- Diagnóstico y Tratamiento -->
             <div class="form-section">
                 <h3><i class="fas fa-diagnoses"></i> Diagnóstico y Tratamiento</h3>
                 <div class="form-grid">
                     <div class="form-group full-width">
                         <label for="diagnostico">Diagnóstico *</label>
-                        <!--<textarea id="diagnostico" name="diagnostico" rows="3" required placeholder="Diagnóstico principal"></textarea>-->
                         <input type="text" id="diagnostico" name="diagnostico" required autocomplete="off">
                         <div id="sugerencias-diagnosticos" class="sugerencias-lista-diagnosticos"></div>
                         <input type="hidden" id="diagnostico_id" name="diagnostico_id">
@@ -143,6 +159,7 @@
                 </div>
             </div>
 
+            <!-- Botones -->
             <div class="form-actions">
                 <button type="button" class="btn-secondary" onclick="limpiarFormulario()">
                     <i class="fas fa-eraser"></i> Limpiar
@@ -155,6 +172,7 @@
     </div>
 </div>
 @endsection 
+
 @section('scripts')
 @vite(['resources/js/medic/script-medico.js'])
 @endsection

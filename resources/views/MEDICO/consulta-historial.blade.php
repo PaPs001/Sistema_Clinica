@@ -9,34 +9,6 @@
             </header>
 
             <div class="content">
-                <!-- Panel de Búsqueda -->
-                
-                <div class="search-panel">
-                    <div class="search-filters">
-                        <!--<div class="filter-group">
-                            <label for="filterDate">Filtrar por fecha:</label>
-                            <input type="date" id="filterDate">
-                        </div>-->
-                        <div class="search-box">
-                            <label for="searchPatient">Buscar paciente:</label>
-                            <input type="text" id="searchPatient" placeholder="Buscar por nombre o ID...">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <!--<div class="filter-group">
-                            <label for="filterDiagnosis">Filtrar por diagnóstico:</label>
-                            <select id="filterDiagnosis">
-                                <option value="">Todos los diagnósticos</option>
-                                <option value="hipertension">Hipertensión</option>
-                                <option value="diabetes">Diabetes</option>
-                                <option value="infeccion">Infección</option>
-                            </select>
-                        </div>-->
-                        <button class="btn-primary" onclick="buscarPacientes()">
-                            <i class="fas fa-search"></i> Buscar
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Resultados -->
                 <div class="results-section">
                     <h2>Resultados de Búsqueda</h2>
@@ -44,7 +16,6 @@
                     <div class="patient-info-card" id="patientInfo" style="display: none;">
                         <div class="patient-header">
                             <div class="patient-avatar-large">
-                                <i class="fas fa-user"></i>
                             </div>
                             <div class="patient-details">
                                 <h3 id="patientName">Nombre del Paciente</h3>
@@ -68,45 +39,57 @@
                     </div>
 
                     <div class="table-container">
-                        <h2>Lista de Pacientes</h2>
-                        <form method="GET" action="{{ route('consulta-historial') }}" class="mb-3">
-                           <input type="text" name="buscar" class="search-input" placeholder="Buscar usuario por nombre..."value="{{ request('buscar') }}">
-                            <button type="submit" class="btn-search">Buscar</button>
+                        
+                        <!-- Panel de Búsqueda -->
+                        <form method="GET" action="{{ route('consulta-historial') }}" class="search-filters">
+                            <div class="search-box">
+                                <div style="position: relative;">
+                                    <input type="text" name="buscar" id="searchPatient" placeholder="Buscar por nombre o ID..." value="{{ request('buscar') }}">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
                         </form>
-                        <table>
-                            <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nombre</th>
-                                <th>Edad</th>
-                                <th>Género</th>
-                                <th>Teléfono</th>
-                                <th>Acción</th>
-                            </tr>
-                            </thead>
-                            <tbody id="tablaPacientes">
-                                @foreach($patientUser as $patient)
-                                    @if($patient->userId != null)
-                                        <tr>
-                                            <td>{{ $patient->id }}</td>
-                                            <td>{{ $patient->user->name }}</td>
-                                            <td>{{ $patient->user->birthdate }}</td>
-                                            <td>{{ $patient->user->genre }}</td>
-                                            <td>{{ $patient->user->phone }}</td>
-                                            <td>
-                                                <button class="btn-view" onclick="verHistorial({{ $patient->id }})">
-                                                    Ver historial
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endif
+
+                        <div class="table-wrapper">
+                            <table>
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Edad</th>
+                                    <th>Género</th>
+                                    <th>Teléfono</th>
+                                    <th>Acción</th>
+                                </tr>
+                                </thead>
+                                <tbody id="tablaPacientes">
+                                    @foreach($patientUser as $patient)
+                                        @if($patient->userId != null)
+                                            <tr>
+                                                <td>{{ $patient->id }}</td>
+                                                <td>{{ $patient->user->name }}</td>
+                                                <td>{{ $patient->user->birthdate }}</td>
+                                                <td>{{ $patient->user->genre }}</td>
+                                                <td>{{ $patient->user->phone }}</td>
+                                                <td>
+                                                    <button class="btn-view" onclick="verHistorial({{ $patient->id }})">
+                                                        Ver historial
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 </tbody>
                             </table>
-                        <div class="d-flex justify-content-center mt-3">
+                        </div>
+                        
+                        <div class="d-flex justify-content-center mt-4">
                             {{ $patientUser->onEachSide(1)->links('plantillas.pagination') }}
                         </div>
                     </div>
+                    
                     <div class="expedienteContainer" style="display: none;">
                         <div id="historialPaciente" class="patient-history" style="margin-top: 30px;">
                     
@@ -134,8 +117,9 @@
                                 </div>
                             </div>
 
-                            <div
-                               <h3>Medicamentos Actuales</h3>
+                            <div class="medical-card">
+                                <div class="medical-card-header">
+                                    <h3>Medicamentos Actuales</h3>
                                 </div>
                                 <div class="medical-card-content">
                                     <div id="medicamentos-content">
@@ -156,48 +140,9 @@
                             </div>
                         </div>
                     </div>
-                    <!--<div class="consultation-history">
-                        <h3>Historial de Consultas</h3>
-                        <div class="timeline">
-                            <div class="timeline-item">
-                                <div class="timeline-date">15 Mar 2024 - 10:30 AM</div>
-                                <div class="timeline-content">
-                                    <h4>Consulta de Seguimiento</h4>
-                                    <div class="consultation-details">
-                                        <p><strong>Motivo:</strong> Control de presión arterial</p>
-                                        <p><strong>Diagnóstico:</strong> Hipertensión controlada</p>
-                                        <p><strong>Tratamiento:</strong> Continuar con Losartán 50mg</p>
-                                        <p><strong>Signos Vitales:</strong> PA: 125/80, FC: 72 lpm</p>
-                                    </div>
-                                    <div class="consultation-actions">
-                                        <button class="btn-view" onclick="verConsultaCompleta(1)">Ver Completo</button>
-                                        <button class="btn-edit" onclick="editarConsulta(1)">Editar</button>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="timeline-item">
-                                <div class="timeline-date">01 Mar 2024 - 09:15 AM</div>
-                                <div class="timeline-content">
-                                    <h4>Consulta Inicial</h4>
-                                    <div class="consultation-details">
-                                        <p><strong>Motivo:</strong> Evaluación de presión alta</p>
-                                        <p><strong>Diagnóstico:</strong> Hipertensión arterial</p>
-                                        <p><strong>Tratamiento:</strong> Iniciar Losartán 50mg diario</p>
-                                        <p><strong>Signos Vitales:</strong> PA: 145/95, FC: 78 lpm</p>
-                                    </div>
-                                    <div class="consultation-actions">
-                                        <button class="btn-view" onclick="verConsultaCompleta(2)">Ver Completo</button>
-                                        <button class="btn-edit" onclick="editarConsulta(2)">Editar</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>-->
-
-                    
                 </div>
             </div>
+            
             <div id="modalConsulta" style="
                 display: none;
                 position: fixed;
@@ -233,6 +178,7 @@
                 </div>
             </div>
 @endsection
+
 @section('scripts')
 <script>
 function verHistorial(id) {
@@ -339,7 +285,6 @@ function verHistorial(id) {
         });
 }
 
-
 function abrirModal(index) {
     const consulta = window.vitalSignsData[index];
     const consultDiseases = window.medicalRecordsData.flatMap(mr => mr.consult_diseases);
@@ -362,10 +307,6 @@ function abrirModal(index) {
         <p><strong>Revision: </strong> ${diagnosticosPerConsulta.findings ?? 'Sin notas adicionales'}</p>
         <p><strong>Diagnóstico: </strong>  ${enfermedad}</p>
         <p><strong>Tratamiento: </strong> ${diagnosticosPerConsulta.treatment_diagnosis ?? 'Sin notas adicionales'}</p>
-        
-        
-        
-
     `;
 
     modal.style.display = 'flex';
@@ -374,113 +315,6 @@ function abrirModal(index) {
     modal.onclick = e => {
         if (e.target === modal) modal.style.display = 'none';
     };
-
-
 }
 </script>
 @endsection
-<!--<script>
- async function buscarPacientes() {
-    const searchPatient = document.getElementById('searchPatient').value.trim();
-    if (!searchPatient) {
-        alert('Por favor ingresa un ID o nombre de paciente.');
-        return;
-    }
-
-    const info = document.getElementById('patientInfo');
-    const timeline = document.querySelector('.timeline');
-    timeline.innerHTML = '';
-    try {
-        const response = await fetch(`/obtenerDatos/${encodeURIComponent(searchPatient)}`);
-        if (!response.ok) throw new Error('No se encontró el paciente.');
-
-        const patient = await response.json();
-
-        info.style.display = 'block';
-        document.getElementById('patientName').textContent = patient.user?.name || 'No disponible';
-        document.getElementById('patientAge').textContent = patient.user?.age || 'N/A';
-        document.getElementById('patientGender').textContent = patient.user?.gender === 'M' ? 'Masculino' : 'Femenino';
-        document.getElementById('patientAllergies').textContent = (patient.medical_records?.[0]?.allergy_record || []).length > 0 ? 'Sí' : 'No';
-        document.getElementById('patientChronic').textContent = (patient.medical_records?.[0]?.disease_record || []).length > 0 ? 'Sí' : 'No';
-
-        if (patient.medical_records && patient.medical_records.length > 0) {
-            patient.medical_records.forEach(record => {
-                const fecha = new Date(record.created_at).toLocaleString();
-                const item = `
-                    <div class="timeline-item">
-                        <div class="timeline-date">${fecha}</div>
-                        <div class="timeline-content">
-                            <h4>${record.type || 'Consulta médica'}</h4>
-                            <div class="consultation-details">
-                                <p><strong>Motivo:</strong> ${record.reason || 'N/A'}</p>
-                                <p><strong>Diagnóstico:</strong> ${record.diagnosis || 'N/A'}</p>
-                                <p><strong>Tratamiento:</strong> ${record.treatment || 'N/A'}</p>
-                                <p><strong>Signos Vitales:</strong> ${
-                                    record.vital_sign 
-                                        ? `Temp: ${record.vital_sign.temperature}°C, FC: ${record.vital_sign.heart_rate} lpm`
-                                        : 'No registrados'
-                                }</p>
-                            </div>
-                            <div class="consultation-actions">
-                                <button class="btn-view" onclick="verConsultaCompleta(${record.id})">Ver Completo</button>
-                                <button class="btn-edit" onclick="editarConsulta(${record.id})">Editar</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                timeline.insertAdjacentHTML('beforeend', item);
-            });
-        } else {
-            timeline.innerHTML = '<p>No hay consultas registradas para este paciente.</p>';
-        }
-
-    } catch (error) {
-        console.error(error);
-        alert('Error al obtener los datos del paciente.');
-    }
-}
-</>
-   <script>
-        // Script específico para consulta de historial
-        function buscarPacientes() {
-            const searchTerm = document.getElementById('searchPatient').value;
-            const filterDate = document.getElementById('filterDate').value;
-            const filterDiagnosis = document.getElementById('filterDiagnosis').value;
-            
-            // Simular búsqueda
-            console.log('Buscando:', { searchTerm, filterDate, filterDiagnosis });
-            
-            // Mostrar información del paciente (simulado)
-            document.getElementById('patientInfo').style.display = 'block';
-            document.getElementById('patientName').textContent = 'María González';
-            document.getElementById('patientAge').textContent = '35 años';
-            document.getElementById('patientGender').textContent = 'Femenino';
-            document.getElementById('patientId').textContent = 'ID: MG-001';
-            document.getElementById('patientAllergies').textContent = 'Penicilina';
-            document.getElementById('patientChronic').textContent = 'Hipertensión';
-        }
-
-        function verConsultaCompleta(consultaId) {
-            alert(`Mostrando consulta completa #${consultaId}`);
-            // Aquí se abriría un modal con toda la información
-        }
-
-        function editarConsulta(consultaId) {
-            if (confirm('¿Estás seguro de que quieres editar esta consulta?')) {
-                alert(`Editando consulta #${consultaId}`);
-                // Redirigir a edición
-            }
-        }
-
-        function verDocumento(documentoId) {
-            alert(`Abriendo documento #${documentoId}`);
-            // Aquí se abriría el documento en una nueva pestaña o visor
-        }
-
-        // Búsqueda en tiempo real
-        document.getElementById('searchPatient').addEventListener('input', function(e) {
-            if (e.target.value.length >= 3) {
-                buscarPacientes();
-            }
-        });
-    </script>-->

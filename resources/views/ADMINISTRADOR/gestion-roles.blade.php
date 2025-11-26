@@ -165,6 +165,3 @@
                 </div>
             </div>
 @endsection
-@section('scripts')
-@vite('resources/js/ADMINISTRATOR/gestion-roles.js')
-@endsection
