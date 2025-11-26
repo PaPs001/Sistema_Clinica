@@ -1,17 +1,17 @@
 // script-gestion-citas.js - Funcionalidades específicas para Gestión de Citas
 console.log('Script de gestión de citas cargado correctamente');
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('DOM completamente cargado - Módulo Gestión de Citas');
-    
+
     try {
         // Inicializar componentes
         initializeAppointmentManagement();
         setupEventListeners();
         loadAppointmentData();
-        
+
         console.log('Gestión de citas inicializada correctamente');
-        
+
     } catch (error) {
         console.error('Error al inicializar gestión de citas:', error);
     }
@@ -24,7 +24,7 @@ function initializeAppointmentManagement() {
     if (dateFilter) {
         dateFilter.value = today;
     }
-    
+
     // Inicializar datos de ejemplo
     initializeSampleData();
 }
@@ -35,62 +35,30 @@ function setupEventListeners() {
     if (newAppointmentBtn) {
         newAppointmentBtn.addEventListener('click', showNewAppointmentModal);
     }
-    
+
     // Filtros
     const applyFiltersBtn = document.getElementById('apply-filters');
     const resetFiltersBtn = document.getElementById('reset-filters');
-    
+
     if (applyFiltersBtn) {
         applyFiltersBtn.addEventListener('click', applyAppointmentFilters);
     }
-    
+
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', resetAppointmentFilters);
     }
-    
+
     // Botones de acción en tabla
     setupTableActionButtons();
-    
-    // Modal de nueva cita
-    const newAppointmentModal = document.getElementById('new-appointment-modal');
-    const closeModalBtn = document.querySelector('.close-modal');
-    const cancelAppointmentBtn = document.getElementById('cancel-appointment');
-    
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener('click', function() {
-            newAppointmentModal.classList.remove('active');
-        });
-    }
-    
-    if (cancelAppointmentBtn) {
-        cancelAppointmentBtn.addEventListener('click', function() {
-            newAppointmentModal.classList.remove('active');
-        });
-    }
-    
-    // Cerrar modal al hacer clic fuera
-    if (newAppointmentModal) {
-        newAppointmentModal.addEventListener('click', function(e) {
-            if (e.target === newAppointmentModal) {
-                newAppointmentModal.classList.remove('active');
-            }
-        });
-    }
-    
-    // Formulario de nueva cita
-    const newAppointmentForm = document.getElementById('new-appointment-form');
-    if (newAppointmentForm) {
-        newAppointmentForm.addEventListener('submit', handleNewAppointmentSubmit);
-    }
-    
+
     // Botones de exportar y actualizar
     const exportCitasBtn = document.getElementById('export-citas');
     const refreshCitasBtn = document.getElementById('refresh-citas');
-    
+
     if (exportCitasBtn) {
         exportCitasBtn.addEventListener('click', exportAppointments);
     }
-    
+
     if (refreshCitasBtn) {
         refreshCitasBtn.addEventListener('click', refreshAppointments);
     }
@@ -100,21 +68,21 @@ function setupTableActionButtons() {
     // Botones de detalles
     const detailButtons = document.querySelectorAll('.appointments-table .btn-view');
     detailButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const row = this.closest('tr');
             const patientName = row.querySelector('.patient-info strong').textContent;
             showAppointmentDetails(patientName, row);
         });
     });
-    
+
     // Botones de cancelar
     const cancelButtons = document.querySelectorAll('.appointments-table .btn-cancel');
     cancelButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const row = this.closest('tr');
             const patientName = row.querySelector('.patient-info strong').textContent;
             const action = this.textContent.toLowerCase();
-            
+
             if (action === 'cancelar') {
                 cancelAppointment(patientName, row);
             } else if (action === 'finalizar') {
@@ -124,77 +92,207 @@ function setupTableActionButtons() {
     });
 }
 
-function showNewAppointmentModal() {
-    const modal = document.getElementById('new-appointment-modal');
-    if (modal) {
-        modal.classList.add('active');
-        
-        // Establecer fecha mínima como hoy
-        const today = new Date().toISOString().split('T')[0];
-        const dateInput = document.getElementById('appointment-date');
-        if (dateInput) {
-            dateInput.min = today;
-            dateInput.value = today;
+async function showNewAppointmentModal() {
+    // 1. Pedir correo del paciente
+    const { value: checkResult } = await Swal.fire({
+        title: 'Nueva Cita',
+        input: 'email',
+        inputLabel: 'Correo del Paciente',
+        inputPlaceholder: 'Ingrese el correo del paciente',
+        showCancelButton: true,
+        confirmButtonText: 'Verificar',
+        cancelButtonText: 'Cancelar',
+        showLoaderOnConfirm: true,
+        preConfirm: async (email) => {
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const response = await fetch('/recepcionista/check-patient', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ email })
+                });
+                if (!response.ok) throw new Error(response.statusText);
+                const data = await response.json();
+                return { ...data, email }; // Return data merged with email
+            } catch (error) {
+                Swal.showValidationMessage(`Request failed: ${error}`);
+            }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+    });
+
+    if (!checkResult) return; // Cancelled
+
+    const isNew = !checkResult.exists;
+    const patientName = checkResult.exists ? checkResult.name : '';
+    const patientPhone = checkResult.exists ? (checkResult.phone || '') : '';
+
+    // 1.5 Obtener lista de médicos
+    let doctorOptions = '<option value="" disabled selected>Seleccionar Médico</option>';
+    try {
+        const response = await fetch('/recepcionista/get-doctors');
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.doctors) {
+                data.doctors.forEach(doctor => {
+                    doctorOptions += `<option value="${doctor.name}">${doctor.name}</option>`;
+                });
+            }
         }
-        
-        // Establecer hora por defecto (próxima hora disponible)
-        const timeInput = document.getElementById('appointment-time');
-        if (timeInput) {
+    } catch (error) {
+        console.error('Error fetching doctors:', error);
+    }
+
+    // 2. Mostrar formulario de cita
+    const { value: formValues } = await Swal.fire({
+        title: isNew ? 'Registrar Nuevo Paciente y Cita' : 'Agendar Cita',
+        html: `
+            <div style="text-align: left; margin-bottom: 10px;">
+                <label>Paciente</label>
+                <input id="swal-email" class="swal2-input" value="${checkResult.email}" readonly style="background: #f0f0f0;">
+                
+                ${isNew ? `
+                <label>Nombre Completo</label>
+                <input id="swal-name" class="swal2-input" placeholder="Nombre Completo">
+                <label>Teléfono</label>
+                <input id="swal-phone" class="swal2-input" placeholder="Teléfono">
+                ` : `
+                <label>Nombre</label>
+                <input class="swal2-input" value="${patientName}" readonly style="background: #f0f0f0;">
+                `}
+                
+                <label>Médico</label>
+                <select id="swal-doctor" class="swal2-select" style="width: 100%; margin: 10px 0;">
+                    ${doctorOptions}
+                </select>
+                
+                <label>Fecha</label>
+                <input id="swal-date" class="swal2-input" type="date">
+                
+                <label>Hora</label>
+                <input id="swal-time" class="swal2-input" type="time">
+                
+                <label>Tipo de Cita</label>
+                <select id="swal-type" class="swal2-select" style="width: 100%; margin: 10px 0;">
+                    <option value="consulta">Consulta</option>
+                    <option value="control">Control</option>
+                    <option value="emergencia">Urgencia</option>
+                    <option value="seguimiento">Seguimiento</option>
+                </select>
+                
+                <label>Notas</label>
+                <textarea id="swal-notes" class="swal2-textarea" placeholder="Observaciones adicionales..."></textarea>
+            </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'Agendar',
+        cancelButtonText: 'Cancelar',
+        width: '600px',
+        didOpen: () => {
+            // Set default date/time
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('swal-date');
+            dateInput.value = today;
+            dateInput.min = today;
+
             const now = new Date();
             const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
             const hours = nextHour.getHours().toString().padStart(2, '0');
             const minutes = '00';
-            timeInput.value = `${hours}:${minutes}`;
+            document.getElementById('swal-time').value = `${hours}:${minutes}`;
+        },
+        preConfirm: () => {
+            const doctor = document.getElementById('swal-doctor').value;
+            const date = document.getElementById('swal-date').value;
+            const time = document.getElementById('swal-time').value;
+            const type = document.getElementById('swal-type').value;
+            const notes = document.getElementById('swal-notes').value;
+
+            const name = isNew ? document.getElementById('swal-name').value : patientName;
+            const phone = isNew ? document.getElementById('swal-phone').value : patientPhone;
+
+            if (!doctor || !date || !time || (isNew && (!name || !phone))) {
+                Swal.showValidationMessage('Por favor complete todos los campos obligatorios');
+                return false;
+            }
+
+            return {
+                email: checkResult.email,
+                is_new: isNew,
+                name: name,
+                phone: phone,
+                doctor_name: doctor,
+                date: date,
+                time: time,
+                type: type,
+                notes: notes
+            };
         }
+    });
+
+    if (formValues) {
+        submitAppointment(formValues);
     }
 }
 
-function handleNewAppointmentSubmit(e) {
-    e.preventDefault();
-    
-    const formData = {
-        patient: document.getElementById('patient-select').value,
-        doctor: document.getElementById('doctor-select').value,
-        date: document.getElementById('appointment-date').value,
-        time: document.getElementById('appointment-time').value,
-        type: document.getElementById('appointment-type').value,
-        notes: document.getElementById('appointment-notes').value
-    };
-    
-    // Validar datos
-    if (!validateAppointmentData(formData)) {
-        return;
+async function submitAppointment(data) {
+    try {
+        Swal.fire({
+            title: 'Agendando Cita...',
+            text: 'Por favor espere',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const response = await fetch('/recepcionista/store-appointment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Cita Agendada!',
+                text: result.message,
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+            // Agregar a la tabla (simulado o recargar)
+            // Para simplificar, recargamos la página o llamamos a loadAppointmentData
+            // Pero como loadAppointmentData es simulado, agregamos manualmente
+            addAppointmentToTable({
+                date: data.date,
+                time: data.time,
+                doctor: data.doctor_name,
+                type: data.type,
+                patient_name: data.name // Necesitamos el nombre para mostrarlo
+            });
+
+            updateAppointmentStats();
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.message || 'Ocurrió un error al agendar la cita'
+        });
     }
-    
-    // Simular envío de datos
-    console.log('Creando nueva cita:', formData);
-    
-    // Mostrar loading
-    const submitBtn = e.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Agendando...';
-    submitBtn.disabled = true;
-    
-    // Simular delay de red
-    setTimeout(() => {
-        // Agregar cita a la tabla
-        addAppointmentToTable(formData);
-        
-        // Cerrar modal y resetear formulario
-        document.getElementById('new-appointment-modal').classList.remove('active');
-        e.target.reset();
-        
-        // Restaurar botón
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        
-        // Mostrar notificación de éxito
-        showToast('Cita agendada exitosamente', 'success');
-        
-        // Actualizar estadísticas
-        updateAppointmentStats();
-        
-    }, 1500);
 }
 
 function validateAppointmentData(data) {
@@ -202,32 +300,30 @@ function validateAppointmentData(data) {
         showToast('Por favor complete todos los campos obligatorios', 'error');
         return false;
     }
-    
+
     // Validar que la fecha no sea en el pasado
     const appointmentDateTime = new Date(`${data.date}T${data.time}`);
     const now = new Date();
-    
+
     if (appointmentDateTime < now) {
         showToast('No puede agendar citas en fechas pasadas', 'error');
         return false;
     }
-    
+
     return true;
 }
 
 function addAppointmentToTable(appointmentData) {
     const tableBody = document.querySelector('.appointments-table tbody');
     if (!tableBody) return;
-    
+
     // Obtener nombre del paciente
-    const patientSelect = document.getElementById('patient-select');
-    const selectedOption = patientSelect.options[patientSelect.selectedIndex];
-    const patientName = selectedOption.text;
-    
+    const patientName = appointmentData.patient_name || 'Paciente';
+
     // Formatear fecha
     const appointmentDate = new Date(`${appointmentData.date}T${appointmentData.time}`);
     const formattedDate = formatAppointmentDate(appointmentDate);
-    
+
     // Crear nueva fila
     const newRow = document.createElement('tr');
     newRow.innerHTML = `
@@ -257,16 +353,16 @@ function addAppointmentToTable(appointmentData) {
             <button class="btn-cancel" aria-label="Cancelar cita">Cancelar</button>
         </td>
     `;
-    
+
     // Agregar event listeners a los nuevos botones
-    newRow.querySelector('.btn-view').addEventListener('click', function() {
+    newRow.querySelector('.btn-view').addEventListener('click', function () {
         showAppointmentDetails(patientName, newRow);
     });
-    
-    newRow.querySelector('.btn-cancel').addEventListener('click', function() {
+
+    newRow.querySelector('.btn-cancel').addEventListener('click', function () {
         cancelAppointment(patientName, newRow);
     });
-    
+
     // Insertar al principio de la tabla
     tableBody.insertBefore(newRow, tableBody.firstChild);
 }
@@ -275,13 +371,13 @@ function applyAppointmentFilters() {
     const dateFilter = document.getElementById('date-filter').value;
     const doctorFilter = document.getElementById('doctor-filter').value;
     const statusFilter = document.getElementById('status-filter').value;
-    
+
     const tableRows = document.querySelectorAll('.appointments-table tbody tr');
     let visibleRows = 0;
-    
+
     tableRows.forEach(row => {
         let showRow = true;
-        
+
         // Filtrar por fecha
         if (dateFilter) {
             const dateText = row.querySelector('.time-slot strong').textContent;
@@ -289,7 +385,7 @@ function applyAppointmentFilters() {
                 showRow = false;
             }
         }
-        
+
         // Filtrar por médico
         if (doctorFilter && showRow) {
             const doctorName = row.cells[2].textContent;
@@ -297,7 +393,7 @@ function applyAppointmentFilters() {
                 showRow = false;
             }
         }
-        
+
         // Filtrar por estado
         if (statusFilter && showRow) {
             const statusBadge = row.querySelector('.status-badge');
@@ -309,18 +405,18 @@ function applyAppointmentFilters() {
                 'completada': 'completada',
                 'cancelada': 'cancelada'
             };
-            
+
             if (status !== statusMap[statusFilter]) {
                 showRow = false;
             }
         }
-        
+
         row.style.display = showRow ? '' : 'none';
         if (showRow) visibleRows++;
     });
-    
+
     console.log(`Mostrando ${visibleRows} citas con los filtros aplicados`);
-    
+
     if (visibleRows === 0) {
         showToast('No se encontraron citas con los criterios seleccionados', 'warning');
     }
@@ -330,12 +426,12 @@ function resetAppointmentFilters() {
     document.getElementById('date-filter').value = '';
     document.getElementById('doctor-filter').value = '';
     document.getElementById('status-filter').value = '';
-    
+
     const tableRows = document.querySelectorAll('.appointments-table tbody tr');
     tableRows.forEach(row => {
         row.style.display = '';
     });
-    
+
     showToast('Filtros restablecidos', 'success');
 }
 
@@ -345,7 +441,7 @@ function showAppointmentDetails(patientName, row) {
     const room = row.cells[3].textContent;
     const type = row.cells[4].querySelector('.type-badge').textContent;
     const status = row.cells[5].querySelector('.status-badge').textContent;
-    
+
     const modal = document.createElement('div');
     modal.style.cssText = `
         position: fixed;
@@ -362,7 +458,7 @@ function showAppointmentDetails(patientName, row) {
         max-height: 80vh;
         overflow-y: auto;
     `;
-    
+
     modal.innerHTML = `
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h3 style="color: var(--primary-color); margin: 0;">Detalles de Cita</h3>
@@ -419,11 +515,11 @@ function showAppointmentDetails(patientName, row) {
             </button>
         </div>
     `;
-    
+
     document.body.appendChild(modal);
-    
+
     // Cerrar modal al hacer clic fuera
-    modal.addEventListener('click', function(e) {
+    modal.addEventListener('click', function (e) {
         if (e.target === modal) {
             modal.remove();
         }
@@ -436,7 +532,7 @@ function cancelAppointment(patientName, row) {
         const statusBadge = row.querySelector('.status-badge');
         statusBadge.textContent = 'Cancelada';
         statusBadge.className = 'status-badge canceled';
-        
+
         // Deshabilitar botones
         const buttons = row.querySelectorAll('button');
         buttons.forEach(btn => {
@@ -445,13 +541,13 @@ function cancelAppointment(patientName, row) {
             }
             btn.disabled = true;
         });
-        
+
         // Mostrar notificación
         showToast(`Cita de ${patientName} cancelada`, 'success');
-        
+
         // Actualizar estadísticas
         updateAppointmentStats();
-        
+
         // En una implementación real, aquí se enviaría la cancelación al servidor
         console.log(`Cita cancelada para: ${patientName}`);
     }
@@ -462,33 +558,33 @@ function completeAppointment(patientName, row) {
     const statusBadge = row.querySelector('.status-badge');
     statusBadge.textContent = 'Completada';
     statusBadge.className = 'status-badge completed';
-    
+
     // Cambiar texto del botón
     const completeBtn = row.querySelector('.btn-cancel');
     if (completeBtn) {
         completeBtn.textContent = 'Completada';
         completeBtn.disabled = true;
     }
-    
+
     showToast(`Cita de ${patientName} marcada como completada`, 'success');
     updateAppointmentStats();
 }
 
 function exportAppointments() {
     console.log('Exportando lista de citas...');
-    
+
     // Simular proceso de exportación
     showToast('Generando archivo de exportación...', 'success');
-    
+
     setTimeout(() => {
         showToast('Lista de citas exportada exitosamente', 'success');
-        
+
         // En una implementación real, aquí se descargaría el archivo
         const exportData = {
             fecha: new Date().toLocaleDateString(),
             citas: getAppointmentsForExport()
         };
-        
+
         console.log('Datos para exportar:', exportData);
     }, 2000);
 }
@@ -496,10 +592,10 @@ function exportAppointments() {
 function refreshAppointments() {
     const refreshBtn = document.getElementById('refresh-citas');
     const originalText = refreshBtn.innerHTML;
-    
+
     refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
     refreshBtn.disabled = true;
-    
+
     // Simular actualización de datos
     setTimeout(() => {
         loadAppointmentData();
@@ -520,7 +616,7 @@ function getDateContext(date) {
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
-    
+
     if (date.toDateString() === today.toDateString()) {
         return 'Hoy';
     } else if (date.toDateString() === tomorrow.toDateString()) {
@@ -546,18 +642,18 @@ function showToast(message, type = 'success') {
     if (existingToast) {
         existingToast.remove();
     }
-    
+
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
-    
+
     document.body.appendChild(toast);
-    
+
     // Animación de entrada
     setTimeout(() => {
         toast.classList.add('show');
     }, 100);
-    
+
     // Auto-remover después de 3 segundos
     setTimeout(() => {
         toast.classList.remove('show');
@@ -602,12 +698,12 @@ function loadAppointmentData() {
 
 // ===== FUNCIONES GLOBALES =====
 
-window.sendAppointmentReminder = function(patientName) {
+window.sendAppointmentReminder = function (patientName) {
     showToast(`Recordatorio enviado a ${patientName}`, 'success');
     console.log(`Enviando recordatorio a: ${patientName}`);
 };
 
-window.rescheduleAppointmentFromDetails = function(patientName) {
+window.rescheduleAppointmentFromDetails = function (patientName) {
     showNewAppointmentModal();
     console.log(`Reagendando cita para: ${patientName}`);
 };

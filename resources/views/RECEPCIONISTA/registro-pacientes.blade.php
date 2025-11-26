@@ -24,7 +24,8 @@
                         </h2>
                     </div>
                     
-                    <form id="patient-registration-form">
+                    <form id="patient-registration-form" action="{{ route('registrar.paciente.store') }}" method="POST">
+                        @csrf
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="patient-name">

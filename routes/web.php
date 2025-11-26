@@ -154,6 +154,11 @@ Route::get('/registro-paciente', function(){
     return view('RECEPCIONISTA.registro-pacientes');
 })->name('registroPaciente');
 
+Route::post('/recepcionista/registrar-paciente', [App\Http\Controllers\PatientController::class, 'store'])->name('registrar.paciente.store');
+Route::post('/recepcionista/check-patient', [App\Http\Controllers\AppointmentController::class, 'checkPatient'])->name('check.patient');
+Route::post('/recepcionista/store-appointment', [App\Http\Controllers\AppointmentController::class, 'store'])->name('store.appointment');
+Route::get('/recepcionista/get-doctors', [App\Http\Controllers\AppointmentController::class, 'getDoctors'])->name('get.doctors');
+
 
 //Rutas a paginas enfermera --------------------------------------------------------------
 Route::get('/dashboard-enfermera', function(){

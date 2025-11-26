@@ -262,67 +262,8 @@
                 </div>
             </div>
 
-    <!-- Modal para Nueva Cita -->
-    <div class="modal-overlay" id="new-appointment-modal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Agendar Nueva Cita</h3>
-                <button class="close-modal" aria-label="Cerrar modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="new-appointment-form">
-                    <div class="form-group">
-                        <label for="patient-select">Paciente:</label>
-                        <select id="patient-select" required>
-                            <option value="">Seleccionar paciente</option>
-                            <option value="1">Carlos Ruiz</option>
-                            <option value="2">Ana López</option>
-                            <option value="3">Miguel Torres</option>
-                            <option value="4">Laura García</option>
-                            <option value="5">Juan Pérez</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="doctor-select">Médico:</label>
-                        <select id="doctor-select" required>
-                            <option value="">Seleccionar médico</option>
-                            <option value="Dra. Elena Morales">Dra. Elena Morales</option>
-                            <option value="Dr. Roberto Silva">Dr. Roberto Silva</option>
-                            <option value="Dr. Carlos Mendoza">Dr. Carlos Mendoza</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="appointment-date">Fecha:</label>
-                        <input type="date" id="appointment-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="appointment-time">Hora:</label>
-                        <input type="time" id="appointment-time" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="appointment-type">Tipo de cita:</label>
-                        <select id="appointment-type" required>
-                            <option value="consulta">Consulta</option>
-                            <option value="control">Control</option>
-                            <option value="emergencia">Urgencia</option>
-                            <option value="seguimiento">Seguimiento</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="appointment-notes">Notas:</label>
-                        <textarea id="appointment-notes" rows="3" placeholder="Observaciones adicionales..."></textarea>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="section-btn">Agendar Cita</button>
-                        <button type="button" class="section-btn btn-cancel" id="cancel-appointment">Cancelar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <!-- Modal para Nueva Cita eliminado, se usará SweetAlert2 -->
 @endsection
 @section('scripts')
-    <script src="script-gestion-citas.js"></script>
+    @vite(['resources/js/RECEPCIONISTA/script-gestion-citas.js'])
 @endsection
