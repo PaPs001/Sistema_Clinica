@@ -42,7 +42,7 @@ Route::get('/prueba-mail', function (){
 //Rutas de paginas medico --------------------------------------------------------------
 Route::middleware(['auth', 'role:medic'])->group(function (){
     Route::get('/dashboard', function(){
-        return view('plantillas.dashboard_medico');
+        return view('MEDICO.pagina-principal-medico');
     })->name('dashboardMedico');
     
     Route::get('/registro-expediente', function(){

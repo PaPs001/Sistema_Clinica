@@ -1,83 +1,9 @@
 @extends('plantillas.dashboard_general')
 @section('title', 'Dashboard Médico - Hospital Naval')
 @section('styles')
-<style>
-
-</style>
+    @vite('resources/css/medic/paginas/dashboard-medico.css')
 @endsection
-
 @section('content')
-<div class="dashboard-container">
-    <!-- Sidebar CON LAS OPCIONES QUE TE GUSTARON -->
-    <aside class="sidebar">
-        <div class="clinic-info">
-            <h3>Hospital Naval</h3>
-            <p>Sistema Médico</p>
-        </div>
-        
-        <ul class="sidebar-menu">
-            <li>
-               <!-- <a href="{{ route('dashboardMedico') }}" class="active">
-                    <i class="fas fa-home"></i>
-                    <span>Inicio</span>
-                </a>-->
-            </li>
-            <li>
-                <a href="{{ route('registro-expediente') }}">
-                    <i class="fas fa-file-medical"></i>
-                    <span>Nuevo Expediente</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('consulta-historial') }}">
-                    <i class="fas fa-history"></i>
-                    <span>Historial Médico</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('iniciar-Upload-files') }}">
-                    <i class="fas fa-upload"></i>
-                    <span>Subir Documentos</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('filtrar-expedientes') }}">
-                    <i class="fas fa-filter"></i>
-                    <span>Filtrar Expedientes</span>
-                </a>
-            </li>
-            <li>
-                <a href="{{ route('registro-alergias') }}">
-                    <i class="fas fa-allergies"></i>
-                    <span>Antecedentes Medicos</span>
-                </a>
-            </li>
-        </ul>
-        
-        <div class="user-section">
-            <div class="user-info">
-                <div class="user-avatar">
-                    <i class="fas fa-user-md"></i>
-                </div>
-                <div>
-                    <strong>Dr. {{ Auth::user()->name }}</strong>
-                    <div>Médico General</div>
-                </div>
-            </div>
-            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="text-decoration: none; color: inherit;">
-                <div class="weather-info">
-                    <span>Cerrar Sesión</span>
-                    <i class="fas fa-sign-out-alt"></i>
-                </div>
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
-        </div>
-    </aside>
-
-    <!-- Contenido Principal -->
-    <main class="main-content">
         <header class="content-header">
             <h1>Hola {{ Auth::user()->name }}</h1>
             <div class="header-actions">
@@ -216,8 +142,6 @@
                 </div>
             </div>
         </div>
-    </main>
-</div>
 @endsection
 
 @section('scripts')
