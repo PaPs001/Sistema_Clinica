@@ -1,7 +1,7 @@
 @extends('plantillas.dashboard_enfermera')
 @section('title', 'Dashboard Enfermera - Hospital Naval')
 @section('styles')
-    @vite(['resources/css/ENFERMERA/paginas/style-enfermera.css'])
+    @vite(['resources/css/ENFERMERA/general.css'])
 @endsection
 
 @section('content')

@@ -35,7 +35,6 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 // ENFERMERA - Dashboard
-                'resources/css/ENFERMERA/paginas/style-enfermera.css',
                 'resources/js/ENFERMERA/script-enfermera.js',
                 // ENFERMERA - Pacientes
                 'resources/css/ENFERMERA/paginas/style-pacientes.css',

@@ -66,7 +66,5 @@
             </div>
         </div>
     </div>
-
-    <!--@vite('resources/js/auth_log/script.js')-->
 </body>
 </html>
