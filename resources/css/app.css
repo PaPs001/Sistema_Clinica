@@ -1,5 +1,5 @@
 @import 'tailwindcss';
-
+@import './auth_log/login.css';
 @plugin 'tailwindcss-animate';
 
 @source '../views';

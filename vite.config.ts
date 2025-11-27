@@ -9,7 +9,6 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css',
                 'resources/js/app.tsx',
-                'resources/css/auth_log/login.css',
                 'resources/css/ADMINISTRADOR/general.css',
                 'resources/css/ENFERMERA/general.css',
                 'resources/css/medic/general.css',
