@@ -7,6 +7,7 @@ export default defineConfig({
         laravel({
             input: ['resources/css/app.css',
                 'resources/js/app.tsx',
+                'resources/css/auth_log/login.css',
                 'resources/css/ADMINISTRADOR/general.css',
                 'resources/css/ENFERMERA/general.css',
                 'resources/css/medic/general.css',
@@ -19,6 +20,7 @@ export default defineConfig({
                 'resources/js/medic/script-agregar-alergias.js',
                 'resources/js/medic/script-filtrar-expedientes.js',
                 'resources/js/medic/script-filtro-expediente.js',
+                'resources/js/PACIENTE/script-historial',
                 // JS de la enfermera
                 'resources/js/ENFERMERA/script-enfermera.js',
                 // JS del administrador
@@ -30,8 +32,6 @@ export default defineConfig({
                 'resources/js/RECEPCIONISTA/script-recepcionista.js',
                 'resources/js/RECEPCIONISTA/script-recordatorios.js',
                 'resources/js/RECEPCIONISTA/script-registro-paciente.js',
-                'resources/css/app.css',
-                'resources/js/app.js',
                 // ENFERMERA - Dashboard
                 'resources/js/ENFERMERA/script-enfermera.js',
                 // ENFERMERA - Pacientes
@@ -52,6 +52,16 @@ export default defineConfig({
                 // ENFERMERA - Reportes
                 'resources/css/ENFERMERA/paginas/style-reportes.css',
                 'resources/js/ENFERMERA/script-reportes.js',
+                // PACIENTE - Dashboard e historial
+                'resources/js/PACIENTE/script-historial.js',
+                'resources/js/PACIENTE/script-paciente.js',
+                // PACIENTE - Otras secciones
+                'resources/js/PACIENTE/script-perfil.js',
+                'resources/js/PACIENTE/script-citas.js',
+                'resources/js/PACIENTE/script-alergias.js',
+                'resources/js/PACIENTE/script-documentos.js',
+                // App JS clásico (welcome.blade)
+                'resources/js/app.js',
             ],
             refresh: true,
         }),
