@@ -10,6 +10,8 @@ export default defineConfig({
                 'resources/js/app.js',
                 // Auth login
                 'resources/css/auth_log/login.css',
+                // Enfermera general
+                'resources/css/ENFERMERA/general.css',
             ],
             refresh: true,
         }),
