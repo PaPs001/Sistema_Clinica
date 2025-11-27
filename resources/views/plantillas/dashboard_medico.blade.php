@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Pagina')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @vite(['resources/css/medic/general.css'])
-    @yield('scripts')
+    @vite('resources/css/MEDICO/modulo_plantilla.css')
+    @yield('styles')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -74,4 +74,6 @@
             @yield('content')
         </div>
     </div>
+
+    @yield('scripts')
 </body>

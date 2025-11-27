@@ -272,6 +272,3 @@
         </div>
     </div>
 @endsection
-@section('scripts')
-    <script src="script-pacientes.js"></script>
-@endsection

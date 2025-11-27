@@ -23,6 +23,7 @@ export default defineConfig({
                 'resources/js/medic/script-filtrar-expedientes.js',
                 'resources/js/medic/script-filtro-expediente.js',
                 'resources/js/PACIENTE/script-historial',
+                'resources/css/MEDICO/modulo_plantilla.css',
                 // JS de la enfermera
                 'resources/js/ENFERMERA/script-enfermera.js',
                 // JS del administrador

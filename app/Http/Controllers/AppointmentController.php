@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Appointment;
+use App\Models\appointment;
 use App\Models\UserModel;
 use App\Models\patientUser;
 use App\Models\medicUser;
@@ -115,7 +115,7 @@ class AppointmentController extends Controller
             $receptionistId = null; 
 
             // 4. Create Appointment
-            $appointment = new Appointment();
+            $appointment = new appointment();
             $appointment->patient_id = $patientId;
             $appointment->doctor_id = $doctorId;
             $appointment->receptionist_id = $receptionistId;
@@ -137,7 +137,7 @@ class AppointmentController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('AppointmentController@store: Error: ' . $e->getMessage());
+            Log::error('appointmentController@store: Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al agendar cita: ' . $e->getMessage()
@@ -169,7 +169,7 @@ class AppointmentController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Appointment::with(['patient.user', 'doctor.user'])
+            $query = appointment::with(['patient.user', 'doctor.user'])
                 ->orderBy('appointment_date', 'desc')
                 ->orderBy('appointment_time', 'asc');
 
@@ -235,7 +235,7 @@ class AppointmentController extends Controller
     public function cancel($id)
     {
         try {
-            $appointment = Appointment::findOrFail($id);
+            $appointment = appointment::findOrFail($id);
             $appointment->status = 'cancelada';
             $appointment->save();
 
@@ -260,7 +260,7 @@ class AppointmentController extends Controller
                 'status' => 'required|in:agendada,Confirmada,En curso,completada,cancelada,Sin confirmar'
             ]);
 
-            $appointment = Appointment::findOrFail($id);
+            $appointment = appointment::findOrFail($id);
             $appointment->status = $request->status;
             $appointment->save();
 

@@ -195,6 +195,3 @@
         </div>
     </div>
 @endsection
-@section('scripts')
-    <script src="script-recepcionista.js"></script>
-@endsection
