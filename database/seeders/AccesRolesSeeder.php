@@ -13,13 +13,19 @@ class AccesRolesSeeder extends Seeder
      */
     public function run(): void
     {
-        //
-        DB::table('acces_roles')->insert([
-            ['id' => 1, 'name_type' => 'admin'],
-            ['id' => 2, 'name_type' => 'medico'],
-            ['id' => 3, 'name_type' => 'paciente'],
-            ['id' => 4, 'name_type' => 'recepcionista'],
-            ['id' => 5, 'name_type' => 'enfermera'],
-        ]);
+        $roles = [
+            1 => 'admin',
+            2 => 'medico',
+            3 => 'paciente',
+            4 => 'recepcionista',
+            5 => 'enfermera',
+        ];
+
+        foreach ($roles as $id => $name) {
+            DB::table('acces_roles')->updateOrInsert(
+                ['id' => $id],
+                ['name_type' => $name]
+            );
+        }
     }
 }

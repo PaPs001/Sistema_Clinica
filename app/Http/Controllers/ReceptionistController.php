@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Appointment;
+use App\Models\appointment;
 use App\Models\UserModel;
 use Carbon\Carbon;
 
@@ -14,7 +14,7 @@ class ReceptionistController extends Controller
         $today = Carbon::today();
 
         // 1. Citas del Día (Appointments for today)
-        $todaysAppointments = Appointment::with(['patient.user', 'doctor.user'])
+        $todaysAppointments = appointment::with(['patient.user', 'doctor.user'])
             ->whereDate('appointment_date', $today)
             ->orderBy('appointment_time', 'asc')
             ->get();
