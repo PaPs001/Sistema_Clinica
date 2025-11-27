@@ -652,10 +652,10 @@ button:focus, a:focus, input:focus {
         
         <ul class="sidebar-menu">
             <li>
-                <a href="{{ route('dashboardMedico') }}" class="active">
+               <!-- <a href="{{ route('dashboardMedico') }}" class="active">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
-                </a>
+                </a>-->
             </li>
             <li>
                 <a href="{{ route('registro-expediente') }}">
