@@ -1,8 +1,6 @@
 @extends('plantillas.dashboard_general')
 @section('title', 'Dashboard Médico - Hospital Naval')
 
-@section('styles')
-@vite('resources/css/medic/dashboard_medico.css')
 <style>
 /* ===== VARIABLES Y RESET ===== */
 :root {

@@ -1,10 +1,6 @@
 @extends('plantillas.dashboard_general')
 @section('title', 'Consulta Historial - Hospital Naval')
 
-@section('styles')
-@vite('resources/css/medic/consulta_historial_medico.css')
-@endsection
-
 <style>
 /* ===== VARIABLES Y RESET ===== */
 :root {

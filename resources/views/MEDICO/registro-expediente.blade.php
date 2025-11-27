@@ -1,10 +1,6 @@
 @extends('plantillas.dashboard_general')
 @section('title', 'Registro de Expediente Médico - Hospital Naval')
 
-@section('styles')
-@vite(['resources/css/medic/registro-expediente.css'])
-@endsection
-
 <style>
 /* ===== VARIABLES Y RESET ===== */
 :root {

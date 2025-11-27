@@ -1,10 +1,5 @@
 @extends('plantillas.dashboard_general')
 @section('title', 'Subir Documentos - Hospital Naval')
-
-@section('styles')
-@vite('resources/css/medic/subir-documentos.css')
-@endsection
-
 <style>
 /* ===== VARIABLES Y RESET ===== */
 :root {

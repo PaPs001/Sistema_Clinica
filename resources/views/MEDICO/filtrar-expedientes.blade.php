@@ -1,10 +1,6 @@
 @extends('plantillas.dashboard_general')
 @section('title', 'Filtrar Expedientes - Hospital Naval')
 
-@section('styles')
-@vite('resources/css/medic/filtrar-expedientes.css')
-@endsection
-
 <style>
 /* ===== VARIABLES Y RESET ===== */
 :root {

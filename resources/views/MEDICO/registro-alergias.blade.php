@@ -1,10 +1,6 @@
 @extends('plantillas.dashboard_general')
 @section('title', 'Registro alergias Médico - Hospital Naval')
 
-@section('styles')
-@vite('resources/css/medic/registro-alergias.css')
-@endsection
-
 <style>
 /* ===== VARIABLES Y RESET ===== */
 :root {
