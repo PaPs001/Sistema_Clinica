@@ -54,12 +54,13 @@ export function crearBuscador({
                     contenedor.appendChild(div);
                 });
 
-            } catch (err) {
+            } catch (error) {
                 contenedor.innerHTML = `
                     <div style="padding: 8px; color: #999;">
                         Error al buscar pacientes
                     </div>
                 `;
+                console.error("Error en crearBuscador:", error);
             }
 
         }, 300);
