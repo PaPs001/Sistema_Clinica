@@ -108,5 +108,3 @@ window.toggleExpandibleUser = function(header) {
     /*const icon = header.querySelector(".icon");
     icon.classList.toggle("rotate");*/
 };
-
-window.toggleExpandibleUser = toggleExpandibleUser; 

@@ -1,124 +1,60 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+
 /**
-* @see \App\Http\Controllers\LoginController::LoginRequest
-<<<<<<< HEAD
-<<<<<<< HEAD
+ * @see \App\Http\Controllers\LoginController::LoginRequest
  * @see app/Http/Controllers/LoginController.php:16
-=======
- * @see app/Http/Controllers/LoginController.php:13
->>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
-=======
-* @see app/Http/Controllers/LoginController.php:16
-* @route '/login'
-*/
->>>>>>> 2a0a28eae3ac502c1d4c898fbbc30302a6da80ed
 export const LoginRequest = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: LoginRequest.url(options),
     method: 'post',
 })
 
 LoginRequest.definition = {
-    methods: ["post"],
+    methods: ['post'],
     url: '/login',
-} satisfies RouteDefinition<["post"]>
+} satisfies RouteDefinition<['post']>
 
 /**
-* @see \App\Http\Controllers\LoginController::LoginRequest
-<<<<<<< HEAD
-<<<<<<< HEAD
+ * @see \App\Http\Controllers\LoginController::LoginRequest
  * @see app/Http/Controllers/LoginController.php:16
-=======
- * @see app/Http/Controllers/LoginController.php:13
->>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
-=======
-* @see app/Http/Controllers/LoginController.php:16
-* @route '/login'
-*/
->>>>>>> 2a0a28eae3ac502c1d4c898fbbc30302a6da80ed
 LoginRequest.url = (options?: RouteQueryOptions) => {
-
-
-
-
     return LoginRequest.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\LoginController::LoginRequest
-<<<<<<< HEAD
-<<<<<<< HEAD
+ * @see \App\Http\Controllers\LoginController::LoginRequest
  * @see app/Http/Controllers/LoginController.php:16
-=======
- * @see app/Http/Controllers/LoginController.php:13
->>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
-=======
-* @see app/Http/Controllers/LoginController.php:16
-* @route '/login'
-*/
->>>>>>> 2a0a28eae3ac502c1d4c898fbbc30302a6da80ed
 LoginRequest.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: LoginRequest.url(options),
     method: 'post',
 })
 
 /**
-* @see \App\Http\Controllers\LoginController::LoginRequest
-<<<<<<< HEAD
-<<<<<<< HEAD
+ * @see \App\Http\Controllers\LoginController::LoginRequest
  * @see app/Http/Controllers/LoginController.php:16
-=======
- * @see app/Http/Controllers/LoginController.php:13
->>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
-    const LoginRequestForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-        action: LoginRequest.url(options),
-        method: 'post',
-    })
-=======
-* @see app/Http/Controllers/LoginController.php:16
-* @route '/login'
-*/
 const LoginRequestForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: LoginRequest.url(options),
     method: 'post',
 })
->>>>>>> 2a0a28eae3ac502c1d4c898fbbc30302a6da80ed
 
 /**
-* @see \App\Http\Controllers\LoginController::LoginRequest
-<<<<<<< HEAD
-<<<<<<< HEAD
+ * @see \App\Http\Controllers\LoginController::LoginRequest
  * @see app/Http/Controllers/LoginController.php:16
-=======
- * @see app/Http/Controllers/LoginController.php:13
->>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
  * @route '/login'
  */
-        LoginRequestForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-            action: LoginRequest.url(options),
-            method: 'post',
-        })
-    
-    LoginRequest.form = LoginRequestForm
-=======
-* @see app/Http/Controllers/LoginController.php:16
-* @route '/login'
-*/
 LoginRequestForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: LoginRequest.url(options),
     method: 'post',
 })
 
 LoginRequest.form = LoginRequestForm
-
->>>>>>> 2a0a28eae3ac502c1d4c898fbbc30302a6da80ed
 /**
 * @see \App\Http\Controllers\LoginController::logout
 * @see app/Http/Controllers/LoginController.php:46
