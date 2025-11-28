@@ -132,4 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     `;
     document.head.appendChild(style);
+
+    // Expose for potential external use and avoid lint unused warning
+    window.showAlert = showAlert;
 });
