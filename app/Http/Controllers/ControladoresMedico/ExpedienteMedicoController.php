@@ -292,35 +292,45 @@ class ExpedienteMedicoController extends Controller
         }
     }
 
-
-
-
-
-
-
-
-
     //Buscar pacientes en agregado de expedientes
     public function buscarPacientes(Request $request){
-        $query = $request->get('query');
-        $doctor = Auth::user()->medic;
-        $doctorId = $doctor ? $doctor->id : null;
+         $query = $request->get('query');
+         $fecha = $request->get('fecha');
+         $doctor = Auth::user()->medic;
+         $doctorId = $doctor ? $doctor->id : null;
+
+         $fechaCarbon = null;
+         if ($fecha) {
+             try {
+                 $fechaCarbon = Carbon::parse($fecha);
+             } catch (\Exception $e) {
+                 $fechaCarbon = null;
+             }
+         }
         //se obtiene el usuario del paciente teniendo en cuenta de si es temporal o no y lo busca dependiendo de si el medico que lo registra es el que
         //va a dar la consulta
-        $pacientesTemporales = patientUser::where('is_temporary', 1)
-        ->where('temporary_name', 'LIKE', "%{$query}%")
-        ->whereHas('appointments', function ($q) use ($doctorId) {
-            $q->where('doctor_id', $doctorId);
-        })
+         $pacientesTemporales = patientUser::where('is_temporary', 1)
+         ->where('temporary_name', 'LIKE', "%{$query}%")
+         ->whereHas('appointments', function ($q) use ($doctorId, $fechaCarbon) {
+             $q->where('doctor_id', $doctorId);
+             if ($fechaCarbon) {
+                 $q->whereDate('appointment_date', $fechaCarbon->toDateString())
+                   ->where('status', 'agendada');
+             }
+         })
         ->limit(10)
-        ->get(['id','temporary_name','temporary_phone'])
-        ->map(function ($p) use ($doctorId) {
+         ->get(['id','temporary_name','temporary_phone'])
+         ->map(function ($p) use ($doctorId, $fechaCarbon) {
 
-            $cita = appointment::where('patient_id', $p->id)
-                ->where('doctor_id', $doctorId)
-                ->where('status', 'agendada')
-                ->latest()
-                ->first();
+             $citaQuery = appointment::where('patient_id', $p->id)
+                 ->where('doctor_id', $doctorId)
+                 ->where('status', 'agendada');
+
+             if ($fechaCarbon) {
+                 $citaQuery->whereDate('appointment_date', $fechaCarbon->toDateString());
+             }
+
+             $cita = $citaQuery->latest()->first();
 
             if ($cita) {
                 $signos = vital_sign::where('patient_id', $p->id)
@@ -351,22 +361,30 @@ class ExpedienteMedicoController extends Controller
             ];
         });
     
-     $pacientesRegistrados = patientUser::whereNotNull('userId')
-        ->whereHas('user', function ($q) use ($query) {
-            $q->where('name','LIKE',"%{$query}%");
-        })
-        ->whereHas('appointments', function ($q) use ($doctorId) {
-            $q->where('doctor_id', $doctorId);
-        })
-        ->with('user:id,name,phone,birthdate,address,genre,email')
-        ->limit(10)
-        ->get(['id','userId'])
-        ->map(function ($p) use ($doctorId) {
-            $cita = appointment::where('patient_id', $p->id)
-                ->where('doctor_id', $doctorId)
-                ->where('status', 'agendada')
-                ->latest()
-                ->first();
+      $pacientesRegistrados = patientUser::whereNotNull('userId')
+         ->whereHas('user', function ($q) use ($query) {
+             $q->where('name','LIKE',"%{$query}%");
+         })
+         ->whereHas('appointments', function ($q) use ($doctorId, $fechaCarbon) {
+             $q->where('doctor_id', $doctorId);
+             if ($fechaCarbon) {
+                 $q->whereDate('appointment_date', $fechaCarbon->toDateString())
+                   ->where('status', 'agendada');
+             }
+         })
+         ->with('user:id,name,phone,birthdate,address,genre,email')
+         ->limit(10)
+         ->get(['id','userId'])
+         ->map(function ($p) use ($doctorId, $fechaCarbon) {
+             $citaQuery = appointment::where('patient_id', $p->id)
+                 ->where('doctor_id', $doctorId)
+                 ->where('status', 'agendada');
+
+             if ($fechaCarbon) {
+                 $citaQuery->whereDate('appointment_date', $fechaCarbon->toDateString());
+             }
+
+             $cita = $citaQuery->latest()->first();
 
             if ($cita) {
                 $signos = vital_sign::where('patient_id', $p->id)
@@ -408,5 +426,4 @@ class ExpedienteMedicoController extends Controller
     Log::info($resultados);
     }
 }
-
 

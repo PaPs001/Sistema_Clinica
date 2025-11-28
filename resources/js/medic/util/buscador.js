@@ -1,4 +1,10 @@
-export function crearBuscador({ input, contenedor, url, renderItem, onSelect }) {
+export function crearBuscador({ 
+    input, 
+    contenedor, 
+    url, 
+    renderItem, 
+    onSelect 
+}) {
 
     input = (input instanceof Element) ? input : document.querySelector(input);
     contenedor = (contenedor instanceof Element) ? contenedor : document.querySelector(contenedor);
@@ -22,7 +28,8 @@ export function crearBuscador({ input, contenedor, url, renderItem, onSelect }) 
             }
 
             try {
-                const response = await fetch(url + query);
+                const finalUrl = (typeof url === "function") ? url(query) : url + query;
+                const response = await fetch(finalUrl);
                 const data = await response.json();
                 contenedor.innerHTML = "";
                 if (data.length === 0) {

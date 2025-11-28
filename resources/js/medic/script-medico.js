@@ -50,7 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
     crearBuscador({
         input: "#nombre",
         contenedor: "#sugerencias-pacientes",
-        url: "/buscar-pacientes?query=",
+        url: (q) => {
+            const fechaConsulta = document.querySelector("#fechaConsulta")?.value || "";
+            const params = new URLSearchParams();
+            if (fechaConsulta) {
+                params.append("fecha", fechaConsulta);
+            }
+            params.append("query", q);
+            return "/buscar-pacientes?" + params.toString();
+        },
         renderItem: p => `${p.nombre} (${p.telefono || "Sin teléfono"})`,
         onSelect: paciente => {
             document.querySelector("#nombre").value = paciente.nombre;
