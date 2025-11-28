@@ -60,6 +60,7 @@ Route::middleware(['auth', 'role:medic'])->group(function (){
     Route::post('newRecord', [ExpedienteMedicoController::class, 'storeRecord'])->name('save_medical_record');
     Route::get('/buscar-pacientes', [ExpedienteMedicoController::class, 'buscarPacientes'])->name('buscar.pacientes');
     Route::get('/consulta-historial', [historialMedicoController::class, 'listarPacientes'])->name('consulta-historial');
+    Route::get('/buscar-pacientes-historial', [historialMedicoController::class, 'buscarPacientesHistorial'])->name('buscar.pacientes.historial');
     Route::get('/obtenerDatos/{id}', [historialMedicoController::class, 'getHistorial'])->name('obtenerDatosHistorial');
     Route::get('/tipos-documentos', [archivosMedicosController::class, 'iniciarPaginaUploadFiles'])->name('iniciar-Upload-files');
     Route::post('subir-archivos', [archivosMedicosController::class, 'subirArchivos'])->name('subir_archivos');

@@ -23,7 +23,14 @@ export default defineConfig({
                 'resources/js/medic/script-filtrar-expedientes.js',
                 'resources/js/medic/script-filtro-expediente.js',
                 'resources/js/PACIENTE/script-historial',
-                'resources/css/MEDICO/modulo_plantilla.css',
+                'resources/css/medic/paginas/modulo_plantilla.css',
+                'resources/css/medic/paginas/consulta_historial_medico.css',
+                'resources/css/medic/paginas/subir_doc_medico.css',
+                'resources/css/medic/paginas/filtrar_exp_medico.css',
+                'resources/css/medic/paginas/registro_alergias_medico.css',
+                'resources/css/medic/paginas/registro-expediente.css',
+                // CSS del paginador
+                'resources/css/PACIENTE/paginas/paginador.css',
                 // JS de la enfermera
                 'resources/js/ENFERMERA/script-enfermera.js',
                 // JS del administrador

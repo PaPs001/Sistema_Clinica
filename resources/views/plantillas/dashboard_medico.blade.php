@@ -5,70 +5,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Pagina')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @vite('resources/css/MEDICO/modulo_plantilla.css')
+    @vite('resources/css/medic/paginas/modulo_plantilla.css')
     @yield('styles')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="hospital-icon">
-                    <i class="fas fa-hospital"></i>
-                </div>
-                <h2>Clinica Ultima Asignatura</h2>
-                <p>Módulo Médico</p>
-                <p>Bienvenido {{ Auth::user()->name }}</p>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <!--<a href="{{ route('dashboardMedico') }}" class="nav-item {{ request()->routeIs('dashboardMedico') ? 'active' : '' }}">
+    <!-- Sidebar CON LAS OPCIONES QUE TE GUSTARON -->
+    <aside class="sidebar">
+        <div class="clinic-info">
+            <h3>Clinica Ultima Asignatura</h3>
+            <p>Sistema Médico</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <!--<li>
+                <a href="{{ route('dashboardMedico') }}">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
-                </a>-->
-                <a href="{{ route('registro-expediente') }}" class="nav-item {{ request()->routeIs('registro-expediente') ? 'active' : '' }}">
+                </a>
+            </li>-->
+            <li>
+                <a href="{{ route('registro-expediente') }}" class="{{ request()->routeIs('registro-expediente') ? 'active' : '' }}">
                     <i class="fas fa-file-medical"></i>
                     <span>Nuevo Expediente</span>
                 </a>
-                <a href="{{ route('consulta-historial') }}" class="nav-item {{ request()->routeIs('consulta-historial') ? 'active' : '' }}">
+            </li>
+            <li>
+                <a href="{{ route('consulta-historial') }}" class="{{ request()->routeIs('consulta-historial') ? 'active' : '' }}">
                     <i class="fas fa-history"></i>
                     <span>Historial Médico</span>
                 </a>
-                <a href="{{ route('iniciar-Upload-files') }}" class="nav-item {{ request()->routeIs('iniciar-Upload-files') ? 'active' : '' }}">
-                    <i class="fas fa-file-upload"></i>
+            </li>
+            <li>
+                <a href="{{ route('iniciar-Upload-files') }}" class="{{ request()->routeIs('iniciar-Upload-files') ? 'active' : '' }}">
+                    <i class="fas fa-upload"></i>
                     <span>Subir Documentos</span>
                 </a>
-                <a href="{{ route('filtrar-expedientes') }}" class="nav-item {{ request()->routeIs('filtrar-expedientes') ? 'active' : '' }}">
+            </li>
+            <li>
+                <a href="{{ route('filtrar-expedientes') }}" class="{{ request()->routeIs('filtrar-expedientes') ? 'active' : '' }}">
                     <i class="fas fa-filter"></i>
                     <span>Filtrar Expedientes</span>
                 </a>
-                <a href="{{ route('registro-alergias') }}" class="nav-item {{ request()->routeIs('registro-alergias') ? 'active' : '' }}">
+            </li>
+            <li>
+                <a href="{{ route('registro-alergias') }}" class="{{ request()->routeIs('registro-alergias') ? 'active' : '' }}">
                     <i class="fas fa-allergies"></i>
-                    <span>Antecedents Medicos</span>
+                    <span>Antecedentes Medicos</span>
                 </a>
-            </nav>
-            
-            
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user-md"></i>
-                    </div>
-                    <div class="user-details">
-                        <strong>Dr. Juan Pérez</strong>
-                        <span>Cardiólogo</span>
-                    </div>
+            </li>
+        </ul>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user-md"></i>
                 </div>
-                <form id="logout-form" method="post" style="display: none;"action="{{ route('logout') }}">
-                    @csrf
-                </form>
-                <a href="#" class="logout-btn" onClick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Cerrar Sesión</span>
-                </a>
+                <div>
+                    <strong>Dr. {{ Auth::user()->name }}</strong>
+                    <div>Médico General</div>
+                </div>
             </div>
+            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="text-decoration: none; color: inherit;">
+                <div class="weather-info">
+                    <span>Cerrar Sesión</span>
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
         </div>
+    </aside>
         <!-- Main Content -->
         <div class="main-content">
             @yield('content')

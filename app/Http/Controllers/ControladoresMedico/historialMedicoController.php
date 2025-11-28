@@ -28,28 +28,63 @@ use Illuminate\Support\Facades\DB;
 class historialMedicoController extends Controller
 {
     //
-     
-    //Listado de pacientes para consulta su historial
+
     public function listarPacientes(Request $request)
     {
         $doctor = Auth::user()->medic;
         $doctorId = $doctor ? $doctor->id : null;
         $search = $request->input('buscar');
-        
-        $relacion  =    
-        $patientUser = patientUser::with('user')
-            ->whereHas('medicPatient', function ($query) use ($doctorId){
+
+        $patientQuery = patientUser::with('user')
+            ->whereHas('medicPatient', function ($query) use ($doctorId) {
                 $query->where('medic_id', $doctorId);
-            })
-            ->whereHas('user', function ($query) use ($search) {
-                if (!empty($search)) {
-                    $query->where('name', 'LIKE', '%' . $search . '%');
-                }
-            })
+            });
+
+        if (!empty($search)) {
+            $patientQuery->where(function ($query) use ($search) {
+                $query->whereHas('user', function ($userQuery) use ($search) {
+                    $userQuery->where('name', 'LIKE', '%' . $search . '%');
+                })->orWhere('id', $search);
+            });
+        }
+
+        $patientUser = $patientQuery
+            ->orderBy('id')
             ->paginate(5)
-            ->withQueryString(); 
+            ->withQueryString();
 
         return view('MEDICO.consulta-historial', compact('patientUser'));
+    }
+
+    public function buscarPacientesHistorial(Request $request)
+    {
+        $doctor = Auth::user()->medic;
+        $doctorId = $doctor ? $doctor->id : null;
+        $query = $request->input('query');
+
+        if (!$doctorId || empty($query)) {
+            return response()->json([]);
+        }
+
+        $patients = patientUser::with('user')
+            ->whereHas('medicPatient', function ($q) use ($doctorId) {
+                $q->where('medic_id', $doctorId);
+            })
+            ->whereHas('user', function ($q) use ($query) {
+                $q->where('name', 'LIKE', '%' . $query . '%');
+            })
+            ->limit(10)
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id' => $p->id,
+                    'name' => $p->user->name,
+                    'phone' => $p->user->phone,
+                    'email' => $p->user->email,
+                ];
+            });
+
+        return response()->json($patients);
     }
     //Obtener las conexiones de los modelos para lograr obtener la informacion necesaria del historial medico
     public function getHistorial($id){

@@ -66,10 +66,18 @@ document.addEventListener("DOMContentLoaded", () => {
             document.querySelector("#paciente_id").value = paciente.id;
 
             if (paciente.userId != null) {
-                document.querySelector("#fechaNacimiento").value = paciente.fechaNacimiento;
-                document.querySelector("#genero").value = paciente.genero;
-                document.querySelector("#direccion").value = paciente.direccion;
-                document.querySelector("#email").value = paciente.email;
+                const fechaInput = document.querySelector("#fechaNacimiento");
+                const generoInput = document.querySelector("#genero");
+                const direccionInput = document.querySelector("#direccion");
+                const emailInput = document.querySelector("#email");
+                fechaInput.value = paciente.fechaNacimiento;
+                fechaInput.readOnly = 'true';
+                generoInput.value = paciente.genero;
+                generoInput.disabled = 'true';
+                direccionInput.value = paciente.direccion;
+                direccionInput.readOnly = 'true';
+                emailInput.value = paciente.email;
+                emailInput.readOnly = 'true';
             }
 
             addVitalSigns(paciente.signos_vitales);

@@ -1,7 +1,7 @@
-@extends('plantillas.dashboard_general')
+@extends('plantillas.dashboard_medico')
 @section('title', 'Dashboard Médico - Hospital Naval')
 @section('styles')
-    @vite('resources/css/medic/paginas/dashboard-medico.css')
+    @vite('resources/css/medic/paginas/modulo_plantilla.css')
 @endsection
 @section('content')
         <header class="content-header">
