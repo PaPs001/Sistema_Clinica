@@ -18,7 +18,6 @@ function setupEditModals() {
     const closeModal = document.querySelector('.close-modal');
     const cancelBtn = document.querySelector('.btn-cancel');
     const modalTitle = document.getElementById('modal-title');
-    const formFields = document.getElementById('form-fields');
     const editForm = document.getElementById('edit-form');
     
     // Configuraciones para cada tipo de edición
@@ -96,8 +95,8 @@ function setupEditModals() {
 }
 
 function loadFormFields(fields) {
-    const formFields = document.getElementById('form-fields');
-    formFields.innerHTML = '';
+    const formFieldsContainer = document.getElementById('form-fields');
+    formFieldsContainer.innerHTML = '';
     
     fields.forEach(field => {
         const formGroup = document.createElement('div');
@@ -135,7 +134,7 @@ function loadFormFields(fields) {
         
         formGroup.appendChild(label);
         formGroup.appendChild(input);
-        formFields.appendChild(formGroup);
+        formFieldsContainer.appendChild(formGroup);
     });
 }
 
