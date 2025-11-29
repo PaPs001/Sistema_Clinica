@@ -349,9 +349,9 @@ body {
     opacity: 0;
 }
 
-.form-group input:required + label::after,
-.form-group select:required + label::after,
-.form-group textarea:required + label::after {
+.form-group input:required+label::after,
+.form-group select:required+label::after,
+.form-group textarea:required+label::after {
     opacity: 1;
 }
 
@@ -377,6 +377,30 @@ body {
 .form-group textarea {
     resize: vertical;
     min-height: 80px;
+}
+
+/* ===== MEDICAMENTOS SELECCIONADOS ===== */
+.selected-medications {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.med-chip {
+    background: #f0f4ff;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    border: 1px solid var(--accent-color);
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.med-chip:hover {
+    background: #e0e7ff;
+    transform: translateY(-1px);
 }
 
 /* ===== BOTONES HORIZONTALES PARA ANTECEDENTES ===== */
@@ -439,6 +463,27 @@ body {
     box-shadow: 0 4px 12px rgba(6, 17, 117, 0.3);
 }
 
+.btn-eliminar {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-eliminar:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
 .btn-secondary {
     background: #6c757d;
     color: white;
@@ -473,9 +518,28 @@ body {
     border-left: 4px solid var(--accent-color);
 }
 
+/* Bloque de enfermedades crónicas dentro de expandibles */
+.bloque-cronica {
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.bloque-cronica .form-group {
+    position: relative;
+}
+
+.bloque-cronica .enfermedades-cronicas {
+    font-weight: 500;
+}
+
+.bloque-cronica .notas {
+    resize: vertical;
+}
+
 /* ===== SUGERENCIAS ===== */
 .sugerencias-lista,
 .sugerencias-lista-diagnosticos {
+    display: none;
     position: absolute;
     top: 100%;
     left: 0;
@@ -532,6 +596,7 @@ body {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -543,6 +608,7 @@ body {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -550,9 +616,17 @@ body {
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 .form-section {
@@ -573,50 +647,50 @@ body {
         width: 100%;
         height: auto;
     }
-    
+
     .main-content {
         margin-left: 0;
         width: 100%;
     }
-    
+
     .content {
         padding: 20px 15px;
     }
-    
+
     .content-header {
         flex-direction: column;
         gap: 15px;
         align-items: flex-start;
     }
-    
+
     .header-actions {
         width: 100%;
         justify-content: space-between;
     }
-    
+
     .search-box input {
         width: 200px;
     }
-    
+
     .form-section {
         padding: 20px;
     }
-    
+
     .form-grid {
         grid-template-columns: 1fr;
         gap: 15px;
     }
-    
+
     .medical-buttons-horizontal {
         grid-template-columns: 1fr;
         gap: 20px;
     }
-    
+
     .form-actions {
         padding: 20px;
         flex-direction: column;
     }
-    
+
     .btn-primary,
     .btn-secondary {
         width: 100%;
@@ -628,11 +702,11 @@ body {
     .content-header h1 {
         font-size: 1.5rem;
     }
-    
+
     .form-section h3 {
         font-size: 1.1rem;
     }
-    
+
     .medical-button-item {
         padding: 20px;
     }
@@ -670,10 +744,12 @@ textarea:focus {
 }
 
 .expandible-content {
-    display: none;          /* oculto por defecto */
+    display: none;
+    /* oculto por defecto */
     padding: 15px;
 }
 
 .expandible.open .expandible-content {
-    display: block;         /* se muestra cuando tiene .open */
+    display: block;
+    /* se muestra cuando tiene .open */
 }

@@ -33,6 +33,9 @@ class filtradoExpedientesController extends Controller
         $texto = $request->input('texto');
         $doctor = Auth::user()->medic;
         $doctorId = $doctor ? $doctor->id : null;
+
+        Log::info("FiltradoExpedientes: DoctorId: $doctorId, Texto: $texto");
+
         $expedientes = medical_records::whereHas('patientUser.medicAll', function($q) use ($doctorId){
             $q->where('medic_id', $doctorId);
         })
@@ -43,6 +46,8 @@ class filtradoExpedientesController extends Controller
         })
         ->with(['patientUser.user', 'consultDiseases.disease'])
         ->paginate(4);
+
+        Log::info("FiltradoExpedientes: Found records: " . $expedientes->total());
 
         return response()->json($expedientes);
     }

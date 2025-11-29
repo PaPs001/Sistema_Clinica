@@ -19,6 +19,7 @@ use App\Models\documentType;
 use App\Models\allergie;
 use App\Models\allergene;
 use App\Models\MedicPatient;
+use App\Models\Medication;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Models\fileRecord;
@@ -79,5 +80,18 @@ class buscadoresController extends Controller
             ->get(['id', 'name']);
 
         return response()->json($alergenos);
+    }
+
+    public function autocompletarMedicamentos(Request $request){
+        $query = $request->get('query');
+
+        $medications = Medication::where('name', 'LIKE', "%{$query}%")
+            ->orWhere('category', 'LIKE', "%{$query}%")
+            ->orWhere('presentation', 'LIKE', "%{$query}%")
+            ->orderBy('name')
+            ->limit(10)
+            ->get(['id', 'name', 'category', 'presentation']);
+
+        return response()->json($medications);
     }
 }

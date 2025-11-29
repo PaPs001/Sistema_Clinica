@@ -86,15 +86,20 @@ class historialMedicoController extends Controller
 
         return response()->json($patients);
     }
-    //Obtener las conexiones de los modelos para lograr obtener la informacion necesaria del historial medico
     public function getHistorial($id){
         $patientUser = patientUser::with([
-            'vitalSigns.appointment',
+            'appointments' => function($query) {
+                $query->where('status', 'completada')
+                      ->orderBy('appointment_date', 'desc')
+                      ->orderBy('appointment_time', 'desc');
+            },
+            'appointments.vitalSigns',
             'medicalRecords.allergies.allergieAllergene.allergie',
             'medicalRecords.allergies.allergieAllergene.allergene',
-            'appointments',
             'medicalRecords.consultDiseases.disease',
+            'medicalRecords.consultDiseases.medications',
             'medicalRecords.diseaseRecords.disease',
+            'medicalRecords.currentMedications',
             'user',
             'medicalRecords.files.documentType',
         ])->findOrFail($id);

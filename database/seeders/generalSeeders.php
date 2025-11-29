@@ -19,6 +19,7 @@ class generalSeeders extends Seeder
             TypeServicesSeeder::class,
             UsersInitSeeder::class,
             appointmentSeeder::class,
+            MedicationSeeder::class,
             vitalSignsSeeder::class,
             allergieSeeder::class,
             diseaseSeeder::class,

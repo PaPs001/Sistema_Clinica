@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\consult_disease;
 
 class Medication extends Model
 {
@@ -18,4 +19,14 @@ class Medication extends Model
         'provider',
         'status',
     ];
+
+    public function consults()
+    {
+        return $this->belongsToMany(
+            consult_disease::class,
+            'consult_disease_medication',
+            'medication_id',
+            'consult_disease_id'
+        )->withTimestamps();
+    }
 }

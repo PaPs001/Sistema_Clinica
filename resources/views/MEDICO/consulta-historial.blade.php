@@ -160,33 +160,52 @@
             display: none;
             position: fixed;
             inset: 0;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0,0,0,0.6);
             justify-content: center;
             align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(3px);
         ">
             <div style="
-                background: white;
-                padding: 20px;
-                border-radius: 10px;
-                width: 80%;
-                max-width: 600px;
-                max-height: 80vh;
-                overflow-y: auto;
-                position: relative;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                padding: 2px;
+                border-radius: 16px;
+                width: 90%;
+                max-width: 700px;
+                max-height: 85vh;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             ">
-                <button id="cerrarModal" style="
-                    position: absolute;
-                    top: 10px;
-                    right: 10px;
-                    background: red;
-                    color: white;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    padding: 5px 10px;
-                ">X</button>
+                <div style="
+                    background: white;
+                    border-radius: 14px;
+                    padding: 30px;
+                    overflow-y: auto;
+                    max-height: calc(85vh - 4px);
+                    position: relative;
+                ">
+                    <button id="cerrarModal" style="
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 50%;
+                        cursor: pointer;
+                        padding: 0;
+                        width: 35px;
+                        height: 35px;
+                        font-size: 18px;
+                        font-weight: bold;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+                    " onmouseover="this.style.transform='rotate(90deg) scale(1.1)'" onmouseout="this.style.transform='rotate(0deg) scale(1)'">×</button>
 
-                <div id="contenidoModal">
+                    <div id="contenidoModal">
+                    </div>
                 </div>
             </div>
         </div>
@@ -215,6 +234,11 @@ function renderPaginatedList(
         const pageItems = items.slice(start, start + perPage);
 
         const listHtml = pageItems.map(renderItem).join('');
+
+        if (totalPages <= 1) {
+            container.innerHTML = listHtml;
+            return;
+        }
 
         const paginationHtml = `
             <ul class="myPagination">
@@ -266,39 +290,45 @@ function verHistorial(id) {
             const divEnfermedades = document.getElementById('enfermedades-cronicas-content');
             const divMedicamentos = document.getElementById('medicamentos-content');
             const divArchivos = document.getElementById('attached-documents');
-            const vitalSigns = data.vital_signs ?? [];
+            
+            const completedAppointments = data.appointments ?? [];
             const user = data.user ?? {};
             const allergies = data.medical_records?.flatMap(r => r.allergies ?? []) ?? [];
             const chronicDiseases = data.medical_records?.flatMap(r => r.disease_records ?? []) ?? [];
-            const medicines = data.medical_records?.flatMap(r => r.medicines ?? []) ?? [];
+            const medicines = data.medical_records?.flatMap(r => r.current_medications ?? []) ?? [];
             const medicalRecords = data.medical_records ?? [];
-            window.vitalSignsData = vitalSigns;
+            
+            window.appointmentsData = completedAppointments;
             window.medicalRecordsData = medicalRecords;
-            if (vitalSigns.length) {
-            const cardsHtml = vitalSigns.map((vs, i) => `
-                <div class="history-card">
-                    <div class="history-card-header">
-                        <span> fecha de consulta ${vs.appointment?.appointment_date ?? 'N/A'}</span>
-                        <span>Consulta #${i + 1}</span>
-                    </div>
-                    <div class="history-card-body">
-                        <p><strong>Paciente:</strong> ${user.name ?? 'Sin nombre'}</p>
-                        <p><strong>Edad:</strong> ${user.birthdate ?? 'N/A'}</p>
-                        <p><strong>Género:</strong> ${user.genre ?? 'N/A'}</p>
-                        <p><strong>Teléfono:</strong> ${user.phone ?? 'N/A'}</p>
+            
+            if (completedAppointments.length) {
+                const cardsHtml = completedAppointments.map((appointment, i) => {
+                    const vitalSign = appointment.vital_signs?.[0] ?? {};
+                    return `
+                    <div class="history-card">
+                        <div class="history-card-header">
+                            <span>fecha de consulta ${appointment.appointment_date ?? 'N/A'}</span>
+                            <span>Consulta #${i + 1}</span>
+                        </div>
+                        <div class="history-card-body">
+                            <p><strong>Paciente:</strong> ${user.name ?? 'Sin nombre'}</p>
+                            <p><strong>Edad:</strong> ${user.birthdate ?? 'N/A'}</p>
+                            <p><strong>Género:</strong> ${user.genre ?? 'N/A'}</p>
+                            <p><strong>Teléfono:</strong> ${user.phone ?? 'N/A'}</p>
 
-                        <div class="history-vitals">
-                            <div><strong>Temp:</strong> ${vs.temperature ?? 'N/A'} °C</div>
-                            <div><strong>FC:</strong> ${vs.heart_rate ?? 'N/A'} lpm</div>
-                            <div><strong>Peso:</strong> ${vs.weight ?? 'N/A'} kg</div>
-                            <div><strong>Altura:</strong> ${vs.height ?? 'N/A'} cm</div>
+                            <div class="history-vitals">
+                                <div><strong>Temp:</strong> ${vitalSign.temperature ?? 'N/A'} °C</div>
+                                <div><strong>FC:</strong> ${vitalSign.heart_rate ?? 'N/A'} lpm</div>
+                                <div><strong>Peso:</strong> ${vitalSign.weight ?? 'N/A'} kg</div>
+                                <div><strong>Altura:</strong> ${vitalSign.height ?? 'N/A'} cm</div>
+                            </div>
+                        </div>
+                        <div class="history-card-footer">
+                            <button class="btnVerMas" onclick="abrirModal(${i})">Ver detalles</button>
                         </div>
                     </div>
-                    <div class="history-card-footer">
-                        <button class="btnVerMas" onclick="abrirModal(${i})">Ver detalles</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+                }).join('');
 
             div.innerHTML = `
                 <h3 class="history-title">
@@ -329,8 +359,8 @@ function verHistorial(id) {
         
             renderPaginatedList(divMedicamentos, medicines, (m) => `
                 <div class="medical-item">
-                    <strong>${m.medicine_name ?? 'Medicamento'}</strong>
-                    <span class="detail">Dosis: ${m.dose ?? 'N/A'} - Frecuencia: ${m.frequency ?? 'N/A'}</span>
+                    <strong>${m.name ?? 'Medicamento'}</strong>
+                    <span class="detail">Dosis: ${m.pivot?.dose ?? 'N/A'} - Frecuencia: ${m.pivot?.frequency ?? 'N/A'}</span>
                 </div>
             `, 'No se han registrado medicamentos');
         
@@ -353,27 +383,108 @@ function verHistorial(id) {
 }
 
 function abrirModal(index) {
-    const consulta = window.vitalSignsData[index];
+    const appointment = window.appointmentsData[index];
+    const vitalSign = appointment.vital_signs?.[0] ?? {};
     const consultDiseases = window.medicalRecordsData.flatMap(mr => mr.consult_diseases);
     const diagnosticosPerConsulta = consultDiseases.find(cd => 
-        cd.appointment_id === consulta.appointment.id
+        cd.appointment_id === appointment.id
     ) || {};
     const modal = document.getElementById('modalConsulta');
     const contenidoModal = document.getElementById('contenidoModal');
     const cerrarModal = document.getElementById('cerrarModal');
     const enfermedad = diagnosticosPerConsulta.disease?.name ?? 'Sin diagnóstico';
+    const medications = diagnosticosPerConsulta.medications ?? [];
+    
+    const medicationsHtml = medications.length > 0 
+        ? medications.map(med => `
+            <div style="
+                background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+                padding: 12px;
+                border-radius: 8px;
+                margin-bottom: 8px;
+                border-left: 3px solid #667eea;
+            ">
+                <strong style="color: #667eea;">${med.name ?? 'Medicamento'}</strong>
+                ${med.presentation ? `<span style="color: #666; font-size: 0.9em;"> - ${med.presentation}</span>` : ''}
+            </div>
+        `).join('')
+        : '<p style="color: #999; font-style: italic;">No se recetaron medicamentos</p>';
+    
     contenidoModal.innerHTML = `
-        <h3>Consulta del ${consulta.appointment?.appointment_date ?? 'N/A'}</h3>
-        <p><strong>Temperatura:</strong> ${consulta.temperature ?? 'N/A'} °C</p>
-        <p><strong>Frecuencia cardiaca:</strong> ${consulta.heart_rate ?? 'N/A'} lpm</p>
-        <p><strong>Peso:</strong> ${consulta.weight ?? 'N/A'} kg</p>
-        <p><strong>Altura:</strong> ${consulta.height ?? 'N/A'} cm</p>
-        <hr>
-        <p><strong>Razon de consulta: </strong> ${diagnosticosPerConsulta.reason ?? 'Sin notas adicionales'}</p>
-        <p><strong>Sintomas descritos: </strong> ${diagnosticosPerConsulta.symptoms ?? 'Sin notas adicionales'}</p>
-        <p><strong>Revision: </strong> ${diagnosticosPerConsulta.findings ?? 'Sin notas adicionales'}</p>
-        <p><strong>Diagnóstico: </strong>  ${enfermedad}</p>
-        <p><strong>Tratamiento: </strong> ${diagnosticosPerConsulta.treatment_diagnosis ?? 'Sin notas adicionales'}</p>
+        <div style="margin-bottom: 25px;">
+            <h2 style="
+                color: #667eea;
+                margin: 0 0 10px 0;
+                font-size: 24px;
+                font-weight: 600;
+            ">Detalles de Consulta</h2>
+            <p style="color: #999; margin: 0; font-size: 14px;">${appointment.appointment_date ?? 'N/A'}</p>
+        </div>
+
+        <div style="
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+        ">
+            <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Temperatura</p>
+                <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: 600; color: #333;">${vitalSign.temperature ?? 'N/A'} °C</p>
+            </div>
+            <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Frecuencia Cardiaca</p>
+                <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: 600; color: #333;">${vitalSign.heart_rate ?? 'N/A'} lpm</p>
+            </div>
+            <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Peso</p>
+                <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: 600; color: #333;">${vitalSign.weight ?? 'N/A'} kg</p>
+            </div>
+            <div>
+                <p style="margin: 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Altura</p>
+                <p style="margin: 5px 0 0 0; font-size: 18px; font-weight: 600; color: #333;">${vitalSign.height ?? 'N/A'} cm</p>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: #667eea; font-size: 16px; margin-bottom: 10px; font-weight: 600;">Razón de Consulta</h3>
+            <p style="margin: 0; padding: 12px; background: #f8f9fa; border-radius: 8px; color: #333;">${diagnosticosPerConsulta.reason ?? 'Sin información'}</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: #667eea; font-size: 16px; margin-bottom: 10px; font-weight: 600;">Síntomas Descritos</h3>
+            <p style="margin: 0; padding: 12px; background: #f8f9fa; border-radius: 8px; color: #333;">${diagnosticosPerConsulta.symptoms ?? 'Sin información'}</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: #667eea; font-size: 16px; margin-bottom: 10px; font-weight: 600;">Hallazgos en Revisión</h3>
+            <p style="margin: 0; padding: 12px; background: #f8f9fa; border-radius: 8px; color: #333;">${diagnosticosPerConsulta.findings ?? 'Sin información'}</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: #667eea; font-size: 16px; margin-bottom: 10px; font-weight: 600;">Diagnóstico</h3>
+            <p style="
+                margin: 0;
+                padding: 12px;
+                background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+                border-radius: 8px;
+                color: #333;
+                font-weight: 600;
+                border-left: 4px solid #667eea;
+            ">${enfermedad}</p>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <h3 style="color: #667eea; font-size: 16px; margin-bottom: 10px; font-weight: 600;">Medicamentos Recetados</h3>
+            ${medicationsHtml}
+        </div>
+
+        <div style="margin-bottom: 0;">
+            <h3 style="color: #667eea; font-size: 16px; margin-bottom: 10px; font-weight: 600;">Tratamiento Indicado</h3>
+            <p style="margin: 0; padding: 12px; background: #f8f9fa; border-radius: 8px; color: #333;">${diagnosticosPerConsulta.treatment_diagnosis ?? 'Sin información'}</p>
+        </div>
     `;
 
     modal.style.display = 'flex';

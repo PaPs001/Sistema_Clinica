@@ -10,7 +10,11 @@ class medical_records extends Model
     protected $table = 'medical_records';
     protected $fillable = [
         'patient_id',
-        'creation_date'
+        'creation_date',
+        'smoking_status',
+        'alcohol_use',
+        'physical_activity',
+        'special_needs',
     ];
 //listo
     public function patientUser(){
@@ -35,6 +39,15 @@ class medical_records extends Model
 
     public function consultDiseases(){
         return $this->hasMany(consult_disease::class, 'id_medical_record', 'id');
+    }
+
+    public function currentMedications(){
+        return $this->belongsToMany(
+            Medication::class,
+            'medical_record_medications',
+            'medical_record_id',
+            'medication_id'
+        )->withPivot('dose', 'frequency')->withTimestamps();
     }
 
     

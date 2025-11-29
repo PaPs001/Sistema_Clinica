@@ -20,5 +20,10 @@ class DatabaseSeeder extends Seeder
         if (class_exists(EnfermeraDemoSeeder::class)) {
             $this->call(EnfermeraDemoSeeder::class);
         }
+
+        // Catálogo de medicamentos desde CSV
+        if (class_exists(MedicationSeeder::class)) {
+            $this->call(MedicationSeeder::class);
+        }
     }
 }

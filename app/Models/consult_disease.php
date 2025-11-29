@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Medication;
 
 class consult_disease extends Model
 {
@@ -17,6 +18,7 @@ class consult_disease extends Model
         'findings',
         'diagnosis_id',
         'treatment_diagnosis',
+        'prescribed_medications',
     ];
 
     public function medicalRecord(){
@@ -28,6 +30,16 @@ class consult_disease extends Model
     }
 
     public function disease(){
-        return $this->beLongsTo(disease::class, 'diagnosis_id', 'id');
+        return $this->belongsTo(disease::class, 'diagnosis_id', 'id');
+    }
+
+    public function medications()
+    {
+        return $this->belongsToMany(
+            Medication::class,
+            'consult_disease_medication',
+            'consult_disease_id',
+            'medication_id'
+        )->withTimestamps();
     }
 }

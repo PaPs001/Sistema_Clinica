@@ -24,10 +24,8 @@ export function addVitalSigns(sv) {
     input.peso.value = peso ?? '';
     input.estatura.value = estatura ?? '';
 
-    if (cita) {
+    if (input.fecha && cita) {
         const fechaHora = `${cita.fecha}T${cita.hora.slice(0, 5)}`;
         input.fecha.value = fechaHora;
-    } else {
-        input.fecha.value = '';
     }
 }

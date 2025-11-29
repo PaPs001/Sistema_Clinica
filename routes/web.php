@@ -66,6 +66,7 @@ Route::middleware(['auth', 'role:medic'])->group(function (){
     Route::post('subir-archivos', [archivosMedicosController::class, 'subirArchivos'])->name('subir_archivos');
     Route::get('/buscar-paciente-archivos', [buscadoresController::class, 'buscarPacienteArchivos'])->name('buscar.paciente.Archivos');
     Route::get('/buscar-diagnostico', [buscadoresController::class, 'autocompletarDiagnostico'])->name('buscar_diagnostico');
+    Route::get('/buscar-medicamentos', [buscadoresController::class, 'autocompletarMedicamentos'])->name('buscar_medicamentos');
     Route::post('/filtrado-expedientes', [filtradoExpedientesController::class, 'filtradoExpedientes'])->name('filtro_Expedientes');
     Route::get('/buscar-alergenos', [buscadoresController::class, 'autocompletarAlergenos'])->name('autocompletar_Alergenos');
     Route::get('/buscar-alergias', [buscadoresController::class, 'autocompletarAlergias'])->name('autocompletar_Alergias');

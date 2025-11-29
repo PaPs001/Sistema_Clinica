@@ -29,7 +29,6 @@ class MedicalRecordsSeeder extends Seeder
         $allAllergies = allergie::all();
         $allAllergenes = allergene::all();
 
-        // Solo pacientes con citas completadas
         $completedAppointments = appointment::where('status', 'completada')
             ->get()
             ->groupBy('patient_id');
@@ -48,13 +47,17 @@ class MedicalRecordsSeeder extends Seeder
                 continue;
             }
 
-            // Un expediente por paciente con citas completadas
             $record = medical_records::firstOrCreate(
                 ['patient_id' => $patient->id],
-                ['creation_date' => now()]
+                [
+                    'creation_date' => now(),
+                    'smoking_status' => $faker->randomElement(['actual', 'exfumador', 'nunca']),
+                    'alcohol_use' => $faker->randomElement(['ninguno', 'ocasional', 'frecuente']),
+                    'physical_activity' => $faker->randomElement(['sedentario', 'moderado', 'activo']),
+                    'special_needs' => $faker->optional()->sentence(6),
+                ]
             );
 
-            // Enfermedades crónicas asociadas al expediente
             if ($allDiseases->isNotEmpty()) {
                 $diseasesForRecord = $allDiseases->random(min(3, $allDiseases->count()));
 
@@ -67,7 +70,6 @@ class MedicalRecordsSeeder extends Seeder
                 }
             }
 
-            // Alergias / alergenos en el expediente
             if ($allAllergies->isNotEmpty() && $allAllergenes->isNotEmpty()) {
                 $allergy = $allAllergies->random();
                 $allergene = $allAllergenes->random();
@@ -89,13 +91,11 @@ class MedicalRecordsSeeder extends Seeder
                 ]);
             }
 
-            // Una consulta (consult_disease) por cada cita completada de este paciente
             foreach ($appointmentsForPatient as $appointment) {
                 $diagnosis = $allDiseases->isNotEmpty()
                     ? $allDiseases->random()
                     : null;
 
-                // Relación médico-paciente para esta consulta completada
                 if ($appointment->doctor_id) {
                     MedicPatient::firstOrCreate([
                         'medic_id' => $appointment->doctor_id,

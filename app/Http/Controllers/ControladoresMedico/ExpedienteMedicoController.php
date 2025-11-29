@@ -40,8 +40,12 @@ class ExpedienteMedicoController extends Controller
             'fechaNacimiento' => 'required|date',
             'genero' => 'required|string|max:50',
             'direccion' => 'required|string|max:500',
-            'telefono' => 'required|string|regex:/^[0-9+\-\s]+$/|max:20',
+            'telefono' => 'required|string|regex:/^[0-9+\-\s()]+$/|max:20',
             'email' => 'required|email|max:255',
+            'smoking_status' => 'nullable|string|in:actual,exfumador,nunca',
+            'alcohol_use' => 'nullable|string|in:ninguno,ocasional,frecuente',
+            'physical_activity' => 'nullable|string|in:sedentario,moderado,activo',
+            'special_needs' => 'nullable|string|max:500',
 
             'alergias' => 'nullable|array',
             'alergias.*' => 'nullable|string|max:100',
@@ -60,12 +64,23 @@ class ExpedienteMedicoController extends Controller
             'enfermedades-cronicas' => 'nullable|array',
             'enfermedades-cronicas.*' => 'nullable|string|max:100',
             
+            'medicamentos-actuales' => 'nullable|array',
+            'medicamentos-actuales.*' => 'nullable|string|max:100',
+            'medicamentos-actuales_id' => 'nullable|array',
+            'medicamentos-actuales_id.*' => 'nullable|integer',
+            'dosis_medicamento' => 'nullable|array',
+            'dosis_medicamento.*' => 'nullable|string|max:100',
+            'frecuencia_medicamento' => 'nullable|array',
+            'frecuencia_medicamento.*' => 'nullable|string|max:100',
+            
             'fechaConsulta' => 'required|date',
             'motivoConsulta' => 'required|string|max:1000',
             'sintomas' => 'required|string',
             'exploracion' => 'required|string',
             'diagnostico_id' => 'required|integer',
             'tratamiento' => 'required|string',
+            'prescribed_medications' => 'nullable|string',
+            'prescribed_medications_ids' => 'nullable|string',
         ]);
         Log::info('Validación completada exitosamente.');
     }
@@ -179,8 +194,37 @@ class ExpedienteMedicoController extends Controller
             ->whereDate('appointment_date', $fecha->toDateString())
             ->whereTime('appointment_time', $fecha->toTimeString())
             ->first();
+
+        if (!$appointment) {
+            Log::warning('No se encontró cita agendada que coincida, creando una nueva para el registro.');
+
+            $service = \App\Models\services::first();
+            if (!$service) {
+                throw new \Exception('No hay servicios configurados para crear la cita asociada.');
+            }
+
+            $appointment = appointment::create([
+                'patient_id'        => $patient->id,
+                'doctor_id'         => $doctorId,
+                'receptionist_id'   => null,
+                'services_id'       => $service->id,
+                'appointment_date'  => $fecha->toDateString(),
+                'appointment_time'  => $fecha->toTimeString(),
+                'status'            => 'completada',
+                'reason'            => $validatedData['motivoConsulta'],
+                'notes'             => '',
+                'notifications'     => null,
+            ]);
+
+            Log::info('Cita creada automáticamente:', ['appointment_id' => $appointment->id]);
+        } else {
+            // Marcar la cita existente como completada al registrar el expediente
+            if ($appointment->status !== 'completada') {
+                $appointment->status = 'completada';
+                $appointment->save();
+            }
+        }
             
-            //}
             if($patient->userId == null){
                 Log::info('paso 3: Cambiando valores del medical record');
                 $record = medical_Records::create([
@@ -201,6 +245,18 @@ class ExpedienteMedicoController extends Controller
                     Log::info('Expediente existente encontrado: ID '.$record->id);
                 }
             }
+
+            $lifestyleData = [
+                'smoking_status' => $validatedData['smoking_status'] ?? null,
+                'alcohol_use' => $validatedData['alcohol_use'] ?? null,
+                'physical_activity' => $validatedData['physical_activity'] ?? null,
+                'special_needs' => $validatedData['special_needs'] ?? null,
+            ];
+
+            if (isset($record)) {
+                $record->update($lifestyleData);
+            }
+
             if(!empty($validatedData['alergias']) && !empty($validatedData['alergenos'])){
                 DB::transaction(function () use ($validatedData, $record, $appointment) {
                     $requiredKeys = [
@@ -265,8 +321,46 @@ class ExpedienteMedicoController extends Controller
                 'symptoms' => $validatedData['sintomas'],
                 'findings' => $validatedData['exploracion'],
                 'diagnosis_id' => $validatedData['diagnostico_id'],
-                'treatment_diagnosis' => $validatedData['tratamiento']
+                'treatment_diagnosis' => $validatedData['tratamiento'],
+                'prescribed_medications' => $validatedData['prescribed_medications'] ?? null,
             ]);
+
+            if (!empty($validatedData['prescribed_medications_ids'])) {
+                $ids = collect(explode(',', $validatedData['prescribed_medications_ids']))
+                    ->map(fn ($id) => (int) trim($id))
+                    ->filter()
+                    ->unique()
+                    ->values()
+                    ->all();
+
+                if (!empty($ids)) {
+                    $consult_Disease->medications()->sync($ids);
+                }
+            }
+
+            // Save current medications
+            if (!empty($validatedData['medicamentos-actuales_id'])) {
+                Log::info('Guardando medicamentos actuales del paciente');
+                
+                for ($i = 0; $i < count($validatedData['medicamentos-actuales_id']); $i++) {
+                    $medicationId = $validatedData['medicamentos-actuales_id'][$i];
+                    $dose = $validatedData['dosis_medicamento'][$i] ?? null;
+                    $frequency = $validatedData['frecuencia_medicamento'][$i] ?? null;
+                    
+                    if ($medicationId) {
+                        DB::table('medical_record_medications')->insert([
+                            'medical_record_id' => $record->id,
+                            'medication_id' => $medicationId,
+                            'dose' => $dose,
+                            'frequency' => $frequency,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                }
+                
+                Log::info('Medicamentos actuales guardados correctamente');
+            }
             
             DB::commit();
             $emailToSend = $patient->user->email;
@@ -292,7 +386,6 @@ class ExpedienteMedicoController extends Controller
         }
     }
 
-    //Buscar pacientes en agregado de expedientes
     public function buscarPacientes(Request $request){
          $query = $request->get('query');
          $fecha = $request->get('fecha');

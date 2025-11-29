@@ -1,8 +1,8 @@
-import{ crearBuscador } from "./util/buscador.js";
+import { crearBuscador } from "./util/buscador.js";
 import { agregarBloqueExpandible } from "./util/bloqueExpandible.js";
 function inicializarBuscadores(bloque) {
 
-    
+
     const alergias = bloque.querySelector(".alergias");
     if (alergias) {
         crearBuscador({
@@ -70,33 +70,30 @@ document.addEventListener("DOMContentLoaded", () => {
             contenedor: "#contenedorCronicas",
             template: "#template-cronica",
             titulo: "Enfermedades",
-            inicializarBuscadores: inicializarBuscadores            
+            inicializarBuscadores: inicializarBuscadores
         })
+    };
+
+    window.limpiarFormulario = function () {
+        const contenedorAlergias = document.getElementById('contenedorAlergias');
+        if (contenedorAlergias) {
+            contenedorAlergias.innerHTML = '';
+        }
+        const contenedorCronicas = document.getElementById('contenedorCronicas');
+        if (contenedorCronicas) {
+            contenedorCronicas.innerHTML = '';
+        }
+
+        const nombrePaciente = document.querySelector('.nombre-paciente');
+        if (nombrePaciente) {
+            nombrePaciente.value = '';
+        }
+
+        const pacienteId = document.querySelector('.paciente_id');
+        if (pacienteId) {
+            pacienteId.value = '';
+        }
     };
 });
 
 window.inicializarBuscadores = inicializarBuscadores;
-/*
-function agregarAlergia() {
-    const contenedor = document.getElementById('contenedorAlergias');
-    const template = document.getElementById('template-alergia').innerHTML;
-
-    contenedor.insertAdjacentHTML('beforeend', `
-        <div class="expandible">
-            <div class="expandible-header" onclick="toggleExpandible(this)">
-                <h3>Nueva Alergia</h3>
-                <span class="icon">+</span>
-            </div>
-
-            <div class="expandible-content">
-                ${template}
-            </div>
-        </div>
-    `);
-
-    const nuevoBloque = contenedor.lastElementChild;
-
-    inicializarBuscadores(nuevoBloque);
-}
-*/
-

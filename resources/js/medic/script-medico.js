@@ -1,9 +1,9 @@
-import{ crearBuscador } from "./util/buscador.js";
-import{ addVitalSigns } from "./util/signos-vitales.js";
+import { crearBuscador } from "./util/buscador.js";
+import { addVitalSigns } from "./util/signos-vitales.js";
 import { agregarBloqueExpandible } from "./util/bloqueExpandible.js";
 function inicializarBuscadores(bloque) {
 
-    
+
     const alergias = bloque.querySelector(".alergias");
     if (alergias) {
         crearBuscador({
@@ -45,6 +45,20 @@ function inicializarBuscadores(bloque) {
             }
         });
     }
+
+    const medicamentos = bloque.querySelector(".medicamentos-actuales");
+    if (medicamentos) {
+        crearBuscador({
+            input: medicamentos,
+            contenedor: bloque.querySelector(".sugerencias-medicamentos-actuales"),
+            url: "/buscar-medicamentos?query=",
+            renderItem: m => m.presentation ? `${m.name} — ${m.presentation}` : m.name,
+            onSelect: m => {
+                medicamentos.value = m.name;
+                bloque.querySelector(".medicamentos-actuales_id").value = m.id;
+            }
+        });
+    }
 }
 document.addEventListener("DOMContentLoaded", () => {
     crearBuscador({
@@ -70,14 +84,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 const generoInput = document.querySelector("#genero");
                 const direccionInput = document.querySelector("#direccion");
                 const emailInput = document.querySelector("#email");
-                fechaInput.value = paciente.fechaNacimiento;
-                fechaInput.readOnly = 'true';
-                generoInput.value = paciente.genero;
-                generoInput.disabled = 'true';
-                direccionInput.value = paciente.direccion;
-                direccionInput.readOnly = 'true';
-                emailInput.value = paciente.email;
-                emailInput.readOnly = 'true';
+                if (fechaInput) {
+                    fechaInput.value = paciente.fechaNacimiento;
+                    fechaInput.readOnly = true;
+                }
+                if (generoInput) {
+                    generoInput.value = paciente.genero;
+                }
+                if (direccionInput) {
+                    direccionInput.value = paciente.direccion;
+                    direccionInput.readOnly = true;
+                }
+                if (emailInput) {
+                    emailInput.value = paciente.email;
+                    emailInput.readOnly = true;
+                }
             }
 
             addVitalSigns(paciente.signos_vitales);
@@ -95,6 +116,62 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+    const selectedMedications = [];
+    const medsHiddenInput = document.querySelector("#prescribed_medications");
+    const medsHiddenIdsInput = document.querySelector("#prescribed_medications_ids");
+    const medsSelectedContainer = document.querySelector("#selected-medications");
+
+    function renderSelectedMedications() {
+        if (!medsSelectedContainer) return;
+        medsSelectedContainer.innerHTML = "";
+
+        selectedMedications.forEach((m) => {
+            const chip = document.createElement("span");
+            chip.classList.add("med-chip");
+            const label = m.presentation
+                ? `${m.name} (${m.presentation})`
+                : m.name;
+            chip.textContent = label;
+            chip.title = "Click para quitar";
+            chip.addEventListener("click", () => {
+                const index = selectedMedications.findIndex((x) => x.id === m.id);
+                if (index !== -1) {
+                    selectedMedications.splice(index, 1);
+                    renderSelectedMedications();
+                }
+            });
+            medsSelectedContainer.appendChild(chip);
+        });
+
+        const names = selectedMedications.map((m) => m.name);
+        const ids = selectedMedications.map((m) => m.id);
+
+        if (medsHiddenInput) {
+            medsHiddenInput.value = names.join(", ");
+        }
+        if (medsHiddenIdsInput) {
+            medsHiddenIdsInput.value = ids.join(",");
+        }
+    }
+
+    crearBuscador({
+        input: "#medication_search",
+        contenedor: "#sugerencias-medicamentos",
+        url: "/buscar-medicamentos?query=",
+        renderItem: (m) =>
+            m.presentation
+                ? `${m.name} — ${m.presentation}`
+                : m.name,
+        onSelect: (m) => {
+            if (!selectedMedications.some((x) => x.id === m.id)) {
+                selectedMedications.push(m);
+                renderSelectedMedications();
+            }
+            const input = document.querySelector("#medication_search");
+            if (input) input.value = "";
+        },
+    });
+
     window.agregarAlergia = function () {
         agregarBloqueExpandible({
             contenedor: "#contenedorAlergias",
@@ -109,7 +186,16 @@ document.addEventListener("DOMContentLoaded", () => {
             contenedor: "#contenedorCronicas",
             template: "#template-cronica",
             titulo: "Enfermedades",
-            inicializarBuscadores: inicializarBuscadores            
+            inicializarBuscadores: inicializarBuscadores
+        })
+    };
+
+    window.agregarMedicamento = function () {
+        agregarBloqueExpandible({
+            contenedor: "#contenedorMedicamentos",
+            template: "#template-medicamento",
+            titulo: "Medicamentos Actuales",
+            inicializarBuscadores: inicializarBuscadores
         })
     };
 });

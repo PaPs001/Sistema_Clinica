@@ -6,7 +6,7 @@
 @section('content')
         <header class="content-header">
             <h1>Registro de Expediente Medico</h1>
-            <div class="header-actions">
+            <!--<div class="header-actions">
                 <div class="search-box">
                     <input type="text" placeholder="Buscar paciente...">
                     <i class="fas fa-search"></i>
@@ -15,7 +15,7 @@
                     <i class="fas fa-bell"></i>
                     <span class="notification-badge">3</span>
                 </div>
-            </div>
+            </div>-->
         </header>
         
         <div class="content">
@@ -29,6 +29,16 @@
                 <form id="expedienteForm" class="medical-form" method="post" action="{{ route('save_medical_record') }}">
                     @csrf
                     
+                    <div class="form-section">
+                        <h3><i class="fas fa-calendar-check"></i> Datos de la Consulta</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="fechaConsulta">Fecha de Consulta *</label>
+                                <input type="datetime-local" id="fechaConsulta" name="fechaConsulta" required>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-section">
                         <h3><i class="fas fa-user"></i> Informacion del Paciente</h3>
                         <div class="form-grid">
@@ -61,6 +71,43 @@
                             <div class="form-group full-width">
                                 <label for="direccion">Direccion</label>
                                 <textarea id="direccion" name="direccion" rows="2"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3><i class="fas fa-user-check"></i> Hábitos y Necesidades Especiales</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="smoking_status">Tabaquismo</label>
+                                <select id="smoking_status" name="smoking_status">
+                                    <option value="">Seleccionar</option>
+                                    <option value="actual">Actual</option>
+                                    <option value="exfumador">Exfumador</option>
+                                    <option value="nunca">Nunca</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="alcohol_use">Consumo de alcohol</label>
+                                <select id="alcohol_use" name="alcohol_use">
+                                    <option value="">Seleccionar</option>
+                                    <option value="ninguno">Ninguno</option>
+                                    <option value="ocasional">Ocasional</option>
+                                    <option value="frecuente">Frecuente</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="physical_activity">Actividad física</label>
+                                <select id="physical_activity" name="physical_activity">
+                                    <option value="">Seleccionar</option>
+                                    <option value="sedentario">Sedentario</option>
+                                    <option value="moderado">Moderado</option>
+                                    <option value="activo">Activo</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="special_needs">Necesidades especiales</label>
+                                <textarea id="special_needs" name="special_needs" rows="2" placeholder="Discapacidad visual, auditiva, movilidad reducida, etc."></textarea>
                             </div>
                         </div>
                     </div>
@@ -110,10 +157,18 @@
                                     <i class="fas fa-plus"></i> Agregar enfermedad cronica
                                 </button>
                             </div>
+
+                            <div class="medical-button-item">
+                                <h4><i class="fas fa-pills"></i> Medicamento actual</h4>
+                                <button type="button" class="btn-primary" onclick="agregarMedicamento()">
+                                    <i class="fas fa-plus"></i> Agregar medicamento
+                                </button>
+                            </div>
                         </div>
 
                         <div id="contenedorAlergias"></div>
                         <div id="contenedorCronicas"></div>
+                        <div id="contenedorMedicamentos"></div>
 
                         <template id="template-alergia">
                             @include('plantillas.formularios.form-alergia')
@@ -122,16 +177,16 @@
                         <template id="template-cronica">
                             @include('plantillas.formularios.form-enfermedades-cronicas')
                         </template>
+
+                        <template id="template-medicamento">
+                            @include('plantillas.formularios.form-medicamento-actual')
+                        </template>
                     </div>
 
                     <!-- Consulta Actual -->
                     <div class="form-section">
                         <h3><i class="fas fa-notes-medical"></i> Consulta Actual</h3>
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label for="fechaConsulta">Fecha de Consulta *</label>
-                                <input type="datetime-local" id="fechaConsulta" name="fechaConsulta" required>
-                            </div>
                             <div class="form-group">
                                 <label for="motivoConsulta">Motivo de Consulta *</label>
                                 <input type="text" id="motivoConsulta" name="motivoConsulta" required>
@@ -157,6 +212,14 @@
                                 <input type="hidden" id="diagnostico_id" name="diagnostico_id">
                             </div>
                             <div class="form-group full-width">
+                                <label for="medication_search">Medicamentos a recetar</label>
+                                <input type="text" id="medication_search" autocomplete="off" placeholder="Buscar medicamento por nombre, categoría o presentación">
+                                <div id="sugerencias-medicamentos" class="sugerencias-lista"></div>
+                                <input type="hidden" id="prescribed_medications" name="prescribed_medications">
+                                <input type="hidden" id="prescribed_medications_ids" name="prescribed_medications_ids">
+                                <div class="selected-medications" id="selected-medications"></div>
+                            </div>
+                            <div class="form-group full-width">
                                 <label for="tratamiento">Tratamiento Indicado</label>
                                 <textarea id="tratamiento" name="tratamiento" rows="3" placeholder="Medicamentos, dosis y recomendaciones"></textarea>
                             </div>
@@ -180,4 +243,3 @@
 @section('scripts')
 @vite(['resources/js/medic/script-medico.js'])
 @endsection
-

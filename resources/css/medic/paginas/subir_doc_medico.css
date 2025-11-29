@@ -438,6 +438,7 @@ body {
 
 /* ===== SUGERENCIAS ===== */
 .sugerencias-lista {
+    display: none;
     position: absolute;
     top: 100%;
     left: 0;

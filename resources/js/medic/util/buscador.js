@@ -14,6 +14,8 @@ export function crearBuscador({
         return;
     }
 
+    contenedor.style.display = "none";
+
     let timeout = null;
 
     input.addEventListener("input", () => {
@@ -24,6 +26,7 @@ export function crearBuscador({
 
             if (query.length < 1) {
                 contenedor.innerHTML = "";
+                contenedor.style.display = "none";
                 return;
             }
 
@@ -32,12 +35,14 @@ export function crearBuscador({
                 const response = await fetch(finalUrl);
                 const data = await response.json();
                 contenedor.innerHTML = "";
-                if (data.length === 0) {
+
+                if (!Array.isArray(data) || data.length === 0) {
                     contenedor.innerHTML = `
                         <div style="padding: 8px; color: #999;">
-                            No se encontraron pacientes para "${query}"
+                            No se encontraron resultados para "${query}"
                         </div>
                     `;
+                    contenedor.style.display = "block";
                     return;
                 }
 
@@ -49,17 +54,21 @@ export function crearBuscador({
                     div.addEventListener("click", () => {
                         onSelect(item);
                         contenedor.innerHTML = "";
+                        contenedor.style.display = "none";
                     });
 
                     contenedor.appendChild(div);
                 });
 
+                contenedor.style.display = "block";
+
             } catch (error) {
                 contenedor.innerHTML = `
                     <div style="padding: 8px; color: #999;">
-                        Error al buscar pacientes
+                        Error al buscar resultados
                     </div>
                 `;
+                contenedor.style.display = "block";
                 console.error("Error en crearBuscador:", error);
             }
 
