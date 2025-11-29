@@ -174,9 +174,7 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (){
         return view('RECEPCIONISTA.agenda');
     })->name('agenda');
 
-    Route::get('/gestion-citas', function(){
-        return view('RECEPCIONISTA.gestion-citas');
-    })->name('gestionCitas');
+    Route::get('/gestion-citas', [App\Http\Controllers\AppointmentController::class, 'indexView'])->name('gestionCitas');
 
     Route::get('/registro-paciente', function(){
         return view('RECEPCIONISTA.registro-pacientes');
@@ -197,6 +195,7 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (){
     Route::get('/recepcionista/get-appointments', [App\Http\Controllers\AppointmentController::class, 'index'])->name('get.appointments');
     Route::post('/recepcionista/cancel-appointment/{id}', [App\Http\Controllers\AppointmentController::class, 'cancel'])->name('cancel.appointment');
     Route::post('/recepcionista/update-appointment-status/{id}', [App\Http\Controllers\AppointmentController::class, 'updateStatus'])->name('update.appointment.status');
+    Route::get('/recepcionista/search-appointments-autocomplete', [App\Http\Controllers\AppointmentController::class, 'searchPatients'])->name('search.appointments.autocomplete');
 });
 
 //Rutas a paginas enfermera --------------------------------------------------------------

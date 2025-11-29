@@ -145,6 +145,88 @@ class AppointmentController extends Controller
         }
     }
 
+    public function indexView(Request $request)
+    {
+        $query = appointment::with(['patient.user', 'doctor.user'])
+            ->orderBy('appointment_date', 'desc')
+            ->orderBy('appointment_time', 'asc');
+
+        // Apply filters
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('patient', function ($q) use ($search) {
+                $q->where('temporary_name', 'like', "%{$search}%")
+                  ->orWhereHas('user', function ($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        if ($request->filled('date')) {
+            $query->where('appointment_date', $request->date);
+        }
+
+        if ($request->filled('doctor_id')) {
+            $query->whereHas('doctor', function ($q) use ($request) {
+                $q->where('userId', $request->doctor_id);
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $appointments = $query->paginate(5)->withQueryString();
+
+        // Doctors for the filter
+        $doctors = UserModel::where('typeUser_id', 2)
+            ->where('status', 'active')
+            ->get();
+
+        // Calculate stats
+        $today = Carbon::today()->toDateString();
+        $stats = [
+            'today' => appointment::whereDate('appointment_date', $today)->count(),
+            'confirmed' => appointment::whereIn('status', ['Confirmada', 'completada'])->count(),
+            'scheduled' => appointment::where('status', 'agendada')->count(),
+            'cancelled' => appointment::where('status', 'cancelada')->count(),
+        ];
+
+        return view('RECEPCIONISTA.gestion-citas', compact('appointments', 'doctors', 'stats'));
+    }
+
+    public function searchPatients(Request $request)
+    {
+        $term = $request->input('query');
+        
+        if (!$term) {
+            return response()->json([]);
+        }
+
+        // Search in appointments to find patients who have appointments
+        // Or just search all patients? "buscar las citas por nombre de paciente"
+        // It's better to suggest patients who actually have appointments or just any patient name.
+        // Let's search distinct patient names from the appointments table (via relationships)
+        // This might be heavy. Let's just search the User model for patients.
+        // But the user wants to search *appointments*.
+        // Let's search users who are patients matching the name.
+        
+        $patients = UserModel::where('typeUser_id', 3) // Patients
+            ->where('name', 'like', "%{$term}%")
+            ->limit(10)
+            ->get(['name']);
+
+        // Also consider temporary patients if any
+        $tempPatients = patientUser::where('is_Temporary', true)
+            ->where('temporary_name', 'like', "%{$term}%")
+            ->limit(10)
+            ->get(['temporary_name as name']);
+
+        $results = $patients->concat($tempPatients)->pluck('name')->unique()->values();
+
+        return response()->json($results);
+    }
+
     public function getDoctors()
     {
         try {
