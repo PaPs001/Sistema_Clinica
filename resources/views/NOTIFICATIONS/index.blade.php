@@ -1,10 +1,10 @@
 @extends($layout)
 
-@section('title', 'Mis Notificaciones')
+@section('title', $pageTitle)
 
 @section('content')
 <div class="content-header">
-    <h1>Mis Notificaciones</h1>
+    <h1>{{ $pageTitle }}</h1>
 </div>
 
 <div class="content">

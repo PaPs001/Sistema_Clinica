@@ -14,15 +14,18 @@ class NotificationController extends Controller
             ->paginate(10);
 
         $layout = 'plantillas.dashboard_recepcionista'; // Default
+        $pageTitle = 'Notificaciones';
         $userType = auth()->user()->typeUser_id;
 
         if ($userType == 2) {
             $layout = 'plantillas.dashboard_medico';
+            $pageTitle = 'Notificaciones del Médico';
         } elseif ($userType == 3) {
             $layout = 'plantillas.dashboard_paciente';
+            $pageTitle = 'Mis Notificaciones';
         }
 
-        return view('NOTIFICATIONS.index', compact('notifications', 'layout'));
+        return view('NOTIFICATIONS.index', compact('notifications', 'layout', 'pageTitle'));
     }
 
     public function markAsRead($id)
