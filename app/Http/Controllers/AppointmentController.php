@@ -227,6 +227,23 @@ class AppointmentController extends Controller
         return response()->json($results);
     }
 
+    public function reminders(Request $request)
+    {
+        $query = appointment::with(['patient.user', 'doctor.user'])
+            ->orderBy('appointment_date', 'asc') // Upcoming first makes more sense for reminders
+            ->orderBy('appointment_time', 'asc');
+
+        // Simple filters if needed, or just paginate all
+        // The view has filters, let's try to support at least date if passed
+        if ($request->filled('date')) {
+            $query->where('appointment_date', $request->date);
+        }
+
+        $appointments = $query->paginate(5)->withQueryString();
+
+        return view('RECEPCIONISTA.recordatorios', compact('appointments'));
+    }
+
     public function getDoctors()
     {
         try {

@@ -181,9 +181,7 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (){
     })->name('registroPaciente');
     Route::get('/pacientes-recepcionista', [App\Http\Controllers\PatientController::class, 'index'])->name('pacientesRecepcionista');
 
-    Route::get('/recordatorios', function(){
-        return view('RECEPCIONISTA.recordatorios');
-    })->name('recordatorios');
+    Route::get('/recordatorios', [App\Http\Controllers\AppointmentController::class, 'reminders'])->name('recordatorios');
 
     Route::get('/registro-paciente', [App\Http\Controllers\PatientController::class, 'create'])->name('registroPaciente');
 
