@@ -124,17 +124,34 @@ function setupTableActionButtons() {
         });
     });
 
+    // Botones de estado (NUEVO)
+    const statusButtons = document.querySelectorAll('.appointments-table .btn-status');
+    statusButtons.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const row = this.closest('tr');
+            const patientName = row.querySelector('.patient-info strong').textContent;
+            // Get current status from the badge
+            const statusBadge = row.querySelector('.status-badge');
+            const currentStatus = statusBadge.textContent.trim(); // Or map from class if needed
+
+            // We need the raw status value (e.g. 'agendada', 'Confirmada') to pre-select correctly.
+            // The badge text might be 'Agendada' (capitalized).
+            // Let's try to infer or pass it. For now, passing text content is okay as the select handles it.
+            changeAppointmentStatus(patientName, row, currentStatus);
+        });
+    });
+
     // Botones de cancelar
     const cancelButtons = document.querySelectorAll('.appointments-table .btn-cancel');
     cancelButtons.forEach(btn => {
         btn.addEventListener('click', function () {
             const row = this.closest('tr');
             const patientName = row.querySelector('.patient-info strong').textContent;
-            const action = this.textContent.toLowerCase();
+            const action = this.textContent.trim().toLowerCase();
 
             if (action === 'cancelar') {
                 cancelAppointment(patientName, row);
-            } else if (action === 'finalizar') {
+            } else if (action === 'finalizar' || action === 'completar') {
                 completeAppointment(patientName, row);
             }
         });
@@ -415,7 +432,7 @@ function addAppointmentToTable(appointmentData) {
         <td>
             <div style="display: flex; gap: 5px;">
                 <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
-                <button class="section-btn" style="background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.8rem;" aria-label="Cambiar estado">Estado</button>
+                <button class="section-btn btn-status" style="background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.8rem;" aria-label="Cambiar estado">Estado</button>
                 <button class="btn-cancel" aria-label="Cancelar cita">Cancelar</button>
             </div>
         </td>

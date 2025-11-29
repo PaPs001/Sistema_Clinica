@@ -8,33 +8,15 @@
                         <input type="text" placeholder="Buscar recordatorios..." aria-label="Buscar recordatorios">
                         <i class="fas fa-search"></i>
                     </div>-->
-                    <button class="section-btn" id="new-reminder-btn">
-                        <i class="fas fa-plus"></i> Nuevo Recordatorio
-                    </button>
+                    
                 </div>
             </header>
 
             <div class="content">
                 <!-- Estadísticas Rápidas -->
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>24</h3>
-                            <p>Pendientes Hoy</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>156</h3>
-                            <p>Enviados Esta Semana</p>
-                        </div>
-                    </div>
+                    
+                    
                     <!--<div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -62,11 +44,10 @@
                             <label for="reminder-type">Tipo:</label>
                             <select id="reminder-type" name="type">
                                 <option value="">Todos los tipos</option>
-                                <option value="cita">Recordatorio de Cita</option>
-                                <option value="pago">Recordatorio de Pago</option>
-                                <option value="medicamento">Recordatorio de Medicamento</option>
-                                <option value="resultado">Resultados Disponibles</option>
-                                <option value="general">Recordatorio General</option>
+                                <option value="consulta" {{ request('type') == 'consulta' ? 'selected' : '' }}>Consulta</option>
+                                <option value="control" {{ request('type') == 'control' ? 'selected' : '' }}>Control</option>
+                                <option value="emergencia" {{ request('type') == 'emergencia' ? 'selected' : '' }}>Urgencia</option>
+                                <option value="seguimiento" {{ request('type') == 'seguimiento' ? 'selected' : '' }}>Seguimiento</option>
                             </select>
                         </div>
                         
@@ -74,21 +55,12 @@
                             <label for="reminder-status">Estado:</label>
                             <select id="reminder-status" name="status">
                                 <option value="">Todos los estados</option>
-                                <option value="pendiente">Pendiente</option>
-                                <option value="enviado">Enviado</option>
-                                <option value="fallido">Fallido</option>
-                                <option value="programado">Programado</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label for="reminder-channel">Canal:</label>
-                            <select id="reminder-channel" name="channel">
-                                <option value="">Todos los canales</option>
-                                <option value="sms">SMS</option>
-                                <option value="email">Email</option>
-                                <option value="llamada">Llamada</option>
-                                <option value="push">Notificación Push</option>
+                                <option value="Confirmada" {{ request('status') == 'Confirmada' ? 'selected' : '' }}>Confirmada</option>
+                                <option value="agendada" {{ request('status') == 'agendada' ? 'selected' : '' }}>Agendada</option>
+                                <option value="En curso" {{ request('status') == 'En curso' ? 'selected' : '' }}>En consulta</option>
+                                <option value="completada" {{ request('status') == 'completada' ? 'selected' : '' }}>Completada</option>
+                                <option value="cancelada" {{ request('status') == 'cancelada' ? 'selected' : '' }}>Cancelada</option>
+                                <option value="Sin confirmar" {{ request('status') == 'Sin confirmar' ? 'selected' : '' }}>Sin confirmar</option>
                             </select>
                         </div>
                         
@@ -104,18 +76,6 @@
                             <i class="fas fa-redo"></i> Limpiar
                         </a>
                     </form>
-                    
-                    <div class="bulk-actions">
-                        <button class="section-btn" id="send-bulk-reminders">
-                            <i class="fas fa-paper-plane"></i> Enviar Lote
-                        </button>
-                        <button class="section-btn" id="schedule-reminders">
-                            <i class="fas fa-clock"></i> Programar
-                        </button>
-                        <button class="section-btn btn-cancel" id="delete-reminders">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </div>
                 </div>
 
                 <!-- Lista de Recordatorios -->
@@ -123,12 +83,7 @@
                     <h2>
                         <i class="fas fa-list"></i> Recordatorios Programados
                         <div class="section-actions">
-                            <button class="section-btn" id="export-reminders">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                            <button class="section-btn" id="refresh-reminders">
-                                <i class="fas fa-sync"></i> Actualizar
-                            </button>
+                            
                         </div>
                     </h2>
                     
@@ -247,62 +202,7 @@
                 </div>
 
                 <!-- Plantillas de Recordatorios -->
-                <div class="recent-section">
-                    <h2>
-                        <i class="fas fa-layer-group"></i> Plantillas de Recordatorios
-                    </h2>
-                    
-                    <div class="templates-grid">
-                        <div class="template-card">
-                            <div class="template-icon">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <div class="template-content">
-                                <h4>Confirmación de Cita</h4>
-                                <p>Plantilla estándar para confirmar citas médicas programadas.</p>
-                                <div class="template-stats">
-                                    <!--<span><i class="fas fa-chart-bar"></i> 85% tasa de apertura</span>-->
-                                    <span><i class="fas fa-clock"></i> Usada 234 veces</span>
-                                </div>
-                            </div>
-                            <button class="section-btn btn-use-template">
-                                <i class="fas fa-plus"></i> Usar
-                            </button>
-                        </div>
-                        
-                        <div class="template-card">
-                            <div class="template-icon">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                            </div>
-                            <div class="template-content">
-                                <h4>Recordatorio de Pago</h4>
-                                <p>Plantilla para recordatorios de pagos pendientes y facturas.</p>
-                                <div class="template-stats">
-                                    <!--<span><i class="fas fa-chart-bar"></i> 72% tasa de apertura</span>-->
-                                    <span><i class="fas fa-clock"></i> Usada 156 veces</span>
-                                </div>
-                            </div>
-                            <button class="section-btn btn-use-template">
-                                <i class="fas fa-plus"></i> Usar
-                            </button>
-                        </div>
-                        
-                        <div class="template-card">
-                            <div class="template-icon">
-                                <i class="fas fa-file-medical"></i>
-                            </div>
-                            <div class="template-content">
-                                <h4>Resultados Disponibles</h4>
-                                <p>Notificación cuando los resultados de laboratorio están listos.</p>
-                                <div class="template-stats">
-                                    <!--<span><i class="fas fa-chart-bar"></i> 91% tasa de apertura</span>-->
-                                    <span><i class="fas fa-clock"></i> Usada 89 veces</span>
-                                </div>
-                            </div>
-                            <button class="section-btn btn-use-template">
-                                <i class="fas fa-plus"></i> Usar
-                            </button>
-                        </div>
+                
                         
                         <!--<div class="template-card">
                             <div class="template-icon">

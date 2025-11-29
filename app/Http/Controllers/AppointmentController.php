@@ -278,6 +278,14 @@ class AppointmentController extends Controller
             $query->where('appointment_date', $request->date);
         }
 
+        if ($request->filled('type')) {
+            $query->where('reason', $request->type);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         $appointments = $query->paginate(5)->withQueryString();
 
         return view('RECEPCIONISTA.recordatorios', compact('appointments'));

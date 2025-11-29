@@ -4,14 +4,7 @@
             <header class="content-header">
                 <h1>¡Buenos días Ana!</h1>
                 <div class="header-actions">
-                    <div class="search-box">
-                        <input type="text" placeholder="Buscar paciente, cita o teléfono..." aria-label="Buscar en recepción">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <div class="notifications" role="button" aria-label="Ver notificaciones">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">8</span>
-                    </div>
+                   
                 </div>
             </header>
 
@@ -143,6 +136,48 @@
                                 @endforelse
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <!-- Paginación -->
+                    <div class="pagination">
+                        @if ($todaysAppointments->onFirstPage())
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        @else
+                            <a href="{{ $todaysAppointments->previousPageUrl() }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        @endif
+
+                        {{-- Pagination Elements --}}
+                        @foreach ($todaysAppointments->links()->elements as $element)
+                            {{-- "Three Dots" Separator --}}
+                            @if (is_string($element))
+                                <span class="pagination-ellipsis">{{ $element }}</span>
+                            @endif
+
+                            {{-- Array Of Links --}}
+                            @if (is_array($element))
+                                @foreach ($element as $page => $url)
+                                    @if ($page == $todaysAppointments->currentPage())
+                                        <button class="pagination-btn active">{{ $page }}</button>
+                                    @else
+                                        <a href="{{ $url }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">{{ $page }}</a>
+                                    @endif
+                                @endforeach
+                            @endif
+                        @endforeach
+
+                        @if ($todaysAppointments->hasMorePages())
+                            <a href="{{ $todaysAppointments->nextPageUrl() }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        @else
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        @endif
                     </div>
                 </div>
               

@@ -17,11 +17,11 @@ class ReceptionistController extends Controller
         $todaysAppointments = appointment::with(['patient.user', 'doctor.user'])
             ->whereDate('appointment_date', $today)
             ->orderBy('appointment_time', 'asc')
-            ->get();
+            ->paginate(5);
 
         // 2. Statistics
         // Citas Hoy: Count of today's appointments
-        $citasHoy = $todaysAppointments->count();
+        $citasHoy = $todaysAppointments->total();
 
         // Nuevos Pacientes: Patients registered today
         // Assuming 'created_at' in general_users reflects registration time
