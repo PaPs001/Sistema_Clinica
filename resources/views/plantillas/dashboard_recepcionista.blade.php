@@ -46,6 +46,7 @@
                     <i class="fas fa-bell"></i>
                     <span>Recordatorios</span>
                 </a>
+                
                 <!--<a href="reportes-recepcion.html" class="nav-item">
                     <i class="fas fa-chart-bar"></i>
                     <span>Reportes</span>
@@ -76,5 +77,28 @@
         </div>
     </div>
     @yield('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNotificationCount();
+            setInterval(updateNotificationCount, 30000);
+        });
+
+        function updateNotificationCount() {
+            fetch('{{ route("notifications.count") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const badges = document.querySelectorAll('.notification-badge');
+                    badges.forEach(badge => {
+                        if (data.count > 0) {
+                            badge.textContent = data.count;
+                            badge.style.display = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching notifications:', error));
+        }
+    </script>
 </body>
 </html>

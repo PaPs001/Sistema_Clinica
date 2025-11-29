@@ -28,6 +28,13 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function(){
     Route::get('/cambiar-password-primera-vez', function() {return view('LOGIN.cambiar-password');})->name('password.primeravez');
     Route::post('/cambiar-password-primera-vez', [passwordFirstLoginController::class, 'actualizarPasswordInicial'])->name('password.primeravez.update');
+
+    // Notifications
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::get('/notifications/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('notifications.count');
+    Route::get('/notifications/recent', [App\Http\Controllers\NotificationController::class, 'getRecent'])->name('notifications.recent');
+    Route::post('/notifications/send-reminder', [App\Http\Controllers\NotificationController::class, 'sendManualReminder'])->name('notifications.sendReminder');
 });
 
 Route::get('/correo-prueba', [CorreoController::class, 'pruebaCorreo']);

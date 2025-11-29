@@ -187,7 +187,7 @@ async function showNewAppointmentModal() {
             const data = await response.json();
             if (data.success && data.doctors) {
                 data.doctors.forEach(doctor => {
-                    doctorOptions += `<option value="${doctor.name}">${doctor.name}</option>`;
+                    doctorOptions += `<option value="${doctor.id}">${doctor.name}</option>`;
                 });
             }
         }
@@ -274,7 +274,7 @@ async function showNewAppointmentModal() {
                 is_new: isNew,
                 name: name,
                 phone: phone,
-                doctor_name: doctor,
+                doctor_id: doctor, // Send ID instead of name
                 date: date,
                 time: time,
                 type: type,
@@ -300,6 +300,10 @@ async function submitAppointment(data) {
         });
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        console.log('Enviando datos de cita al backend:', data);
+        console.log('Doctor ID enviado:', data.doctor_id);
+
         const response = await fetch('/recepcionista/store-appointment', {
             method: 'POST',
             headers: {

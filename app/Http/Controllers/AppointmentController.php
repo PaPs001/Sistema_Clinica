@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use App\Models\Notification;
 use Carbon\Carbon;
 
 class AppointmentController extends Controller
@@ -39,7 +40,7 @@ class AppointmentController extends Controller
 
         $request->validate([
             'email' => 'required|email',
-            'doctor_name' => 'required|string',
+            'doctor_id' => 'required|exists:general_users,id',
             'date' => 'required|date',
             'time' => 'required',
             'type' => 'required|string',
@@ -57,6 +58,7 @@ class AppointmentController extends Controller
             $patientId = null;
 
             if (!$user) {
+                Log::info('Creating temporary patient for: ' . $request->name);
                 // Create TEMPORARY patient in patient_users
                 $patient = new patientUser();
                 $patient->userId = null; // No general_user linked
@@ -69,9 +71,11 @@ class AppointmentController extends Controller
                 
                 $patientId = $patient->id;
             } else {
+                Log::info('Found existing user: ' . $user->email);
                 // User exists, check if patient record exists
                 $patient = $user->patient;
                 if (!$patient) {
+                    Log::info('Creating patient profile for user: ' . $user->id);
                     $patient = new patientUser();
                     $patient->userId = $user->id;
                     $patient->DNI = 'PENDIENTE';
@@ -81,31 +85,38 @@ class AppointmentController extends Controller
             }
 
             // 2. Handle Doctor
-            // Clean doctor name (remove Dr./Dra. prefix)
-            $cleanDoctorName = preg_replace('/^(Dr\.|Dra\.)\s+/i', '', $request->doctor_name);
+            Log::info('--------------------------------------------------');
+            Log::info('AppointmentController@store: Buscando médico');
+            Log::info('ID recibido del frontend: ' . $request->doctor_id);
             
-            // Search for doctor with typeUser_id = 2 (Medico)
-            $doctorUser = UserModel::where('typeUser_id', 2)
-                ->where('name', 'LIKE', '%' . $cleanDoctorName . '%')
+            // Search for doctor by User ID (general_users id)
+            $doctorUser = UserModel::where('id', $request->doctor_id)
+                ->where('typeUser_id', 2) // Ensure it is a medic
                 ->first();
 
             $doctorId = null;
             
             if ($doctorUser) {
-                // Check if medic profile exists, if not create it (optional, but good for consistency)
+                Log::info('Médico encontrado en tabla general_users (UserModel).');
+                Log::info('Nombre: ' . $doctorUser->name);
+                Log::info('ID (general_users): ' . $doctorUser->id);
+                
+                // Check if medic profile exists, if not create it
                 if (!$doctorUser->medic) {
-                     // Create medic profile if it doesn't exist
+                     Log::info('Perfil médico (medic_users) NO encontrado. Creando uno nuevo...');
                      $medic = new medicUser();
                      $medic->userId = $doctorUser->id;
-                     $medic->service_ID = 1; // Default service or handle appropriately
+                     $medic->service_ID = 1; // Default service
                      $medic->save();
                      $doctorId = $medic->id;
+                     Log::info('Nuevo perfil médico creado en medic_users. ID: ' . $doctorId);
                 } else {
                     $doctorId = $doctorUser->medic->id;
+                    Log::info('Perfil médico encontrado en medic_users. ID: ' . $doctorId);
                 }
             } else {
-                 Log::warning("Doctor not found: " . $request->doctor_name . " (Cleaned: " . $cleanDoctorName . ")");
-                 throw new \Exception("Médico no encontrado: " . $request->doctor_name);
+                 Log::warning("Médico NO encontrado en general_users con ID: " . $request->doctor_id . " y typeUser_id = 2");
+                 throw new \Exception("Médico no encontrado.");
             }
 
             // 3. Handle Receptionist (Auth user)
@@ -115,6 +126,7 @@ class AppointmentController extends Controller
             $receptionistId = null; 
 
             // 4. Create Appointment
+            Log::info('Creating appointment with Patient ID: ' . $patientId . ', Doctor ID: ' . $doctorId);
             $appointment = new appointment();
             $appointment->patient_id = $patientId;
             $appointment->doctor_id = $doctorId;
@@ -127,6 +139,32 @@ class AppointmentController extends Controller
             $appointment->notes = $request->notes ?? '';
             $appointment->save();
 
+            Log::info('Appointment created successfully: ' . $appointment->id);
+
+            // Notify Doctor
+            if ($appointment->doctor && $appointment->doctor->user) {
+                Notification::create([
+                    'sender_id' => auth()->id(),
+                    'receiver_id' => $appointment->doctor->user->id,
+                    'user_role' => 'medico',
+                    'title' => 'Nueva Cita Agendada',
+                    'message' => "Nueva cita agendada para el " . $appointment->appointment_date . " a las " . $appointment->appointment_time,
+                    'status' => 'pending'
+                ]);
+            }
+
+            // Notify Patient
+            if ($appointment->patient && $appointment->patient->user) {
+                Notification::create([
+                    'sender_id' => auth()->id(),
+                    'receiver_id' => $appointment->patient->user->id,
+                    'user_role' => 'paciente',
+                    'title' => 'Nueva Cita Agendada',
+                    'message' => "Tiene una cita programada con el Dr. " . ($appointment->doctor->user->name ?? 'Asignado') . " el " . $appointment->appointment_date . " a las " . $appointment->appointment_time,
+                    'status' => 'pending'
+                ]);
+            }
+
             DB::commit();
 
             return response()->json([
@@ -138,6 +176,7 @@ class AppointmentController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('appointmentController@store: Error: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
             return response()->json([
                 'success' => false,
                 'message' => 'Error al agendar cita: ' . $e->getMessage()

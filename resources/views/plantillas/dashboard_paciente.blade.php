@@ -47,6 +47,11 @@
                     <i class="fas fa-user"></i>
                     <span>Mi Perfil</span>
                 </a>
+                <a href="{{ route('notifications.index') }}" class="nav-item {{ request()->routeIs('notifications.index') ? 'active' : '' }}">
+                    <i class="fas fa-envelope"></i>
+                    <span>Notificaciones</span>
+                    <span class="badge notification-badge" style="display: none; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-left: 5px;">0</span>
+                </a>
             </nav>
             
             <div class="sidebar-footer">
@@ -71,4 +76,27 @@
         <div class="main-content">
             @yield('content')
         </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNotificationCount();
+            setInterval(updateNotificationCount, 30000);
+        });
+
+        function updateNotificationCount() {
+            fetch('{{ route("notifications.count") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const badges = document.querySelectorAll('.notification-badge');
+                    badges.forEach(badge => {
+                        if (data.count > 0) {
+                            badge.textContent = data.count;
+                            badge.style.display = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching notifications:', error));
+        }
+    </script>
 </body>

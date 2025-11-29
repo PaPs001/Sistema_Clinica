@@ -184,7 +184,7 @@
                                             <td><span class="status-badge {{ $appointment->status == 'agendada' ? 'pending' : ($appointment->status == 'Confirmada' ? 'confirmed' : 'completed') }}">{{ ucfirst($appointment->status) }}</span></td>
                                             <td>
                                                 <div class="action-buttons">
-                                                    <button class="btn-send" title="Enviar Recordatorio">
+                                                    <button class="btn-send" title="Enviar Recordatorio" onclick="sendReminder({{ $appointment->id }})">
                                                         <i class="fas fa-paper-plane"></i>
                                                     </button>
                                                     <button class="btn-edit" title="Programar">
@@ -408,4 +408,32 @@
 @endsection
 @section('scripts')
 @vite('resources/js/RECEPCIONISTA/script-recordatorios.js')
+<script>
+    function sendReminder(appointmentId) {
+        if (!confirm('¿Estás seguro de enviar un recordatorio al médico?')) {
+            return;
+        }
+
+        fetch('{{ route("notifications.sendReminder") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ appointment_id: appointmentId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al enviar el recordatorio.');
+        });
+    }
+</script>
 @endsection
