@@ -34,6 +34,9 @@
                         <button type="submit" class="section-btn">
                             <i class="fas fa-filter"></i> Aplicar filtros
                         </button>
+                        <a href="{{ route('reportes.pacientesAtendidos') }}" class="section-btn" style="background-color: #6c757d; text-decoration: none; text-align: center;">
+                            <i class="fas fa-eraser"></i> Limpiar filtros
+                        </a>
                         @if(auth()->user() && auth()->user()->hasPermission('descargar_reportes'))
                             <a href="{{ route('reportes.pacientesAtendidos.export', request()->query()) }}" class="section-btn">
                                 <i class="fas fa-file-excel"></i> Exportar Excel
@@ -54,7 +57,10 @@
                             <th>Hora</th>
                             <th>Paciente</th>
                             <th>Médico</th>
+                            <th>Recepcionista</th>
                             <th>Motivo</th>
+                            <th>Diagnóstico</th>
+                            <th>Medicamentos</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
@@ -65,12 +71,25 @@
                                 <td>{{ $cita->appointment_time }}</td>
                                 <td>{{ optional($cita->patient)->display_name ?? 'N/A' }}</td>
                                 <td>{{ $cita->doctor->user->name ?? 'N/A' }}</td>
+                                <td>{{ optional($cita->receptionist->user)->name ?? 'N/A' }}</td>
                                 <td>{{ $cita->reason }}</td>
+                                <td>
+                                    @foreach($cita->consultDiseases as $consult)
+                                        <span class="badge badge-info">{{ optional($consult->disease)->name }}</span>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    @foreach($cita->consultDiseases as $consult)
+                                        @foreach($consult->medications as $medication)
+                                            <span class="badge badge-success">{{ $medication->name }}</span>
+                                        @endforeach
+                                    @endforeach
+                                </td>
                                 <td>{{ $cita->status }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6">No hay registros con los filtros seleccionados.</td>
+                                <td colspan="9">No hay registros con los filtros seleccionados.</td>
                             </tr>
                         @endforelse
                     </tbody>

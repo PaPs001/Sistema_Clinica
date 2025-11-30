@@ -15,6 +15,7 @@ use App\Models\appointment;
 use App\Models\consult_disease;
 use App\Models\MedicPatient;
 use Faker\Factory as FakerFactory;
+use App\Models\Medication;
 
 class MedicalRecordsSeeder extends Seeder
 {
@@ -103,7 +104,7 @@ class MedicalRecordsSeeder extends Seeder
                     ]);
                 }
 
-                consult_disease::create([
+                $consult = consult_disease::create([
                     'id_medical_record' => $record->id,
                     'appointment_id' => $appointment->id,
                     'reason' => $appointment->reason,
@@ -112,6 +113,12 @@ class MedicalRecordsSeeder extends Seeder
                     'diagnosis_id' => $diagnosis?->id ?? ($allDiseases->first()->id ?? 1),
                     'treatment_diagnosis' => $faker->sentence(10),
                 ]);
+
+                $allMedications = Medication::all();
+                if ($allMedications->isNotEmpty()) {
+                    $randomMedications = $allMedications->random(rand(1, 3));
+                    $consult->medications()->attach($randomMedications->pluck('id'));
+                }
             }
         }
     }

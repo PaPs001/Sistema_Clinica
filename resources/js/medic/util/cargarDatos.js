@@ -15,7 +15,7 @@ export async function cargarDatos({
     const pagination = document.querySelector(paginationContainer);
 
     if (!cont) {
-    console.error(`No se encontró el contenedor: ${contenedor}`);
+        console.error(`No se encontró el contenedor: ${contenedor}`);
     }
 
     if (!tmplt) {
@@ -29,8 +29,17 @@ export async function cargarDatos({
         try {
             const res = await fetch(`${url}?page=${page}`);
             const data = await res.json();
+
+            console.log("=== DEBUG cargarDatos ===");
+            console.log("URL:", url);
+            console.log("Respuesta completa:", data);
+            console.log("data.data existe?:", !!data.data);
+            console.log("data.data:", data.data);
             console.log("PAGINACION:", data.pagination);
+
             const lista = Array.isArray(data) ? data : (data.data || []);
+            console.log("Lista final a procesar:", lista);
+            console.log("Cantidad de items:", lista.length);
 
             if (limpio) cont.innerHTML = "";
 
@@ -101,7 +110,7 @@ function activadorLinksPaginador(contenedor, callback) {
     });
 }
 
-window.toggleExpandibleUser = function(header) {
+window.toggleExpandibleUser = function (header) {
     const item = header.closest(".accordion-item");
     item.classList.toggle("open");
 

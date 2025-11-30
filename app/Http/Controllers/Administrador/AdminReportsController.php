@@ -11,7 +11,7 @@ class AdminReportsController extends Controller
 {
     public function pacientesAtendidos(Request $request)
     {
-        $query = appointment::with(['patient.user', 'doctor.user', 'vitalSigns', 'consultDiseases.disease'])
+        $query = appointment::with(['patient.user', 'doctor.user', 'receptionist.user', 'vitalSigns', 'consultDiseases.disease', 'consultDiseases.medications'])
             ->where('status', 'completada');
 
         if ($request->filled('desde')) {
@@ -41,7 +41,7 @@ class AdminReportsController extends Controller
 
     public function exportPacientesAtendidos(Request $request)
     {
-        $query = appointment::with(['patient.user', 'doctor.user', 'vitalSigns', 'consultDiseases.disease'])
+        $query = appointment::with(['patient.user', 'doctor.user', 'receptionist.user', 'vitalSigns', 'consultDiseases.disease', 'consultDiseases.medications'])
             ->where('status', 'completada');
 
         if ($request->filled('desde')) {
@@ -77,6 +77,7 @@ class AdminReportsController extends Controller
                 'Hora',
                 'Paciente',
                 'Médico',
+                'Recepcionista',
                 'Motivo',
                 'Estado',
                 'Temperatura',
@@ -84,6 +85,7 @@ class AdminReportsController extends Controller
                 'Peso',
                 'Altura',
                 'Diagnósticos',
+                'Medicamentos',
             ]);
 
             foreach ($citas as $cita) {
@@ -96,12 +98,20 @@ class AdminReportsController extends Controller
                     ->filter()
                     ->values()
                     ->implode(' | ');
+                
+                $medications = $cita->consultDiseases
+                    ->flatMap(function ($consult) {
+                        return $consult->medications->pluck('name');
+                    })
+                    ->unique()
+                    ->implode(' | ');
 
                 fputcsv($output, [
                     $cita->appointment_date,
                     $cita->appointment_time,
                     optional($cita->patient)->display_name,
                     optional(optional($cita->doctor)->user)->name,
+                    optional(optional($cita->receptionist)->user)->name ?? 'N/A',
                     $cita->reason,
                     $cita->status,
                     optional($vital)->temperature,
@@ -109,6 +119,7 @@ class AdminReportsController extends Controller
                     optional($vital)->weight,
                     optional($vital)->height,
                     $diagnostics,
+                    $medications,
                 ]);
             }
 

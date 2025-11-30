@@ -1,6 +1,6 @@
-import {cargarDatos} from '../medic/util/cargarDatos.js';
-import {abrirModalPermisos} from '../generales/abrirModal.js';
-document.addEventListener('DOMContentLoaded', function() {
+import { cargarDatos } from '../medic/util/cargarDatos.js';
+import { abrirModalPermisos } from '../generales/abrirModal.js';
+document.addEventListener('DOMContentLoaded', function () {
     cargarDatos({
         url: '/cargarDatos/Roles-permisos',
         contenedor: '#rolesTableBody',
@@ -33,8 +33,8 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             '.usuarios-roles': item => item.users_count ?? 'N/A',
         },
-        onRender: function() {
-            document.querySelector('#rolesTableBody').addEventListener('click', function(e) {
+        onRender: function () {
+            document.querySelector('#rolesTableBody').addEventListener('click', function (e) {
                 const btn = e.target.closest('.btn-view-users');
                 if (!btn) return;
 
@@ -74,7 +74,7 @@ document.addEventListener('click', function (e) {
     cargarDatosRoles(roleId);
 });
 let currentRoleId = null;
-function cargarDatosRoles(roleId){
+function cargarDatosRoles(roleId) {
     currentRoleId = roleId;
     cargarDatos({
         url: `/cargarDatos/permisos/${roleId}`,
@@ -87,7 +87,10 @@ function cargarDatosRoles(roleId){
                 el.value = item.id;
                 if (item.asignado) el.checked = true;
             },
-            '.perm-name': item => item.name
+            '.perm-name': item => el => {
+                el.textContent = item.name;
+                el.setAttribute('for', `perm-${item.id}`);
+            }
         },
         /*onRender: function () {
             document.getElementById("btnGuardarPermisos").onclick = () => {
@@ -98,7 +101,7 @@ function cargarDatosRoles(roleId){
 }
 
 function cerrarModalPermisos(modalId) {
-    const modal = document.querySelector(modalId); 
+    const modal = document.querySelector(modalId);
     if (!modal) {
         console.error(`No se encontró el modal con el ID: ${modalId}`);
         return;
@@ -109,7 +112,7 @@ function cerrarModalPermisos(modalId) {
     document.body.classList.remove('modal-open');
 }
 
-window.cerrarModalPermisos = cerrarModalPermisos; 
+window.cerrarModalPermisos = cerrarModalPermisos;
 
 document.getElementById("btnGuardarPermisos").addEventListener("click", guardarPermisos);
 
@@ -131,7 +134,7 @@ function guardarPermisos() {
         return;
     }
     const checked = [...document.querySelectorAll(".perm-check:checked")]
-                    .map(ch => ch.value);
+        .map(ch => ch.value);
 
     console.log("Permisos seleccionados:", checked);
 
@@ -145,13 +148,13 @@ function guardarPermisos() {
             permisos: checked
         })
     })
-    .then(res => res.json())
-    .then(data => {
-        console.log("Respuesta:", data);
-        alert("Permisos guardados correctamente");
-        cerrarModalPermisos('#modalPermisos');
-    })
-    .catch(err => {
-        console.error("Error al guardar:", err);
-    });
+        .then(res => res.json())
+        .then(data => {
+            console.log("Respuesta:", data);
+            alert("Permisos guardados correctamente");
+            cerrarModalPermisos('#modalPermisos');
+        })
+        .catch(err => {
+            console.error("Error al guardar:", err);
+        });
 }

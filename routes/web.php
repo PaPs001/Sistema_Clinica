@@ -141,15 +141,35 @@ Route::middleware(['auth', 'role:admin'])->group(function (){
         ->name('reportes.pacientesAtendidos.export')
         ->middleware('admin.permission:descargar_reportes,ver_reportes');
 
-    Route::post('/respaldo-datos/backup', [AdminBackupController::class, 'backupDatabase'])
-        ->name('admin.backupDatabase')
+    Route::post('/admin/backup/data', [AdminBackupController::class, 'createDataBackup'])
+        ->name('admin.createDataBackup')
         ->middleware('admin.permission:crear_reportes');
-
-    Route::post('/respaldo-datos/restore', [AdminBackupController::class, 'restoreDatabase'])
-        ->name('admin.restoreDatabase')
+    
+    Route::post('/admin/backup/full', [AdminBackupController::class, 'createFullBackup'])
+        ->name('admin.createFullBackup')
         ->middleware('admin.permission:crear_reportes');
-
-    Route::post('/respaldo-datos/wipe', [AdminBackupController::class, 'wipeDatabase'])
+    
+    Route::get('/admin/backup/list', [AdminBackupController::class, 'listBackups'])
+        ->name('admin.listBackups')
+        ->middleware('admin.permission:crear_reportes');
+    
+    Route::get('/admin/backup/download/{filename}', [AdminBackupController::class, 'downloadBackup'])
+        ->name('admin.downloadBackup')
+        ->middleware('admin.permission:crear_reportes');
+    
+    Route::delete('/admin/backup/delete/{filename}', [AdminBackupController::class, 'deleteBackup'])
+        ->name('admin.deleteBackup')
+        ->middleware('admin.permission:crear_reportes');
+    
+    Route::post('/admin/backup/restore', [AdminBackupController::class, 'restoreBackup'])
+        ->name('admin.restoreBackup')
+        ->middleware('admin.permission:crear_reportes');
+    
+    Route::post('/admin/backup/clean', [AdminBackupController::class, 'cleanOldBackups'])
+        ->name('admin.cleanBackups')
+        ->middleware('admin.permission:crear_reportes');
+    
+    Route::post('/admin/backup/wipe', [AdminBackupController::class, 'wipeDatabase'])
         ->name('admin.wipeDatabase')
         ->middleware('admin.permission:crear_reportes');
 

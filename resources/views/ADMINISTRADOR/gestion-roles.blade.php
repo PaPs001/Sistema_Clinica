@@ -153,15 +153,35 @@
                     </div>
                 </template>
 
-                <div id="modalPermisos" class="modal">
-                    <div class="modal-content">
-                        <h2 id="modal-role-name"></h2>
-                            
-                        <div id="permissionsContainer"></div>
-
-                        <button id="btnGuardarPermisos">Guardar</button>
-                        <button id="btnCerrar" onclick="cerrarModalPermisos('#modalPermisos')">Cerrar</button>
-                    </div>
-                </div>
             </div>
+@endsection
+
+@section('modals')
+    <div id="modalPermisos">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-role-name">Editar Permisos</h3>
+                <button class="close-modal" onclick="cerrarModalPermisos('#modalPermisos')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="permissions-grid" id="permissionsContainer"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button id="btnCerrar" class="btn-secondary" onclick="cerrarModalPermisos('#modalPermisos')">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button id="btnGuardarPermisos" class="btn-primary">
+                    <i class="fas fa-save"></i> Guardar Cambios
+                </button>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@section('scripts')
+    @vite(['resources/css/ADMINISTRADOR/paginas/gestion-roles.css', 'resources/css/generales/modal-permisos.css', 'resources/js/ADMINISTRATOR/gestion-roles.js'])
 @endsection

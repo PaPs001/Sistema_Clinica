@@ -89,4 +89,5 @@
             @yield('content')
          </div>
     </div>
+    @yield('modals')
 </body>

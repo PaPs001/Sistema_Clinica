@@ -12,7 +12,7 @@ export function abrirModalPermisos(modalId, roleName = null) {
     }
 
     modal.classList.add('show');
-    modal.style.display = 'block';
+    // modal.style.display = 'block'; // Eliminado para permitir flexbox en CSS
 
     document.body.classList.add('modal-open');
 }

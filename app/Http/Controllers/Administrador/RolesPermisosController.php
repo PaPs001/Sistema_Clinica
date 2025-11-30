@@ -17,10 +17,20 @@ class RolesPermisosController extends Controller
 {
     //
     public function cargarRolesPermisos(){
+        Log::info('=== INICIO cargarRolesPermisos ===');
+        
         $roles = roleModel::with(['permissions', 'General_user'])
             ->paginate(5);
 
+        Log::info('Total de roles encontrados: ' . $roles->total());
+        Log::info('Roles en la página actual: ' . $roles->count());
+
         $roles->getCollection()->transform(function ($role){
+            Log::info('Procesando rol ID: ' . $role->id);
+            Log::info('Nombre del rol: ' . $role->name_type);
+            Log::info('Permisos del rol: ' . $role->permissions->pluck('name_permission')->toJson());
+            Log::info('Usuarios del rol: ' . $role->General_user->count());
+            
             return [
                 'id' => $role->id,
                 'name' => $role->name_type,
@@ -29,12 +39,18 @@ class RolesPermisosController extends Controller
             ];
         });
 
-        return response()->json([
+        $response = [
             'data' => $roles->items(),
             'current_page' => $roles->currentPage(),
             'last_page' => $roles->lastPage(),
             'pagination' => view('plantillas.pagination', ['paginator' => $roles])->render()
-        ]);
+        ];
+
+        Log::info('Respuesta JSON data count: ' . count($response['data']));
+        Log::info('Respuesta completa: ' . json_encode($response['data']));
+        Log::info('=== FIN cargarRolesPermisos ===');
+
+        return response()->json($response);
     }
 
     public function getUserByRole($roleId){

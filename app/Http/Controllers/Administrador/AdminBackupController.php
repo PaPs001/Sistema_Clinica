@@ -1,133 +1,343 @@
 <?php
 
-namespace App\Http\Controllers\administrador;
+namespace App\Http\Controllers\Administrador;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+use ZipArchive;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 
 class AdminBackupController extends Controller
 {
-    public function backupDatabase(Request $request)
-    {
-        $connection = config('database.default');
-        $config = config("database.connections.$connection");
-
-        if (($config['driver'] ?? null) !== 'mysql') {
-            return back()->with('error', 'El respaldo automático solo está configurado para MySQL.');
+    public function createDataBackup(){
+        try {
+            $configPath = config_path('backup.php');
+            $originalConfig = file_get_contents($configPath);
+            
+            $modifiedConfig = str_replace(
+                "'add_extra_option' => ''",
+                "'add_extra_option' => '--no-create-info --skip-triggers --skip-add-locks'",
+                $originalConfig
+            );
+            
+            file_put_contents($configPath, $modifiedConfig);
+            
+            Artisan::call('config:clear');
+            
+            Artisan::call('backup:run', [
+                '--only-db' => true,
+                '--filename' => 'data-only-' . now()->format('Y-m-d_H-i-s') . '.zip',
+            ]);
+            
+            file_put_contents($configPath, $originalConfig);
+            Artisan::call('config:clear');
+            
+            $output = Artisan::output();
+            Log::info('Data-only backup created', ['output' => $output]);
+            $latestBackup = $this->getLatestBackup();
+            
+            if ($latestBackup) {
+                return response()->download($latestBackup['path'])
+                    ->deleteFileAfterSend(false);
+            }
+            
+            return back()->with('success', 'Backup de datos creado exitosamente.');
+            
+        } catch (\Exception $e) {
+            Log::error('Data backup failed', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Error al crear backup: ' . $e->getMessage());
         }
-
-        $database = $config['database'];
-        $username = $config['username'];
-        $password = $config['password'];
-        $host = $config['host'] ?? '127.0.0.1';
-        $port = $config['port'] ?? 3306;
-
-        $fileName = 'backup_' . $database . '_' . now()->format('Ymd_His') . '.sql';
-        $directory = storage_path('app/backups');
-
-        if (!is_dir($directory)) {
-            mkdir($directory, 0755, true);
+    }
+    
+    public function createFullBackup(){
+        try {
+            config(['backup.backup.source.databases.mysql.dump.add_extra_option' => '']);
+            
+            Artisan::call('backup:run', [
+                '--filename' => 'full-' . now()->format('Y-m-d_H-i-s') . '.zip',
+            ]);
+            
+            $output = Artisan::output();
+            Log::info('Full backup created', ['output' => $output]);
+            
+            $latestBackup = $this->getLatestBackup();
+            
+            if ($latestBackup) {
+                return response()->download($latestBackup['path'])
+                    ->deleteFileAfterSend(false);
+            }
+            
+            return back()->with('success', 'Backup completo creado exitosamente.');
+            
+        } catch (\Exception $e) {
+            Log::error('Full backup failed', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Error al crear backup: ' . $e->getMessage());
         }
-
-        $filePath = $directory . DIRECTORY_SEPARATOR . $fileName;
-        $command = sprintf(
-            '/usr/bin/mysqldump --no-tablespaces --add-drop-table --user=%s --password=%s --host=%s --port=%d %s > %s 2>&1',
-            escapeshellarg($username),
-            escapeshellarg($password),
-            escapeshellarg($host),
-            $port,
-            escapeshellarg($database),
-            escapeshellarg($filePath)
-        );
-
-        Log::info('Comando backup', ['cmd' => $command]);
-        $exitCode = null;
-        $output = [];
-        exec($command, $output, $exitCode);
-        Log::info('Backup output', ['exitCode' => $exitCode, 'output' => $output]);
-        if ($exitCode !== 0 || !file_exists($filePath)) {
-            return back()->with('error', 'No se pudo generar el respaldo. Verifica que mysqldump esté instalado y accesible.');
+    }
+    
+    public function listBackups(){
+        $backups = [];
+        $files = Storage::disk('backups')->files();
+        
+        foreach ($files as $file) {
+            if (str_ends_with($file, '.zip')) {
+                $backups[] = [
+                    'name' => basename($file),
+                    'path' => Storage::disk('backups')->path($file),
+                    'size' => $this->formatBytes(Storage::disk('backups')->size($file)),
+                    'size_bytes' => Storage::disk('backups')->size($file),
+                    'date' => date('Y-m-d H:i:s', Storage::disk('backups')->lastModified($file)),
+                    'timestamp' => Storage::disk('backups')->lastModified($file),
+                    'type' => str_starts_with(basename($file), 'data-only') ? 'Solo Datos' : 'Completo',
+                ];
+            }
         }
-
-        return response()->download($filePath)->deleteFileAfterSend(true);
+        usort($backups, fn($a, $b) => $b['timestamp'] - $a['timestamp']);
+        
+        return response()->json($backups);
+    }
+    
+    public function downloadBackup($filename){
+        $path = Storage::disk('backups')->path($filename);
+        
+        if (!file_exists($path)) {
+            return back()->with('error', 'Backup no encontrado.');
+        }
+        
+        return response()->download($path);
+    }
+    
+    public function deleteBackup($filename){
+        try {
+            if (Storage::disk('backups')->exists($filename)) {
+                Storage::disk('backups')->delete($filename);
+                Log::info('Backup deleted', ['filename' => $filename]);
+                return response()->json(['success' => true, 'message' => 'Backup eliminado correctamente.']);
+            }
+            
+            return response()->json(['success' => false, 'message' => 'Backup no encontrado.'], 404);
+            
+        } catch (\Exception $e) {
+            Log::error('Delete backup failed', ['error' => $e->getMessage()]);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
-    public function restoreDatabase(Request $request)
-    {
+    public function restoreBackup(Request $request){
         $request->validate([
-            'backup_file' => 'required|file|mimes:sql,txt',
+            'backup_file' => 'required|file|mimes:zip|max:512000',
         ]);
-
-        $connection = config('database.default');
-        $config = config("database.connections.$connection");
-
-        if (($config['driver'] ?? null) !== 'mysql') {
-            return back()->with('error', 'La restauración automática solo está configurada para MySQL.');
+        
+        $uploadedFile = $request->file('backup_file');
+        $tmpPath = storage_path('app/tmp_restore/' . uniqid());
+        
+        try {
+            Log::info('Starting backup restoration', [
+                'filename' => $uploadedFile->getClientOriginalName(),
+                'size' => $uploadedFile->getSize(),
+            ]);
+            
+            File::makeDirectory($tmpPath, 0755, true);
+            
+            $zip = new ZipArchive;
+            if ($zip->open($uploadedFile->getRealPath()) !== TRUE) {
+                throw new \Exception('No se pudo abrir el archivo ZIP.');
+            }
+            
+            $zip->extractTo($tmpPath);
+            $zip->close();
+            
+            Log::info('Backup extracted', ['path' => $tmpPath]);
+            
+            $this->restoreDatabaseIntelligent($tmpPath);
+            
+            $this->restoreFiles($tmpPath);
+            
+            File::deleteDirectory($tmpPath);
+            
+            Log::info('Backup restored successfully');
+            
+            return back()->with('success', 'Backup restaurado exitosamente.');
+            
+        } catch (\Exception $e) {
+            if (File::exists($tmpPath)) {
+                File::deleteDirectory($tmpPath);
+            }
+            
+            Log::error('Restore failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            
+            return back()->with('error', 'Error al restaurar: ' . $e->getMessage());
         }
-
-        $database = $config['database'];
-        $username = $config['username'];
-        $password = $config['password'];
-        $host = $config['host'] ?? '127.0.0.1';
-        $port = $config['port'] ?? 3306;
-
-        $file = $request->file('backup_file');
-        $originalName = $file->getClientOriginalName();
-
-        if (!Str::startsWith($originalName, 'backup_' . $database . '_') || !Str::endsWith($originalName, '.sql')) {
-            return back()->with('error', 'Solo se pueden restaurar respaldos generados por el sistema (backup_' . $database . '_YYYYMMDD_HHMMSS.sql).');
-        }
-
-        $storedPath = $file->storeAs(
-            'backups/restores',
-            'restore_' . now()->format('Ymd_His') . '.sql'
-        );
-        $fullPath = storage_path('app/' . $storedPath);
-
-        $command = sprintf(
-            "/usr/bin/mysql --user=%s --password=%s --host=%s --port=%d %s < %s 2>&1",
-            escapeshellarg($username),
-            escapeshellarg($password),
-            escapeshellarg($host),
-            $port,
-            escapeshellarg($database),
-            escapeshellarg($fullPath)
-        );
-
-        Log::warning('Comando restore', [
-            'cmd' => $command,
-            'user_id' => Auth::id(),
-            'user_email' => optional(Auth::user())->email,
-            'original_file' => $originalName,
-            'stored_path' => $storedPath,
-        ]);
-        $exitCode = null;
-        $output = [];
-        exec($command, $output, $exitCode);
-        Log::warning('Restore output', [
-            'exitCode' => $exitCode,
-            'output' => $output,
-            'user_id' => Auth::id(),
-        ]);
-
-        if ($exitCode !== 0) {
-            return back()->with('error', 'No se pudo restaurar la base de datos. Revisa el archivo y los logs para más detalles.');
-        }
-
-        return back()->with('success', 'Base de datos restaurada correctamente desde el respaldo seleccionado.');
     }
 
-    public function wipeDatabase(Request $request)
-    {
+    private function restoreDatabaseIntelligent($tmpPath){
+        $sqlFiles = File::glob($tmpPath . '/db-dumps/*.sql');
+        
+        if (empty($sqlFiles)) {
+            throw new \Exception('No se encontró archivo SQL en el backup.');
+        }
+        
+        $sqlFile = $sqlFiles[0];
+        $fileSize = filesize($sqlFile);
+        $fileSizeMB = round($fileSize / 1024 / 1024, 2);
+        
+        Log::info('Restoring database', [
+            'file' => basename($sqlFile),
+            'size' => $fileSizeMB . ' MB',
+        ]);
+        
+        $threshold = 50 * 1024 * 1024; 
+        
+        if ($fileSize < $threshold) {
+            Log::info('Using DB::unprepared() method (file < 50MB)');
+            $this->restoreWithUnprepared($sqlFile);
+        } else {
+            Log::info('Using mysql CLI method (file >= 50MB)');
+            $this->restoreWithMysqlCLI($sqlFile);
+        }
+        
+        Log::info('Database restored successfully');
+    }
+    
+    private function restoreWithUnprepared($sqlFile){
+        try {
+            $sql = file_get_contents($sqlFile);
+            
+            $statements = array_filter(
+                array_map('trim', explode(';', $sql)),
+                fn($stmt) => !empty($stmt)
+            );
+            
+            foreach ($statements as $statement) {
+                if (!empty($statement)) {
+                    DB::unprepared($statement . ';');
+                }
+            }
+            
+            Log::info('Restore completed using DB::unprepared()', [
+                'statements' => count($statements),
+            ]);
+            
+        } catch (\Exception $e) {
+            throw new \Exception('Error al restaurar con DB::unprepared: ' . $e->getMessage());
+        }
+    }
+    
+    private function restoreWithMysqlCLI($sqlFile){
+        try {
+            $config = config('database.connections.mysql');
+            
+            $command = [
+                env('MYSQL_BIN_PATH', '/usr/bin/mysql'),
+                '--user=' . $config['username'],
+                '--password=' . $config['password'],
+                '--host=' . ($config['host'] ?? '127.0.0.1'),
+                '--port=' . ($config['port'] ?? 3306),
+                $config['database'],
+            ];
+            
+            $process = new Process($command);
+            $process->setInput(file_get_contents($sqlFile));
+            $process->setTimeout(600);
+            $process->run();
+            
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+            
+            Log::info('Restore completed using mysql CLI', [
+                'exit_code' => $process->getExitCode(),
+            ]);
+            
+        } catch (ProcessFailedException $e) {
+            throw new \Exception('Error al restaurar con mysql CLI: ' . $e->getMessage());
+        }
+    }
+
+    private function restoreFiles($tmpPath){
+        $filesPath = $tmpPath . '/files';
+        
+        if (!File::exists($filesPath)) {
+            Log::info('No files to restore');
+            return;
+        }
+        
+        $sourceDocumentos = $filesPath . '/storage/app/public/documentos';
+        $destDocumentos = storage_path('app/public/documentos');
+        
+        if (File::exists($sourceDocumentos)) {
+            if (!File::exists($destDocumentos)) {
+                File::makeDirectory($destDocumentos, 0755, true);
+            }
+            
+            File::copyDirectory($sourceDocumentos, $destDocumentos);
+            Log::info('Documentos files restored', [
+                'from' => $sourceDocumentos,
+                'to' => $destDocumentos,
+            ]);
+        }
+    }
+    
+    private function getLatestBackup(){
+        $files = Storage::disk('backups')->files();
+        $backups = [];
+        
+        foreach ($files as $file) {
+            if (str_ends_with($file, '.zip')) {
+                $backups[] = [
+                    'name' => basename($file),
+                    'path' => Storage::disk('backups')->path($file),
+                    'time' => Storage::disk('backups')->lastModified($file),
+                ];
+            }
+        }
+        
+        if (empty($backups)) {
+            return null;
+        }
+        
+        usort($backups, fn($a, $b) => $b['time'] - $a['time']);
+        
+        return $backups[0];
+    }
+    
+    private function formatBytes($bytes, $precision = 2){
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        
+        for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
+            $bytes /= 1024;
+        }
+        
+        return round($bytes, $precision) . ' ' . $units[$i];
+    }
+ 
+    public function cleanOldBackups(){
+        try {
+            Artisan::call('backup:clean');
+            Log::info('Old backups cleaned');
+            return back()->with('success', 'Backups antiguos eliminados correctamente.');
+        } catch (\Exception $e) {
+            Log::error('Clean backups failed', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Error al limpiar: ' . $e->getMessage());
+        }
+    }
+
+    public function wipeDatabase(Request $request){
         if (!app()->environment('local')) {
             return back()->with('error', 'Por seguridad, solo se puede eliminar la base de datos en entorno local.');
         }
 
         Artisan::call('db:wipe', ['--force' => true]);
+        Log::warning('Database wiped', ['user_id' => auth()->id()]);
 
         return back()->with('success', 'Base de datos eliminada (db:wipe ejecutado correctamente).');
     }

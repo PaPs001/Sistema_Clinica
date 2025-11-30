@@ -1,344 +1,362 @@
 @extends('plantillas.dashboard_administrador')
 @section('title', 'Respaldo de Datos - Clínica "Última Asignatura"')
+
+@section('scripts')
+    <script src="{{ asset('js/ADMINISTRATOR/backup-manager.js') }}"></script>
+    <style>
+        .backup-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .backup-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .backup-card h3 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .backup-card p {
+            color: #7f8c8d;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .backup-btn {
+            width: 100%;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .backup-btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .backup-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .backup-btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .backup-btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(56, 239, 125, 0.4);
+        }
+        
+        .backup-btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+        
+        .backup-btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 87, 108, 0.4);
+        }
+        
+        .backups-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .backups-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .backups-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .backups-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .backups-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-info {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .badge-success {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+        
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 8px;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.3s;
+            font-size: 16px;
+        }
+        
+        .action-btn:hover {
+            color: #2c3e50;
+        }
+        
+        .action-btn.delete-btn:hover {
+            color: #e74c3c;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #7f8c8d;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+            z-index: 10000;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification-success {
+            border-left: 4px solid #27ae60;
+        }
+        
+        .notification-error {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+@endsection
+
 @section('content')
-            <header class="content-header">
-                <h1><i class="fas fa-database"></i> Respaldo de Datos</h1>
-                <!--<div class="header-actions">
-                    <div class="search-box">
-                        <input type="text" id="searchBackups" placeholder="Buscar respaldos..." onkeyup="searchBackups()">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <div class="notifications">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">2</span>
-                    </div>
-                </div>--->
-            </header>
+    <header class="content-header">
+        <h1><i class="fas fa-database"></i> Respaldo de Datos</h1>
+    </header>
 
-            <div class="content">
-                <!-- Estadísticas 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-hdd"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="totalBackups">0</h3>
-                            <p>Total de Respaldos</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-file-archive"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="totalSize">0 GB</h3>
-                            <p>Espacio Utilizado</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="successfulBackups">0</h3>
-                            <p>Respaldos Exitosos</p>
-                        </div>
-                    </div>
-                    div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="nextBackup">-</h3>
-                            <p>Próximo Respaldo</p>
-                        </div>
-                    </div>
-                </div>-->
+    <div class="content">
+        @if(session('success'))
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i> {{ session('success') }}
+            </div>
+        @endif
 
-                <!-- Acciones Principales -->
-                @if(auth()->user() && auth()->user()->hasPermission('crear_reportes'))
-                <div class="health-info">
-                    <div class="info-card">
-                        <h3><i class="fas fa-plus-circle"></i> Crear Respaldo Manual</h3>
-                        <div class="backup-options">
-                            <p>Inicia un respaldo completo de la base de datos en este momento.</p
-                            <form method="POST" action="{{ route('admin.backupDatabase') }}">
-                                @csrf
-                                <button type="submit" class="section-btn btn-success">
-                                    <i class="fas fa-play"></i> Iniciar Respaldo de Base de Datos
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="info-card" style="margin-top: 20px;">
-                    <h3><i class="fas fa-undo"></i> Restaurar Respaldo</h3>
-                    <div class="backup-options">
-                        <p>Selecciona un archivo <code>.sql</code> generado previamente y se restaurará la base de datos actual.</p>
-                        <form method="POST" action="{{ route('admin.restoreDatabase') }}" enctype="multipart/form-data">
-                            @csrf
-                            <div class="option-group">
-                                <label for="backup_file">Archivo de respaldo (.sql):</label>
-                                <input type="file" id="backup_file" name="backup_file" accept=".sql" required>
-                            </div>
-                            <button type="submit" class="section-btn btn-warning">
-                                <i class="fas fa-upload"></i> Restaurar desde respaldo
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                @endif
-                <!--
-                    <div class="info-card">
-                        <h3><i class="fas fa-history"></i> Estado del Sistema</h3>
-                        <div class="system-status">
-                            <div class="status-item">
-                                <span class="status-label">Espacio en Disco:</span>
-                                <div class="progress-bar">
-                                    <div class="progress-fill" id="diskSpaceProgress" style="width: 65%"></div>
-                                </div>
-                                <span class="status-value">65% (32.5/50 GB)</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Última Verificación:</span>
-                                <span class="status-value" id="lastVerification">Hace 2 horas</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Integridad de Respaldos:</span>
-                                <span class="status-badge success" id="integrityStatus">Óptima</span>
-                            </div>
-                            <div class="status-item">
-                                <span class="status-label">Tiempo de Retención:</span>
-                                <span class="status-value" id="retentionPeriod">30 días</span>
-                            </div>
-                        </div>
-                        <div class="maintenance-actions">
-                            <button class="section-btn" onclick="verifyBackups()">
-                                <i class="fas fa-check-double"></i> Verificar Integridad
-                            </button>
-                            <button class="section-btn btn-warning" onclick="cleanOldBackups()">
-                                <i class="fas fa-broom"></i> Limpiar Antiguos
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                -->
-                
-                
-                <!-- Historial de Respaldos 
-                <div class="recent-section">
-                    <h2>
-                        <i class="fas fa-history"></i> Historial de Respaldos
-                        <div class="section-actions">
-                            <button class="section-btn" onclick="refreshBackups()">
-                                <i class="fas fa-sync-alt"></i> Actualizar
-                            </button>
-                            <button class="section-btn" onclick="exportBackupReport()">
-                                <i class="fas fa-download"></i> Exportar Reporte
-                            </button>
-                        </div>
-                    </h2>
-                    
-                    <div class="appointments-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nombre del Respaldo</th>
-                                    <th>Fecha y Hora</th>
-                                    <th>Tipo</th>
-                                    <th>Tamaño</th>
-                                    <th>Estado</th>
-                                    <th>Ubicación</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="backupsTableBody">
-                                Los respaldos se cargarán dinámicamente
-                            </tbody>
-                        </table>
-                    </div>
-                </div>-->
+        @if(session('error'))
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+            </div>
+        @endif
 
-                <!-- Programación Automática
-                <div class="recent-section">
-                    <h2>
-                        <i class="fas fa-clock"></i> Programación Automática
-                        <div class="section-actions">
-                            <button class="section-btn" onclick="addNewSchedule()">
-                                <i class="fas fa-plus"></i> Nueva Programación
-                            </button>
-                        </div>
-                    </h2>
-                    
-                    <div class="appointments-table">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Frecuencia</th>
-                                    <th>Próxima Ejecución</th>
-                                    <th>Tipo</th>
-                                    <th>Destino</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody id="schedulesTableBody">
-                                Las programaciones se cargarán dinámicamente
-                            </tbody>
-                        </table>
-                    </div>
+        @if(auth()->user() && auth()->user()->hasPermission('crear_reportes'))
+            {{-- Acciones de Backup --}}
+            <div class="backup-actions-grid">
+                <div class="backup-card">
+                    <h3><i class="fas fa-database"></i> Backup Solo Datos</h3>
+                    <p>Crea un respaldo de los datos sin incluir la estructura de las tablas. Ideal para restauraciones rápidas.</p>
+                    <button onclick="createDataBackup()" class="backup-btn backup-btn-primary">
+                        <i class="fas fa-save"></i> Crear Backup de Datos
+                    </button>
                 </div>
-                 -->
 
-                <!-- Quick Actions
-                <div class="quick-actions">
-                    <h2><i class="fas fa-bolt"></i> Acciones Rápidas</h2>
-                    <div class="actions-grid">
-                        <a href="#" class="action-card" onclick="createQuickBackup()">
-                            <i class="fas fa-bolt"></i>
-                            <span>Respaldo Rápido</span>
-                        </a>
-                        <a href="#" class="action-card" onclick="showRestoreOptions()">
-                            <i class="fas fa-undo"></i>
-                            <span>Restaurar Datos</span>
-                        </a>
-                        <a href="#" class="action-card" onclick="manageStorage()">
-                            <i class="fas fa-hdd"></i>
-                            <span>Gestionar Almacenamiento</span>
-                        </a>-->
-                        <!--<a href="#" class="action-card" onclick="showBackupLogs()">
-                            <i class="fas fa-list-alt"></i>
-                            <span>Ver Logs</span>
-                        </a>
-                    </div>
+                <div class="backup-card">
+                    <h3><i class="fas fa-archive"></i> Backup Completo</h3>
+                    <p>Crea un respaldo completo incluyendo estructura, datos y archivos de documentos.</p>
+                    <button onclick="createFullBackup()" class="backup-btn backup-btn-success">
+                        <i class="fas fa-box"></i> Crear Backup Completo
+                    </button>
                 </div>
-            </div>-->
-            <div class="info-card" style="margin-top: 20px;">
-                <h3><i class="fas fa-exclamation-triangle"></i> Eliminar Base de Datos</h3>
-                <div class="backup-options">
-                    <p style="color:#c0392b;">
-                        Cuidadito muchacho te metes con <strong>EL DIABOLO</strong>, vas a <strong>ELIMINAR TODA</strong>   la base de datos. Esta acción es <strong>IRREVERSIBLE</strong>.
-                    </p>
-                    <form method="POST" action="{{ route('admin.wipeDatabase') }}"
-                        onsubmit="return confirm('¿Seguro que quieres eliminar TODA la base de datos? Esta acción no se puede deshacer.');">
-                        @csrf
-                        <button type="submit" class="section-btn btn-danger">
-                            <i class="fas fa-trash-alt"></i> Eliminar Base de Datos
+
+                <div class="backup-card">
+                    <h3><i class="fas fa-broom"></i> Limpiar Antiguos</h3>
+                    <p>Elimina backups antiguos según la política de retención configurada.</p>
+                    <button onclick="cleanOldBackups()" class="backup-btn backup-btn-warning">
+                        <i class="fas fa-trash-alt"></i> Limpiar Backups
+                    </button>
+                </div>
+            </div>
+
+            {{-- Restaurar Backup --}}
+            <div class="backup-card" style="margin-bottom: 30px;">
+                <h3><i class="fas fa-undo"></i> Restaurar desde Backup</h3>
+                <p>Sube un archivo <code>.zip</code> de backup para restaurar la base de datos y archivos.</p>
+                <form method="POST" action="{{ route('admin.restoreBackup') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div style="display: flex; gap: 15px; align-items: end;">
+                        <div style="flex: 1;">
+                            <label for="backup_file" style="display: block; margin-bottom: 5px; font-weight: 600;">Archivo de backup (.zip):</label>
+                            <input type="file" id="backup_file" name="backup_file" accept=".zip" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                        </div>
+                        <button type="submit" class="backup-btn backup-btn-warning" style="width: auto; padding: 10px 30px;">
+                            <i class="fas fa-upload"></i> Restaurar
                         </button>
-                    </form>
-                </div>
-            </div>
-
-    <!-- Modal para Restaurar -->
-    <div class="modal-overlay" id="restoreModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3>Restaurar desde Respaldo</h3>
-                <button class="close-modal" onclick="closeRestoreModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="restore-options">
-                    <div class="option-group">
-                        <label>Seleccionar Respaldo:</label>
-                        <select id="restoreBackupSelect" class="setting-select">
-                            <!-- Opciones se cargarán dinámicamente -->
-                        </select>
-                    </div>
-                    <div class="option-group">
-                        <label>Tipo de Restauración:</label>
-                        <select id="restoreType" class="setting-select">
-                            <option value="complete">Restauración Completa</option>
-                            <option value="partial">Restauración Parcial</option>
-                            <option value="tables">Solo Tablas Específicas</option>
-                        </select>
-                    </div>
-                    <div class="option-group">
-                        <label>Verificación:</label>
-                        <div class="checkbox-group">
-                            <input type="checkbox" id="verifyBeforeRestore" checked>
-                            <label for="verifyBeforeRestore">Verificar integridad antes de restaurar</label>
-                        </div>
-                    </div>
-                    <div class="warning-message">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Advertencia:</strong> Esta acción sobrescribirá los datos actuales.
-                    </div>
-                    <div class="form-actions">
-                        <button type="button" class="section-btn" style="background: #95a5a6;" onclick="closeRestoreModal()">Cancelar</button>
-                        <button type="button" class="section-btn btn-danger" onclick="executeRestore()">Iniciar Restauración</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal para Nueva Programación -->
-    <div class="modal-overlay" id="scheduleModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h3 id="scheduleModalTitle">Nueva Programación de Respaldo</h3>
-                <button class="close-modal" onclick="closeScheduleModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="scheduleForm">
-                    <div class="form-group">
-                        <label for="scheduleName">Nombre de la Programación:</label>
-                        <input type="text" id="scheduleName" required>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="scheduleFrequency">Frecuencia:</label>
-                            <select id="scheduleFrequency" required>
-                                <option value="daily">Diario</option>
-                                <option value="weekly">Semanal</option>
-                                <option value="monthly">Mensual</option>
-                                <option value="custom">Personalizado</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="scheduleTime">Hora de Ejecución:</label>
-                            <input type="time" id="scheduleTime" value="02:00" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="scheduleType">Tipo de Respaldo:</label>
-                        <select id="scheduleType" required>
-                            <option value="full">Completo</option>
-                            <option value="incremental">Incremental</option>
-                            <option value="differential">Diferencial</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="scheduleDestination">Destino:</label>
-                        <select id="scheduleDestination" required>
-                            <option value="local">Almacenamiento Local</option>
-                            <option value="cloud">Nube (AWS S3)</option>
-                            <option value="external">Disco Externo</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="checkbox-group">
-                            <input type="checkbox" id="scheduleEnabled" checked>
-                            <span>Programación activa</span>
-                        </label>
-                    </div>
-
-                    <div class="form-actions">
-                        <button type="button" class="section-btn" style="background: #95a5a6;" onclick="closeScheduleModal()">Cancelar</button>
-                        <button type="submit" class="section-btn">Guardar Programación</button>
                     </div>
                 </form>
             </div>
+        @endif
+
+        {{-- Lista de Backups --}}
+        <div class="recent-section">
+            <h2>
+                <i class="fas fa-history"></i> Historial de Backups
+                <div class="section-actions">
+                    <button class="section-btn" onclick="loadBackupsList()">
+                        <i class="fas fa-sync-alt"></i> Actualizar
+                    </button>
+                </div>
+            </h2>
+            
+            <div class="backups-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nombre del Archivo</th>
+                            <th>Fecha</th>
+                            <th>Tipo</th>
+                            <th>Tamaño</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="backupsTableBody">
+                        <tr>
+                            <td colspan="5" style="text-align: center;">Cargando backups...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
+        {{-- Eliminar Base de Datos (Desarrollo) --}}
+        @if(app()->environment('local'))
+            <div class="backup-card" style="margin-top: 30px; border: 2px solid #e74c3c;">
+                <h3 style="color: #e74c3c;"><i class="fas fa-exclamation-triangle"></i> Zona de Peligro</h3>
+                <p style="color: #c0392b;">
+                    <strong>ADVERTENCIA:</strong> Esta acción eliminará TODA la base de datos. Solo disponible en entorno local.
+                </p>
+                <form method="POST" action="{{ route('admin.wipeDatabase') }}" 
+                    onsubmit="return confirm('¿Seguro que quieres eliminar TODA la base de datos? Esta acción no se puede deshacer.');">
+                    @csrf
+                    <button type="submit" class="backup-btn" style="background: #e74c3c; color: white;">
+                        <i class="fas fa-skull-crossbones"></i> Eliminar Base de Datos
+                    </button>
+                </form>
+            </div>
+        @endif
     </div>
 @endsection
