@@ -68,7 +68,26 @@
                             <label for="date-range">Fecha:</label>
                             <input type="date" id="date-range" name="date" value="{{ request('date') }}" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
                         </div>
-                        
+
+                        <!-- Buscador por nombre de paciente -->
+                        <div class="filter-group" style="margin-left: auto; position: relative;">
+                            <label for="reminder-search">Paciente:</label>
+                            <div class="search-box" style="display: flex; align-items: center; background: #f0f2f5; border-radius: 20px; padding: 5px 15px; border: 1px solid #ddd;">
+                                <input
+                                    type="text"
+                                    id="reminder-search"
+                                    name="search"
+                                    value="{{ request('search') }}"
+                                    placeholder="Buscar por nombre..."
+                                    autocomplete="off"
+                                    style="border: none; background: transparent; outline: none; padding: 5px; width: 230px;"
+                                >
+                                <button type="submit" style="border: none; background: none; cursor: pointer; color: #666;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
                         <button type="submit" class="section-btn" id="apply-filters">
                             <i class="fas fa-filter"></i> Aplicar
                         </button>

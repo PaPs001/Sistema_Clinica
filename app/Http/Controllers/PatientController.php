@@ -15,6 +15,7 @@ class PatientController extends Controller
 {
     public function index(Request $request)
     {
+        // Solo pacientes definitivos (no temporales). Los temporales viven en patient_users.
         $query = UserModel::where('typeUser_id', 3);
 
         // Search by name or phone

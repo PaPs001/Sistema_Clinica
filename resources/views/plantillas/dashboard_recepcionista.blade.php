@@ -26,13 +26,17 @@
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
                 </a>
-                <a href="{{ route('registroPaciente') }}" class="nav-item {{ request()->routeIs('registroPaciente') ? 'active' : '' }}">
+                <!--<a href="{{ route('registroPaciente') }}" class="nav-item {{ request()->routeIs('registroPaciente') ? 'active' : '' }}">
                     <i class="fas fa-user-plus"></i>
                     <span>Registrar Pacientes</span>
-                </a>
+                </a>-->
                 <a href="{{ route('gestionCitas') }}" class="nav-item {{ request()->routeIs('gestionCitas') ? 'active' : '' }}">
                     <i class="fas fa-calendar-check"></i>
                     <span>Gestión de Citas</span>
+                </a>
+                <a href="{{ route('crearCita') }}" class="nav-item {{ request()->routeIs('crearCita') ? 'active' : '' }}">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Crear cita</span>
                 </a>
                 <!--<a href="{{ route('agenda') }}" class="nav-item {{ request()->routeIs('agenda') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i>

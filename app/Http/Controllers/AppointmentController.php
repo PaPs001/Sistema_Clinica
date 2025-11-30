@@ -13,9 +13,22 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use App\Models\Notification;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AppointmentController extends Controller
 {
+    /**
+     * Muestra la vista para crear una nueva cita desde recepcionista.
+     */
+    public function createForm()
+    {
+        $doctors = UserModel::where('typeUser_id', 2)
+            ->where('status', 'active')
+            ->get(['id', 'name']);
+
+        return view('RECEPCIONISTA.crear-cita', compact('doctors'));
+    }
+
     public function checkPatient(Request $request)
     {
         $email = $request->input('email');
@@ -32,6 +45,56 @@ class AppointmentController extends Controller
         }
 
         return response()->json(['exists' => false]);
+    }
+
+    /**
+     * Autocompletado de pacientes por nombre para agendar cita.
+     * Devuelve nombre + teléfono (+ email y fecha de nacimiento si existen).
+     */
+    public function searchPatientsByName(Request $request)
+    {
+        $term = $request->input('query');
+
+        if (! $term) {
+            return response()->json([]);
+        }
+
+        // Pacientes registrados (con usuario en general_users)
+        $registrados = patientUser::whereNotNull('userId')
+            ->whereHas('user', function ($q) use ($term) {
+                $q->where('name', 'like', "%{$term}%");
+            })
+            ->with('user:id,name,phone,birthdate,email')
+            ->limit(10)
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id'        => $p->id,
+                    'name'      => $p->user->name,
+                    'phone'     => $p->user->phone,
+                    'email'     => $p->user->email,
+                    'birthdate' => $p->user->birthdate,
+                    'is_temporary' => false,
+                ];
+            });
+
+        // Pacientes temporales (solo en patient_users)
+        $temporales = patientUser::whereNull('userId')
+            ->where('temporary_name', 'like', "%{$term}%")
+            ->limit(10)
+            ->get()
+            ->map(function ($p) {
+                return [
+                    'id'        => $p->id,
+                    'name'      => $p->temporary_name,
+                    'phone'     => $p->temporary_phone,
+                    'email'     => null,
+                    'birthdate' => null,
+                    'is_temporary' => true,
+                ];
+            });
+
+        return response()->json($registrados->concat($temporales)->values());
     }
 
     public function store(Request $request)
@@ -58,18 +121,44 @@ class AppointmentController extends Controller
             $patientId = null;
 
             if (!$user) {
-                Log::info('Creating temporary patient for: ' . $request->name);
-                // Create TEMPORARY patient in patient_users
-                $patient = new patientUser();
-                $patient->userId = null; // No general_user linked
-                $patient->DNI = 'PENDIENTE'; // Required field
-                $patient->is_Temporary = true;
-                $patient->temporary_name = $request->name;
-                $patient->temporary_phone = $request->phone;
-                $patient->userCode = 'PAT' . rand(1000, 9999);
-                $patient->save();
-                
-                $patientId = $patient->id;
+                $name  = trim($request->name ?? '');
+                $phone = $request->phone ?? null;
+
+                Log::info('No existing user for email, checking temporary patients by name: ' . $name);
+
+                // Buscar paciente temporal con nombre similar
+                $existingTemp = null;
+                if ($name !== '') {
+                    $existingTemp = patientUser::whereNull('userId')
+                        ->where('is_Temporary', true)
+                        ->where('temporary_name', 'like', '%' . $name . '%')
+                        ->first();
+                }
+
+                if ($existingTemp) {
+                    Log::info('Using existing temporary patient: ID ' . $existingTemp->id);
+
+                    // Opcional: actualizar teléfono si viene uno nuevo
+                    if ($phone && !$existingTemp->temporary_phone) {
+                        $existingTemp->temporary_phone = $phone;
+                        $existingTemp->save();
+                    }
+
+                    $patientId = $existingTemp->id;
+                } else {
+                    Log::info('Creating new temporary patient for: ' . $name);
+                    // Create TEMPORARY patient in patient_users
+                    $patient = new patientUser();
+                    $patient->userId = null; // No general_user linked
+                    $patient->DNI = 'PENDIENTE'; // Required field
+                    $patient->is_Temporary = true;
+                    $patient->temporary_name = $name;
+                    $patient->temporary_phone = $phone;
+                    $patient->userCode = 'PAT' . rand(1000, 9999);
+                    $patient->save();
+                    
+                    $patientId = $patient->id;
+                }
             } else {
                 Log::info('Found existing user: ' . $user->email);
                 // User exists, check if patient record exists
@@ -95,6 +184,21 @@ class AppointmentController extends Controller
                 ->first();
 
             $doctorId = null;
+
+            // 3. Validar que no exista otra cita pendiente para este paciente con este mismo m�dico
+            if ($patientId && $doctorUser && $doctorUser->medic) {
+                $existingDoctorId = $doctorUser->medic->id;
+
+                $citaPendiente = appointment::where('patient_id', $patientId)
+                    ->where('doctor_id', $existingDoctorId)
+                    ->whereNotIn('status', ['completada', 'cancelada'])
+                    ->first();
+
+                if ($citaPendiente) {
+                    Log::warning('Intento de crear cita duplicada paciente-doctor. Cita existente ID: ' . $citaPendiente->id);
+                    throw new \Exception('Ya existe una cita pendiente entre este paciente y este m�dico. Debe completarse o cancelarse antes de agendar una nueva.');
+                }
+            }
             
             if ($doctorUser) {
                 Log::info('Médico encontrado en tabla general_users (UserModel).');
@@ -118,12 +222,8 @@ class AppointmentController extends Controller
                  Log::warning("Médico NO encontrado en general_users con ID: " . $request->doctor_id . " y typeUser_id = 2");
                  throw new \Exception("Médico no encontrado.");
             }
-
-            // 3. Handle Receptionist (Auth user)
-            // Assuming auth is working and user is receptionist
-            // $receptionistId = auth()->user()->receptionist->id ?? null;
-            // For now, hardcode or nullable
-            $receptionistId = null; 
+            $receptionist = Auth::user();
+            $receptionistId = $receptionist->id; 
 
             // 4. Create Appointment
             Log::info('Creating appointment with Patient ID: ' . $patientId . ', Doctor ID: ' . $doctorId);
@@ -201,8 +301,16 @@ class AppointmentController extends Controller
             });
         }
 
-        if ($request->filled('date')) {
-            $query->where('appointment_date', $request->date);
+        // Filtro por rango de fechas
+        $dateFrom = $request->input('date_from');
+        $dateTo   = $request->input('date_to');
+
+        if ($dateFrom && $dateTo) {
+            $query->whereBetween('appointment_date', [$dateFrom, $dateTo]);
+        } elseif ($dateFrom) {
+            $query->where('appointment_date', '>=', $dateFrom);
+        } elseif ($dateTo) {
+            $query->where('appointment_date', '<=', $dateTo);
         }
 
         if ($request->filled('doctor_id')) {
@@ -269,6 +377,10 @@ class AppointmentController extends Controller
     public function reminders(Request $request)
     {
         $query = appointment::with(['patient.user', 'doctor.user'])
+            // Excluir pacientes temporales de los recordatorios
+            ->whereHas('patient', function ($q) {
+                $q->where('is_Temporary', false);
+            })
             ->orderBy('appointment_date', 'asc') // Upcoming first makes more sense for reminders
             ->orderBy('appointment_time', 'asc');
 
@@ -284,6 +396,18 @@ class AppointmentController extends Controller
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+
+        // Filtro por nombre de paciente (solo definitivos)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->whereHas('patient', function ($q) use ($search) {
+                $q->where('is_Temporary', false)
+                  ->whereNotNull('userId')
+                  ->whereHas('user', function ($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%");
+                  });
+            });
         }
 
         $appointments = $query->paginate(5)->withQueryString();

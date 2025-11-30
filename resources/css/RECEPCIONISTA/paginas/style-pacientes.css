@@ -18,7 +18,7 @@
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 .filters-container::before {
@@ -98,6 +98,46 @@
     font-size: 0.85rem;
     color: #666;
     font-weight: 500;
+}
+
+/* Buscador con sugerencias (nombre, edad, correo) */
+.patients-search-wrapper {
+    position: relative;
+}
+
+.patients-search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 1050;
+}
+
+.patients-search-suggestions .suggestion-item {
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.patients-search-suggestions .suggestion-item strong {
+    color: var(--primary-color);
+}
+
+.patients-search-suggestions .suggestion-item span {
+    color: #666;
+}
+
+.patients-search-suggestions .suggestion-item:hover {
+    background: #f5f7fb;
 }
 
 /* Tabla de Pacientes */

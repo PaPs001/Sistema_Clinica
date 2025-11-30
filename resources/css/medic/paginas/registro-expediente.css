@@ -320,9 +320,11 @@ body {
 }
 
 /* ===== GRID DE FORMULARIOS ===== */
+/* Por solicitud, el formulario se muestra en una sola columna
+   para que las secciones queden apiladas de forma vertical. */
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: 1fr;
     gap: 20px;
 }
 

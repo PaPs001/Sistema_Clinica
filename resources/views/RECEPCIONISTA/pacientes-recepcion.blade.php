@@ -136,10 +136,14 @@
                                     </td>
                                     <td>
                                         <div class="action-buttons">
-                                            <a href="{{ route('gestionCitas') }}" class="btn-calendar" title="Agendar cita">
+                                            <a href="{{ route('crearCita', [
+                                                      'name' => $patient->name,
+                                                      'phone' => $patient->phone,
+                                                      'email' => $patient->email,
+                                                      'patient_id' => $patient->id,
+                                                ]) }}" class="btn-calendar" title="Agendar cita">
                                                 <i class="fas fa-calendar-plus"></i>
                                             </a>
-                                           
                                         </div>
                                     </td>
                                 </tr>

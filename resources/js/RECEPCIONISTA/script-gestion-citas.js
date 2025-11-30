@@ -32,7 +32,9 @@ function setupEventListeners() {
     // Botón nueva cita
     const newAppointmentBtn = document.getElementById('new-appointment-btn');
     if (newAppointmentBtn) {
-        newAppointmentBtn.addEventListener('click', showNewAppointmentModal);
+        newAppointmentBtn.addEventListener('click', () => {
+            window.location.href = '/nueva-cita';
+        });
     }
 
     // Filtros
@@ -501,6 +503,10 @@ function applyAppointmentFilters() {
     });
 
     console.log(`Mostrando ${visibleRows} citas con los filtros aplicados`);
+
+    // La validaci�n real de "sin resultados" se hace en el backend,
+    // as� que no mostramos aqu� la alerta amarilla para evitar falsos positivos.
+    return;
 
     if (visibleRows === 0) {
         showToast('No se encontraron citas con los criterios seleccionados', 'warning');

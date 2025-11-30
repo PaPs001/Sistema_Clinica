@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Pagina')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @vite('resources/css/ENFERMERA/general.css')
     @yield('styles')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -28,6 +29,10 @@
                 <a href="{{ route('pacientesEnfermera') }}" class="nav-item {{ request()->routeIs('pacientesEnfermera') ? 'active' : '' }}">
                     <i class="fas fa-user-injured"></i>
                     <span>Pacientes</span>
+                </a>
+                <a href="{{ route('tratamientosActivos') }}" class="nav-item {{ request()->routeIs('tratamientosActivos') ? 'active' : '' }}">
+                    <i class="fas fa-pills"></i>
+                    <span>Tratamientos Activos</span>
                 </a>
                 <a href="{{ route('signosVitales') }}" class="nav-item {{ request()->routeIs('signosVitales') ? 'active' : '' }}">
                     <i class="fas fa-heartbeat"></i>

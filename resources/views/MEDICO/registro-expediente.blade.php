@@ -5,14 +5,7 @@
 @endsection
 @section('content')
         <header class="content-header">
-            <h1>Registro de Expediente Medico</h1>
-            <!--<div class="header-actions">
-                <div class="search-box">
-                    <input type="text" placeholder="Buscar paciente...">
-                    <i class="fas fa-search"></i>
-                </div>
-                @include('partials.header-notifications')
-            </div>
+            <h1>Registro de Expediente Médico</h1>
         </header>
         
         <div class="content">
@@ -219,6 +212,11 @@
                             <div class="form-group full-width">
                                 <label for="tratamiento">Tratamiento Indicado</label>
                                 <textarea id="tratamiento" name="tratamiento" rows="3" placeholder="Medicamentos, dosis y recomendaciones"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="fechaFinTratamiento">Fecha de Finalización (Opcional)</label>
+                                <input type="date" id="fechaFinTratamiento" name="fechaFinTratamiento" min="{{ date('Y-m-d') }}">
+                                <small class="form-text text-muted">Dejar vacío si el tratamiento es indefinido o crónico.</small>
                             </div>
                         </div>
                     </div>

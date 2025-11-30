@@ -31,6 +31,7 @@ export default defineConfig({
                 'resources/css/PACIENTE/paginas/paginador.css',
                 // JS de la enfermera
                 'resources/js/ENFERMERA/script-enfermera.js',
+                'resources/css/ENFERMERA/paginas/tratamientos-activos.css',
                 // JS del administrador
                 'resources/js/ADMINISTRATOR/gestion-roles.js',
                 // JS de la recepcionista

@@ -20,7 +20,7 @@ class treatment_record extends Model
     ];
     //relacion completada a reporte medico
     public function medicalRecord(){
-        return $this->belongsTo(medical_record::class, 'id_record', 'id');
+        return $this->belongsTo(medical_Records::class, 'id_record', 'id');
     }
     //Relacion completada a tratamientos
     public function treatment(){

@@ -22,8 +22,22 @@
                     </h2>
                     <form action="{{ route('gestionCitas') }}" method="GET" class="filters-container">
                         <div class="filter-group">
-                            <label for="date-filter">Fecha:</label>
-                            <input type="date" id="date-filter" name="date" value="{{ request('date') }}">
+                            <label for="date-filter">Fechas:</label>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <input
+                                    type="date"
+                                    id="date-filter"
+                                    name="date_from"
+                                    value="{{ request('date_from') }}"
+                                >
+                                <span style="font-size: 0.85rem; color: #666;">a</span>
+                                <input
+                                    type="date"
+                                    id="date-filter-to"
+                                    name="date_to"
+                                    value="{{ request('date_to') }}"
+                                >
+                            </div>
                         </div>
                         <div class="filter-group">
                             <label for="doctor-filter">Médico:</label>
@@ -155,7 +169,7 @@
                                         <td>
                                             <div style="display: flex; gap: 5px;">
                                                 <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
-                                                <button class="section-btn btn-status" style="background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.8rem;" aria-label="Cambiar estado">Estado</button>
+                                                <button class="section-btn btn-status" style="background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.8rem;" aria-label="Cambiar estado" {{ $appointment->status == 'cancelada' ? 'disabled' : '' }}>Estado</button>
                                                 <button class="btn-cancel" aria-label="Cancelar cita" {{ in_array($appointment->status, ['cancelada', 'completada']) ? 'disabled' : '' }}>
                                                     {{ $appointment->status == 'cancelada' ? 'Cancelada' : ($appointment->status == 'completada' ? 'Completada' : 'Cancelar') }}
                                                 </button>
@@ -259,4 +273,13 @@
 @endsection
 @section('scripts')
     @vite(['resources/js/RECEPCIONISTA/script-gestion-citas.js'])
+    @if($appointments->isEmpty() && (request('date_from') || request('date_to') || request('doctor_id') || request('status') || request('search')))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (typeof showToast === 'function') {
+                    showToast('No se encontraron citas con los criterios seleccionados', 'warning');
+                }
+            });
+        </script>
+    @endif
 @endsection

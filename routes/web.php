@@ -203,15 +203,12 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (){
     })->name('agenda');
 
     Route::get('/gestion-citas', [App\Http\Controllers\AppointmentController::class, 'indexView'])->name('gestionCitas');
+    Route::get('/nueva-cita', [App\Http\Controllers\AppointmentController::class, 'createForm'])->name('crearCita');
 
-    Route::get('/registro-paciente', function(){
-        return view('RECEPCIONISTA.registro-pacientes');
-    })->name('registroPaciente');
+    Route::get('/registro-paciente', [App\Http\Controllers\PatientController::class, 'create'])->name('registroPaciente');
     Route::get('/pacientes-recepcionista', [App\Http\Controllers\PatientController::class, 'index'])->name('pacientesRecepcionista');
 
     Route::get('/recordatorios', [App\Http\Controllers\AppointmentController::class, 'reminders'])->name('recordatorios');
-
-    Route::get('/registro-paciente', [App\Http\Controllers\PatientController::class, 'create'])->name('registroPaciente');
 
     Route::post('/recepcionista/registrar-paciente', [App\Http\Controllers\PatientController::class, 'store'])->name('registrar.paciente.store');
     Route::post('/recepcionista/update-paciente/{id}', [App\Http\Controllers\PatientController::class, 'update'])->name('update.paciente');
@@ -222,6 +219,7 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (){
     Route::post('/recepcionista/cancel-appointment/{id}', [App\Http\Controllers\AppointmentController::class, 'cancel'])->name('cancel.appointment');
     Route::post('/recepcionista/update-appointment-status/{id}', [App\Http\Controllers\AppointmentController::class, 'updateStatus'])->name('update.appointment.status');
     Route::get('/recepcionista/search-appointments-autocomplete', [App\Http\Controllers\AppointmentController::class, 'searchPatients'])->name('search.appointments.autocomplete');
+    Route::get('/recepcionista/buscar-pacientes', [App\Http\Controllers\AppointmentController::class, 'searchPatientsByName'])->name('search.patients.receptionist');
 });
 
 //Rutas a paginas enfermera --------------------------------------------------------------
@@ -249,6 +247,12 @@ Route::middleware(['auth', 'role:nurse'])->group(function (){
     Route::get('/signos-vitales', function(){
         return view('ENFERMERA.signos-vitales');
     })->name('signosVitales');
+
+    Route::get('/tratamientos-activos', [App\Http\Controllers\TreatmentController::class, 'activeTreatments'])->name('tratamientosActivos');
+    
+    // Rutas AJAX para gestión de tratamientos
+    Route::get('/tratamientos/{id}', [App\Http\Controllers\TreatmentController::class, 'getTreatment'])->name('tratamientos.get');
+    Route::put('/tratamientos/{id}', [App\Http\Controllers\TreatmentController::class, 'updateTreatment'])->name('tratamientos.update');
 
     Route::get('/tratamientos', function(){
         return view('ENFERMERA.tratamientos');

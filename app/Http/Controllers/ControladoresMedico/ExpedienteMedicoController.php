@@ -80,7 +80,9 @@ class ExpedienteMedicoController extends Controller
             'diagnostico_id' => 'required|integer',
             'tratamiento' => 'required|string',
             'prescribed_medications' => 'nullable|string',
+
             'prescribed_medications_ids' => 'nullable|string',
+            'fechaFinTratamiento' => 'nullable|date|after_or_equal:fechaConsulta',
         ]);
         Log::info('Validación completada exitosamente.');
     }
@@ -360,6 +362,32 @@ class ExpedienteMedicoController extends Controller
                 }
                 
                 Log::info('Medicamentos actuales guardados correctamente');
+                Log::info('Medicamentos actuales guardados correctamente');
+            }
+
+            // Guardar tratamiento estructurado para seguimiento
+            if (!empty($validatedData['tratamiento'])) {
+                Log::info('Guardando tratamiento estructurado');
+                
+                // 1. Crear registro en tabla treatments
+                $treatment = \App\Models\treatments::create([
+                    'treatment_description' => $validatedData['tratamiento'],
+                    'type' => 'medication', // Por defecto, se asume medicación/general
+                ]);
+
+                // 2. Crear registro en treatment_records
+                \App\Models\treatment_record::create([
+                    'id_record' => $record->id,
+                    'treatment_id' => $treatment->id,
+                    'start_date' => $validatedData['fechaConsulta'],
+                    'end_date' => $validatedData['fechaFinTratamiento'] ?? null,
+                    'notes' => $validatedData['tratamiento'],
+                    'status' => 'En seguimiento',
+                    'prescribed_by' => $doctorId,
+                    'appointment_id' => $appointment->id,
+                ]);
+                
+                Log::info('Tratamiento estructurado guardado correctamente');
             }
             
             DB::commit();
