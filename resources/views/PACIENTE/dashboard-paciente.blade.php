@@ -3,16 +3,9 @@
 @section('content')
             <header class="content-header">
                 <h1>¡Hola {{ Auth::user()->name }}</h1>
-                <!--<div class="header-actions">
-                    <div class="search-box">
-                        <input type="text" placeholder="Buscar en mis registros..." aria-label="Buscar en mis registros">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <div class="notifications" role="button" aria-label="Ver notificaciones">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">2</span>
-                    </div>
-                </div>-->
+                <div class="header-actions">
+                    @include('partials.header-notifications')
+                </div>
             </header>
 
            <!-- <div class="content">

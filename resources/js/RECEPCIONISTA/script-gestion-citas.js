@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // Inicializar componentes
         initializeAppointmentManagement();
         setupEventListeners();
-        loadAppointmentData();
+        // loadAppointmentData(); // Disabled for server-side pagination
 
         console.log('Gestión de citas inicializada correctamente');
 
@@ -19,11 +19,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function initializeAppointmentManagement() {
     // Configurar fecha actual en el filtro
-    const today = new Date().toISOString().split('T')[0];
-    const dateFilter = document.getElementById('date-filter');
-    if (dateFilter) {
-        dateFilter.value = today;
-    }
+    // const today = new Date().toISOString().split('T')[0];
+    // const dateFilter = document.getElementById('date-filter');
+    // if (dateFilter && !dateFilter.value) {
+    //     dateFilter.value = today;
+    // }
     // Inicializar datos de ejemplo
     initializeSampleData();
 }
@@ -52,26 +52,64 @@ function setupEventListeners() {
 
     // Botones de exportar y actualizar
     const exportCitasBtn = document.getElementById('export-citas');
-    const refreshCitasBtn = document.getElementById('refresh-citas');
+    // const refreshCitasBtn = document.getElementById('refresh-citas'); // Now a link
 
     if (exportCitasBtn) {
         exportCitasBtn.addEventListener('click', exportAppointments);
     }
 
-    if (refreshCitasBtn) {
-        // Cargar médicos en el filtro
-        loadDoctorsForFilter();
+    // Typeahead Logic
+    const searchInput = document.getElementById('appointment-search');
+    const suggestionsBox = document.getElementById('search-suggestions');
+    let debounceTimer;
 
-        // Event listeners for filters
-        document.getElementById('apply-filters').addEventListener('click', () => loadAppointmentData());
-        document.getElementById('reset-filters').addEventListener('click', () => {
-            document.getElementById('date-filter').value = '';
-            document.getElementById('doctor-filter').value = '';
-            document.getElementById('status-filter').value = '';
-            loadAppointmentData();
+    if (searchInput && suggestionsBox) {
+        searchInput.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            const query = this.value;
+
+            if (query.length < 2) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`/recepcionista/search-appointments-autocomplete?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            suggestionsBox.innerHTML = '';
+                            data.forEach(name => {
+                                const div = document.createElement('div');
+                                div.textContent = name;
+                                div.style.padding = '10px';
+                                div.style.cursor = 'pointer';
+                                div.style.borderBottom = '1px solid #eee';
+                                div.onmouseover = () => div.style.background = '#f9f9f9';
+                                div.onmouseout = () => div.style.background = 'white';
+                                div.onclick = () => {
+                                    searchInput.value = name;
+                                    suggestionsBox.style.display = 'none';
+                                    // Submit the form
+                                    searchInput.closest('form').submit();
+                                };
+                                suggestionsBox.appendChild(div);
+                            });
+                            suggestionsBox.style.display = 'block';
+                        } else {
+                            suggestionsBox.style.display = 'none';
+                        }
+                    })
+                    .catch(error => console.error('Error fetching suggestions:', error));
+            }, 300); // 300ms debounce
         });
 
-        document.getElementById('refresh-citas').addEventListener('click', () => loadAppointmentData());
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.style.display = 'none';
+            }
+        });
     }
 }
 
@@ -86,17 +124,34 @@ function setupTableActionButtons() {
         });
     });
 
+    // Botones de estado (NUEVO)
+    const statusButtons = document.querySelectorAll('.appointments-table .btn-status');
+    statusButtons.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const row = this.closest('tr');
+            const patientName = row.querySelector('.patient-info strong').textContent;
+            // Get current status from the badge
+            const statusBadge = row.querySelector('.status-badge');
+            const currentStatus = statusBadge.textContent.trim(); // Or map from class if needed
+
+            // We need the raw status value (e.g. 'agendada', 'Confirmada') to pre-select correctly.
+            // The badge text might be 'Agendada' (capitalized).
+            // Let's try to infer or pass it. For now, passing text content is okay as the select handles it.
+            changeAppointmentStatus(patientName, row, currentStatus);
+        });
+    });
+
     // Botones de cancelar
     const cancelButtons = document.querySelectorAll('.appointments-table .btn-cancel');
     cancelButtons.forEach(btn => {
         btn.addEventListener('click', function () {
             const row = this.closest('tr');
             const patientName = row.querySelector('.patient-info strong').textContent;
-            const action = this.textContent.toLowerCase();
+            const action = this.textContent.trim().toLowerCase();
 
             if (action === 'cancelar') {
                 cancelAppointment(patientName, row);
-            } else if (action === 'finalizar') {
+            } else if (action === 'finalizar' || action === 'completar') {
                 completeAppointment(patientName, row);
             }
         });
@@ -149,7 +204,7 @@ async function showNewAppointmentModal() {
             const data = await response.json();
             if (data.success && data.doctors) {
                 data.doctors.forEach(doctor => {
-                    doctorOptions += `<option value="${doctor.name}">${doctor.name}</option>`;
+                    doctorOptions += `<option value="${doctor.id}">${doctor.name}</option>`;
                 });
             }
         }
@@ -236,7 +291,7 @@ async function showNewAppointmentModal() {
                 is_new: isNew,
                 name: name,
                 phone: phone,
-                doctor_name: doctor,
+                doctor_id: doctor, // Send ID instead of name
                 date: date,
                 time: time,
                 type: type,
@@ -262,6 +317,10 @@ async function submitAppointment(data) {
         });
 
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        console.log('Enviando datos de cita al backend:', data);
+        console.log('Doctor ID enviado:', data.doctor_id);
+
         const response = await fetch('/recepcionista/store-appointment', {
             method: 'POST',
             headers: {
@@ -282,18 +341,10 @@ async function submitAppointment(data) {
                 showConfirmButton: false
             });
 
-            // Agregar a la tabla (simulado o recargar)
-            // Para simplificar, recargamos la página o llamamos a loadAppointmentData
-            // Pero como loadAppointmentData es simulado, agregamos manualmente
-            addAppointmentToTable({
-                date: data.date,
-                time: data.time,
-                doctor: data.doctor_name,
-                type: data.type,
-                patient_name: data.name // Necesitamos el nombre para mostrarlo
-            });
-
-            updateAppointmentStats();
+            // Reload page to show new appointment in correct order/page
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
         } else {
             throw new Error(result.message);
         }
@@ -381,7 +432,7 @@ function addAppointmentToTable(appointmentData) {
         <td>
             <div style="display: flex; gap: 5px;">
                 <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
-                <button class="section-btn" style="background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.8rem;" aria-label="Cambiar estado">Estado</button>
+                <button class="section-btn btn-status" style="background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.8rem;" aria-label="Cambiar estado">Estado</button>
                 <button class="btn-cancel" aria-label="Cancelar cita">Cancelar</button>
             </div>
         </td>

@@ -8,33 +8,15 @@
                         <input type="text" placeholder="Buscar recordatorios..." aria-label="Buscar recordatorios">
                         <i class="fas fa-search"></i>
                     </div>-->
-                    <button class="section-btn" id="new-reminder-btn">
-                        <i class="fas fa-plus"></i> Nuevo Recordatorio
-                    </button>
+                    
                 </div>
             </header>
 
             <div class="content">
                 <!-- Estadísticas Rápidas -->
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-bell"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>24</h3>
-                            <p>Pendientes Hoy</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>156</h3>
-                            <p>Enviados Esta Semana</p>
-                        </div>
-                    </div>
+                    
+                    
                     <!--<div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-exclamation-triangle"></i>
@@ -57,71 +39,43 @@
 
                 <!-- Filtros y Controles -->
                 <div class="reminders-controls">
-                    <div class="filters-container">
+                    <form action="{{ route('recordatorios') }}" method="GET" class="filters-container">
                         <div class="filter-group">
                             <label for="reminder-type">Tipo:</label>
-                            <select id="reminder-type">
+                            <select id="reminder-type" name="type">
                                 <option value="">Todos los tipos</option>
-                                <option value="cita">Recordatorio de Cita</option>
-                                <option value="pago">Recordatorio de Pago</option>
-                                <option value="medicamento">Recordatorio de Medicamento</option>
-                                <option value="resultado">Resultados Disponibles</option>
-                                <option value="general">Recordatorio General</option>
+                                <option value="consulta" {{ request('type') == 'consulta' ? 'selected' : '' }}>Consulta</option>
+                                <option value="control" {{ request('type') == 'control' ? 'selected' : '' }}>Control</option>
+                                <option value="emergencia" {{ request('type') == 'emergencia' ? 'selected' : '' }}>Urgencia</option>
+                                <option value="seguimiento" {{ request('type') == 'seguimiento' ? 'selected' : '' }}>Seguimiento</option>
                             </select>
                         </div>
                         
                         <div class="filter-group">
                             <label for="reminder-status">Estado:</label>
-                            <select id="reminder-status">
+                            <select id="reminder-status" name="status">
                                 <option value="">Todos los estados</option>
-                                <option value="pendiente">Pendiente</option>
-                                <option value="enviado">Enviado</option>
-                                <option value="fallido">Fallido</option>
-                                <option value="programado">Programado</option>
+                                <option value="Confirmada" {{ request('status') == 'Confirmada' ? 'selected' : '' }}>Confirmada</option>
+                                <option value="agendada" {{ request('status') == 'agendada' ? 'selected' : '' }}>Agendada</option>
+                                <option value="En curso" {{ request('status') == 'En curso' ? 'selected' : '' }}>En consulta</option>
+                                <option value="completada" {{ request('status') == 'completada' ? 'selected' : '' }}>Completada</option>
+                                <option value="cancelada" {{ request('status') == 'cancelada' ? 'selected' : '' }}>Cancelada</option>
+                                <option value="Sin confirmar" {{ request('status') == 'Sin confirmar' ? 'selected' : '' }}>Sin confirmar</option>
                             </select>
                         </div>
                         
                         <div class="filter-group">
-                            <label for="reminder-channel">Canal:</label>
-                            <select id="reminder-channel">
-                                <option value="">Todos los canales</option>
-                                <option value="sms">SMS</option>
-                                <option value="email">Email</option>
-                                <option value="llamada">Llamada</option>
-                                <option value="push">Notificación Push</option>
-                            </select>
+                            <label for="date-range">Fecha:</label>
+                            <input type="date" id="date-range" name="date" value="{{ request('date') }}" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
                         </div>
                         
-                        <div class="filter-group">
-                            <label for="date-range">Rango de Fecha:</label>
-                            <select id="date-range">
-                                <option value="hoy">Hoy</option>
-                                <option value="manana">Mañana</option>
-                                <option value="semana">Esta Semana</option>
-                                <option value="mes">Este Mes</option>
-                                <option value="personalizado">Personalizado</option>
-                            </select>
-                        </div>
-                        
-                        <button class="section-btn" id="apply-filters">
+                        <button type="submit" class="section-btn" id="apply-filters">
                             <i class="fas fa-filter"></i> Aplicar
                         </button>
-                        <button class="section-btn btn-cancel" id="reset-filters">
+                        <a href="{{ route('recordatorios') }}" class="section-btn btn-cancel" id="reset-filters" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
                             <i class="fas fa-redo"></i> Limpiar
-                        </button>
-                    </div>
-                    
-                    <div class="bulk-actions">
-                        <button class="section-btn" id="send-bulk-reminders">
-                            <i class="fas fa-paper-plane"></i> Enviar Lote
-                        </button>
-                        <button class="section-btn" id="schedule-reminders">
-                            <i class="fas fa-clock"></i> Programar
-                        </button>
-                        <button class="section-btn btn-cancel" id="delete-reminders">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </div>
+                        </a>
+                    </form>
                 </div>
 
                 <!-- Lista de Recordatorios -->
@@ -129,317 +83,126 @@
                     <h2>
                         <i class="fas fa-list"></i> Recordatorios Programados
                         <div class="section-actions">
-                            <button class="section-btn" id="export-reminders">
-                                <i class="fas fa-download"></i> Exportar
-                            </button>
-                            <button class="section-btn" id="refresh-reminders">
-                                <i class="fas fa-sync"></i> Actualizar
-                            </button>
+                            
                         </div>
                     </h2>
                     
                     <div class="reminders-list">
-                        <!-- Recordatorio 1 -->
-                        <div class="reminder-card" data-type="cita" data-status="pendiente" data-channel="sms">
-                            <div class="reminder-checkbox">
-                                <input type="checkbox" class="reminder-select">
-                            </div>
-                            <div class="reminder-icon">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <div class="reminder-content">
-                                <div class="reminder-header">
-                                    <h4>Recordatorio de Cita - Carlos Ruiz</h4>
-                                    <span class="reminder-badge type-cita">Cita</span>
-                                </div>
-                                <div class="reminder-details">
-                                    <p><i class="fas fa-user-md"></i> <strong>Médico:</strong> Dra. Elena Morales</p>
-                                    <p><i class="fas fa-clock"></i> <strong>Fecha y Hora:</strong> 16 Nov 2023, 08:30 AM</p>
-                                    <p><i class="fas fa-comment"></i> <strong>Mensaje:</strong> Recordatorio de su cita médica programada para mañana a las 08:30 AM con la Dra. Elena Morales. Favor presentarse 15 minutos antes.</p>
-                                </div>
-                                <div class="reminder-meta">
-                                    <span class="meta-item">
-                                        <i class="fas fa-mobile-alt"></i> SMS
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-clock"></i> Programado para: Hoy, 06:00 PM
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-user"></i> +1 555-123-4567
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="reminder-actions">
-                                <span class="status-badge pending">Pendiente</span>
-                                <div class="action-buttons">
-                                    <button class="btn-send" title="Enviar ahora">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                    <button class="btn-edit" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn-cancel" title="Cancelar">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <div class="appointments-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Fecha y Hora</th>
+                                        <th>Paciente</th>
+                                        <th>Médico</th>
+                                        <th>Tipo</th>
+                                        <th>Estado Cita</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($appointments as $appointment)
+                                        @php
+                                            $patientName = 'Desconocido';
+                                            if ($appointment->patient) {
+                                                if ($appointment->patient->is_Temporary) {
+                                                    $patientName = $appointment->patient->temporary_name;
+                                                } elseif ($appointment->patient->user) {
+                                                    $patientName = $appointment->patient->user->name;
+                                                }
+                                            }
 
-                        <!-- Recordatorio 2 -->
-                        <div class="reminder-card" data-type="pago" data-status="programado" data-channel="email">
-                            <div class="reminder-checkbox">
-                                <input type="checkbox" class="reminder-select">
-                            </div>
-                            <div class="reminder-icon">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                            </div>
-                            <div class="reminder-content">
-                                <div class="reminder-header">
-                                    <h4>Recordatorio de Pago - Ana López</h4>
-                                    <span class="reminder-badge type-pago">Pago</span>
-                                </div>
-                                <div class="reminder-details">
-                                    <p><i class="fas fa-receipt"></i> <strong>Concepto:</strong> Consulta del 14/11/2023</p>
-                                    <p><i class="fas fa-dollar-sign"></i> <strong>Monto:</strong> $150.00</p>
-                                    <p><i class="fas fa-comment"></i> <strong>Mensaje:</strong> Estimada Ana, le recordamos que tiene un pago pendiente por su consulta médica. Puede realizar el pago en línea o en nuestra sucursal.</p>
-                                </div>
-                                <div class="reminder-meta">
-                                    <span class="meta-item">
-                                        <i class="fas fa-envelope"></i> Email
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-clock"></i> Programado para: 17 Nov, 09:00 AM
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-user"></i> ana.lopez@email.com
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="reminder-actions">
-                                <span class="status-badge scheduled">Programado</span>
-                                <div class="action-buttons">
-                                    <button class="btn-send" title="Enviar ahora">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                    <button class="btn-edit" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn-cancel" title="Cancelar">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Recordatorio 3 -->
-                        <div class="reminder-card" data-type="resultado" data-status="enviado" data-channel="llamada">
-                            <div class="reminder-checkbox">
-                                <input type="checkbox" class="reminder-select">
-                            </div>
-                            <div class="reminder-icon">
-                                <i class="fas fa-file-medical"></i>
-                            </div>
-                            <div class="reminder-content">
-                                <div class="reminder-header">
-                                    <h4>Resultados Disponibles - Miguel Torres</h4>
-                                    <span class="reminder-badge type-resultado">Resultados</span>
-                                </div>
-                                <div class="reminder-details">
-                                    <p><i class="fas fa-flask"></i> <strong>Exámenes:</strong> Hemograma completo, Perfil lipídico</p>
-                                    <p><i class="fas fa-calendar"></i> <strong>Fecha de toma:</strong> 10 Nov 2023</p>
-                                    <p><i class="fas fa-comment"></i> <strong>Mensaje:</strong> Buen día Miguel, sus resultados de laboratorio ya están disponibles. Puede recogerlos en recepción o acceder a ellos través de nuestro portal en línea.</p>
-                                </div>
-                                <div class="reminder-meta">
-                                    <span class="meta-item">
-                                        <i class="fas fa-phone"></i> Llamada
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-check-circle"></i> Enviado: Hoy, 10:30 AM
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-user"></i> +1 555-456-7890
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="reminder-actions">
-                                <span class="status-badge sent">Enviado</span>
-                                <div class="action-buttons">
-                                    <button class="btn-view" title="Ver detalles">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn-resend" title="Reenviar">
-                                        <i class="fas fa-redo"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Recordatorio 4 -->
-                        <div class="reminder-card" data-type="medicamento" data-status="fallido" data-channel="sms">
-                            <div class="reminder-checkbox">
-                                <input type="checkbox" class="reminder-select">
-                            </div>
-                            <div class="reminder-icon">
-                                <i class="fas fa-pills"></i>
-                            </div>
-                            <div class="reminder-content">
-                                <div class="reminder-header">
-                                    <h4>Recordatorio de Medicamento - Laura García</h4>
-                                    <span class="reminder-badge type-medicamento">Medicamento</span>
-                                </div>
-                                <div class="reminder-details">
-                                    <p><i class="fas fa-prescription-bottle"></i> <strong>Medicamento:</strong> Metformina 500mg</p>
-                                    <p><i class="fas fa-clock"></i> <strong>Frecuencia:</strong> Cada 12 horas</p>
-                                    <p><i class="fas fa-comment"></i> <strong>Mensaje:</strong> Recordatorio: Es hora de tomar su medicamento (Metformina 500mg). No olvide seguir las indicaciones de su médico.</p>
-                                </div>
-                                <div class="reminder-meta">
-                                    <span class="meta-item">
-                                        <i class="fas fa-mobile-alt"></i> SMS
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-exclamation-triangle"></i> Fallido: Hoy, 02:00 PM
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-user"></i> +1 555-321-0987
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="reminder-actions">
-                                <span class="status-badge failed">Fallido</span>
-                                <div class="action-buttons">
-                                    <button class="btn-retry" title="Reintentar">
-                                        <i class="fas fa-sync"></i>
-                                    </button>
-                                    <button class="btn-edit" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn-cancel" title="Cancelar">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Recordatorio 5 -->
-                        <div class="reminder-card" data-type="general" data-status="pendiente" data-channel="push">
-                            <div class="reminder-checkbox">
-                                <input type="checkbox" class="reminder-select">
-                            </div>
-                            <div class="reminder-icon">
-                                <i class="fas fa-bullhorn"></i>
-                            </div>
-                            <div class="reminder-content">
-                                <div class="reminder-header">
-                                    <h4>Recordatorio General - Campaña de Vacunación</h4>
-                                    <span class="reminder-badge type-general">General</span>
-                                </div>
-                                <div class="reminder-details">
-                                    <p><i class="fas fa-syringe"></i> <strong>Tema:</strong> Vacuna contra la influenza</p>
-                                    <p><i class="fas fa-users"></i> <strong>Destinatarios:</strong> Pacientes mayores de 60 años</p>
-                                    <p><i class="fas fa-comment"></i> <strong>Mensaje:</strong> La campaña de vacunación contra la influenza está disponible. Proteja su salud esta temporada. Agenda su cita hoy mismo.</p>
-                                </div>
-                                <div class="reminder-meta">
-                                    <span class="meta-item">
-                                        <i class="fas fa-bell"></i> Notificación Push
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-clock"></i> Programado para: 20 Nov, 08:00 AM
-                                    </span>
-                                    <span class="meta-item">
-                                        <i class="fas fa-user-friends"></i> 125 destinatarios
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="reminder-actions">
-                                <span class="status-badge pending">Pendiente</span>
-                                <div class="action-buttons">
-                                    <button class="btn-send" title="Enviar ahora">
-                                        <i class="fas fa-paper-plane"></i>
-                                    </button>
-                                    <button class="btn-edit" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="btn-cancel" title="Cancelar">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
+                                            $doctorName = 'Por asignar';
+                                            if ($appointment->doctor && $appointment->doctor->user) {
+                                                $doctorName = $appointment->doctor->user->name;
+                                            }
+                                        @endphp
+                                        <tr>
+                                            <td>
+                                                <div class="time-slot">
+                                                    <strong>{{ \Carbon\Carbon::parse($appointment->appointment_date . ' ' . $appointment->appointment_time)->format('d M, H:i') }}</strong>
+                                                    <span>{{ \Carbon\Carbon::parse($appointment->appointment_date)->isToday() ? 'Hoy' : (\Carbon\Carbon::parse($appointment->appointment_date)->isTomorrow() ? 'Mañana' : 'Próxima') }}</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="patient-info">
+                                                    <div class="patient-avatar">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                    <div>
+                                                        <strong>{{ $patientName }}</strong>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>{{ $doctorName }}</td>
+                                            <td><span class="type-badge {{ strtolower($appointment->reason) }}">{{ ucfirst($appointment->reason) }}</span></td>
+                                            <td><span class="status-badge {{ $appointment->status == 'agendada' ? 'pending' : ($appointment->status == 'Confirmada' ? 'confirmed' : 'completed') }}">{{ ucfirst($appointment->status) }}</span></td>
+                                            <td>
+                                                <div class="action-buttons">
+                                                    <button class="btn-send" title="Enviar Recordatorio" onclick="sendReminder({{ $appointment->id }})">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                    <button class="btn-edit" title="Programar">
+                                                        <i class="fas fa-clock"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="6" style="text-align: center; padding: 20px;">No hay citas próximas para mostrar.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                     
                     <!-- Paginación -->
                     <div class="pagination">
-                        <button class="pagination-btn" disabled>
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="pagination-btn active">1</button>
-                        <button class="pagination-btn">2</button>
-                        <button class="pagination-btn">3</button>
-                        <span class="pagination-ellipsis">...</span>
-                        <button class="pagination-btn">5</button>
-                        <button class="pagination-btn">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
+                        @if ($appointments->onFirstPage())
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        @else
+                            <a href="{{ $appointments->previousPageUrl() }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        @endif
+
+                        {{-- Pagination Elements --}}
+                        @foreach ($appointments->links()->elements as $element)
+                            {{-- "Three Dots" Separator --}}
+                            @if (is_string($element))
+                                <span class="pagination-ellipsis">{{ $element }}</span>
+                            @endif
+
+                            {{-- Array Of Links --}}
+                            @if (is_array($element))
+                                @foreach ($element as $page => $url)
+                                    @if ($page == $appointments->currentPage())
+                                        <button class="pagination-btn active">{{ $page }}</button>
+                                    @else
+                                        <a href="{{ $url }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">{{ $page }}</a>
+                                    @endif
+                                @endforeach
+                            @endif
+                        @endforeach
+
+                        @if ($appointments->hasMorePages())
+                            <a href="{{ $appointments->nextPageUrl() }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        @else
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        @endif
                     </div>
                 </div>
 
                 <!-- Plantillas de Recordatorios -->
-                <div class="recent-section">
-                    <h2>
-                        <i class="fas fa-layer-group"></i> Plantillas de Recordatorios
-                    </h2>
-                    
-                    <div class="templates-grid">
-                        <div class="template-card">
-                            <div class="template-icon">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <div class="template-content">
-                                <h4>Confirmación de Cita</h4>
-                                <p>Plantilla estándar para confirmar citas médicas programadas.</p>
-                                <div class="template-stats">
-                                    <!--<span><i class="fas fa-chart-bar"></i> 85% tasa de apertura</span>-->
-                                    <span><i class="fas fa-clock"></i> Usada 234 veces</span>
-                                </div>
-                            </div>
-                            <button class="section-btn btn-use-template">
-                                <i class="fas fa-plus"></i> Usar
-                            </button>
-                        </div>
-                        
-                        <div class="template-card">
-                            <div class="template-icon">
-                                <i class="fas fa-file-invoice-dollar"></i>
-                            </div>
-                            <div class="template-content">
-                                <h4>Recordatorio de Pago</h4>
-                                <p>Plantilla para recordatorios de pagos pendientes y facturas.</p>
-                                <div class="template-stats">
-                                    <!--<span><i class="fas fa-chart-bar"></i> 72% tasa de apertura</span>-->
-                                    <span><i class="fas fa-clock"></i> Usada 156 veces</span>
-                                </div>
-                            </div>
-                            <button class="section-btn btn-use-template">
-                                <i class="fas fa-plus"></i> Usar
-                            </button>
-                        </div>
-                        
-                        <div class="template-card">
-                            <div class="template-icon">
-                                <i class="fas fa-file-medical"></i>
-                            </div>
-                            <div class="template-content">
-                                <h4>Resultados Disponibles</h4>
-                                <p>Notificación cuando los resultados de laboratorio están listos.</p>
-                                <div class="template-stats">
-                                    <!--<span><i class="fas fa-chart-bar"></i> 91% tasa de apertura</span>-->
-                                    <span><i class="fas fa-clock"></i> Usada 89 veces</span>
-                                </div>
-                            </div>
-                            <button class="section-btn btn-use-template">
-                                <i class="fas fa-plus"></i> Usar
-                            </button>
-                        </div>
+                
                         
                         <!--<div class="template-card">
                             <div class="template-icon">
@@ -545,4 +308,32 @@
 @endsection
 @section('scripts')
 @vite('resources/js/RECEPCIONISTA/script-recordatorios.js')
+<script>
+    function sendReminder(appointmentId) {
+        if (!confirm('¿Estás seguro de enviar un recordatorio al médico?')) {
+            return;
+        }
+
+        fetch('{{ route("notifications.sendReminder") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ appointment_id: appointmentId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al enviar el recordatorio.');
+        });
+    }
+</script>
 @endsection

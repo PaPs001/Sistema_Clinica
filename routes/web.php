@@ -28,6 +28,13 @@ Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function(){
     Route::get('/cambiar-password-primera-vez', function() {return view('LOGIN.cambiar-password');})->name('password.primeravez');
     Route::post('/cambiar-password-primera-vez', [passwordFirstLoginController::class, 'actualizarPasswordInicial'])->name('password.primeravez.update');
+
+    // Notifications
+    Route::get('/notifications', [App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::get('/notifications/unread-count', [App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('notifications.count');
+    Route::get('/notifications/recent', [App\Http\Controllers\NotificationController::class, 'getRecent'])->name('notifications.recent');
+    Route::post('/notifications/send-reminder', [App\Http\Controllers\NotificationController::class, 'sendManualReminder'])->name('notifications.sendReminder');
 });
 
 Route::get('/correo-prueba', [CorreoController::class, 'pruebaCorreo']);
@@ -195,18 +202,14 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (){
         return view('RECEPCIONISTA.agenda');
     })->name('agenda');
 
-    Route::get('/gestion-citas', function(){
-        return view('RECEPCIONISTA.gestion-citas');
-    })->name('gestionCitas');
+    Route::get('/gestion-citas', [App\Http\Controllers\AppointmentController::class, 'indexView'])->name('gestionCitas');
 
     Route::get('/registro-paciente', function(){
         return view('RECEPCIONISTA.registro-pacientes');
     })->name('registroPaciente');
     Route::get('/pacientes-recepcionista', [App\Http\Controllers\PatientController::class, 'index'])->name('pacientesRecepcionista');
 
-    Route::get('/recordatorios', function(){
-        return view('RECEPCIONISTA.recordatorios');
-    })->name('recordatorios');
+    Route::get('/recordatorios', [App\Http\Controllers\AppointmentController::class, 'reminders'])->name('recordatorios');
 
     Route::get('/registro-paciente', [App\Http\Controllers\PatientController::class, 'create'])->name('registroPaciente');
 
@@ -218,6 +221,7 @@ Route::middleware(['auth', 'role:receptionist'])->group(function (){
     Route::get('/recepcionista/get-appointments', [App\Http\Controllers\AppointmentController::class, 'index'])->name('get.appointments');
     Route::post('/recepcionista/cancel-appointment/{id}', [App\Http\Controllers\AppointmentController::class, 'cancel'])->name('cancel.appointment');
     Route::post('/recepcionista/update-appointment-status/{id}', [App\Http\Controllers\AppointmentController::class, 'updateStatus'])->name('update.appointment.status');
+    Route::get('/recepcionista/search-appointments-autocomplete', [App\Http\Controllers\AppointmentController::class, 'searchPatients'])->name('search.appointments.autocomplete');
 });
 
 //Rutas a paginas enfermera --------------------------------------------------------------

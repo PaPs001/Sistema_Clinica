@@ -11,11 +11,8 @@
                     <input type="text" placeholder="Buscar paciente...">
                     <i class="fas fa-search"></i>
                 </div>
-                <div class="notifications">
-                    <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
-                </div>
-            </div>-->
+                @include('partials.header-notifications')
+            </div>
         </header>
         
         <div class="content">

@@ -20,38 +20,52 @@
                     <h2>
                         <i class="fas fa-filter"></i> Filtros de Citas
                     </h2>
-                    <div class="filters-container">
+                    <form action="{{ route('gestionCitas') }}" method="GET" class="filters-container">
                         <div class="filter-group">
                             <label for="date-filter">Fecha:</label>
-                            <input type="date" id="date-filter">
+                            <input type="date" id="date-filter" name="date" value="{{ request('date') }}">
                         </div>
                         <div class="filter-group">
                             <label for="doctor-filter">Médico:</label>
-                            <select id="doctor-filter">
+                            <select id="doctor-filter" name="doctor_id">
                                 <option value="">Todos los médicos</option>
-                                <option value="Dra. Elena Morales">Dra. Elena Morales</option>
-                                <option value="Dr. Roberto Silva">Dr. Roberto Silva</option>
-                                <option value="Dr. Carlos Mendoza">Dr. Carlos Mendoza</option>
+                                @foreach($doctors as $doctor)
+                                    <option value="{{ $doctor->id }}" {{ request('doctor_id') == $doctor->id ? 'selected' : '' }}>{{ $doctor->name }}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="filter-group">
                             <label for="status-filter">Estado:</label>
-                            <select id="status-filter">
+                            <select id="status-filter" name="status">
                                 <option value="">Todos los estados</option>
-                                <option value="confirmada">Confirmada</option>
-                                <option value="pendiente">Pendiente</option>
-                                <option value="en-consulta">En consulta</option>
-                                <option value="completada">Completada</option>
-                                <option value="cancelada">Cancelada</option>
+                                <option value="Confirmada" {{ request('status') == 'Confirmada' ? 'selected' : '' }}>Confirmada</option>
+                                <option value="agendada" {{ request('status') == 'agendada' ? 'selected' : '' }}>Agendada</option>
+                                <option value="En curso" {{ request('status') == 'En curso' ? 'selected' : '' }}>En consulta</option>
+                                <option value="completada" {{ request('status') == 'completada' ? 'selected' : '' }}>Completada</option>
+                                <option value="cancelada" {{ request('status') == 'cancelada' ? 'selected' : '' }}>Cancelada</option>
+                                <option value="Sin confirmar" {{ request('status') == 'Sin confirmar' ? 'selected' : '' }}>Sin confirmar</option>
                             </select>
                         </div>
-                        <button class="section-btn" id="apply-filters">
+                        <button type="submit" class="section-btn" id="apply-filters">
                             <i class="fas fa-check"></i> Aplicar Filtros
                         </button>
-                        <button class="section-btn btn-cancel" id="reset-filters">
+                        <a href="{{ route('gestionCitas') }}" class="section-btn btn-cancel" id="reset-filters" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
                             <i class="fas fa-redo"></i> Limpiar
-                        </button>
-                    </div>
+                        </a>
+                        
+                        <!-- Buscador con Typeahead -->
+                        <div class="search-box-container" style="margin-left: auto; position: relative;">
+                            <div class="search-box" style="display: flex; align-items: center; background: #f0f2f5; border-radius: 20px; padding: 5px 15px; border: 1px solid #ddd;">
+                                <input type="text" id="appointment-search" name="search" value="{{ request('search') }}" placeholder="Buscar por paciente..." autocomplete="off" style="border: none; background: transparent; outline: none; padding: 5px; width: 250px;">
+                                <button type="submit" style="border: none; background: none; cursor: pointer; color: #666;">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                            <div id="search-suggestions" style="position: absolute; top: 100%; left: 0; width: 100%; background: white; border: 1px solid #ddd; border-radius: 0 0 10px 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: none; z-index: 1000; max-height: 200px; overflow-y: auto;">
+                                <!-- Suggestions will be populated here -->
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
                 <!-- Lista de Citas -->
@@ -62,9 +76,9 @@
                             <!--<button class="section-btn" id="export-citas">
                                 <i class="fas fa-download"></i> Exportar
                             </button>-->
-                            <button class="section-btn" id="refresh-citas">
+                            <a href="{{ route('gestionCitas') }}" class="section-btn" id="refresh-citas" style="text-decoration: none;">
                                 <i class="fas fa-sync"></i> Actualizar
-                            </button>
+                            </a>
                         </div>
                     </h2>
                     <div class="appointments-table">
@@ -81,9 +95,122 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Las citas se cargarán dinámicamente -->
+                                @forelse($appointments as $appointment)
+                                    @php
+                                        $patientName = 'Desconocido';
+                                        if ($appointment->patient) {
+                                            if ($appointment->patient->is_Temporary) {
+                                                $patientName = $appointment->patient->temporary_name;
+                                            } elseif ($appointment->patient->user) {
+                                                $patientName = $appointment->patient->user->name;
+                                            }
+                                        }
+
+                                        $doctorName = 'Por asignar';
+                                        if ($appointment->doctor && $appointment->doctor->user) {
+                                            $doctorName = $appointment->doctor->user->name;
+                                        }
+
+                                        $statusClass = match($appointment->status) {
+                                            'agendada' => 'pending',
+                                            'Confirmada' => 'confirmed',
+                                            'completada' => 'completed',
+                                            'cancelada' => 'canceled',
+                                            'En curso' => 'in-progress',
+                                            'Sin confirmar' => 'pending',
+                                            default => 'pending'
+                                        };
+                                        
+                                        $statusText = match($appointment->status) {
+                                            'agendada' => 'Agendada',
+                                            'Confirmada' => 'Confirmada',
+                                            'completada' => 'Completada',
+                                            'cancelada' => 'Cancelada',
+                                            'En curso' => 'En Consulta',
+                                            'Sin confirmar' => 'Sin confirmar',
+                                            default => $appointment->status
+                                        };
+                                    @endphp
+                                    <tr data-id="{{ $appointment->id }}">
+                                        <td>
+                                            <div class="time-slot">
+                                                <strong>{{ \Carbon\Carbon::parse($appointment->appointment_date . ' ' . $appointment->appointment_time)->format('d M, H:i') }}</strong>
+                                                <span>{{ \Carbon\Carbon::parse($appointment->appointment_date)->isToday() ? 'Hoy' : (\Carbon\Carbon::parse($appointment->appointment_date)->isTomorrow() ? 'Mañana' : 'Próxima') }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="patient-info">
+                                                <div class="patient-avatar">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <div>
+                                                    <strong>{{ $patientName }}</strong>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>{{ $doctorName }}</td>
+                                        <td>Por asignar</td>
+                                        <td><span class="type-badge {{ strtolower($appointment->reason) }}">{{ ucfirst($appointment->reason) }}</span></td>
+                                        <td><span class="status-badge {{ $statusClass }}">{{ $statusText }}</span></td>
+                                        <td>
+                                            <div style="display: flex; gap: 5px;">
+                                                <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
+                                                <button class="section-btn btn-status" style="background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.8rem;" aria-label="Cambiar estado">Estado</button>
+                                                <button class="btn-cancel" aria-label="Cancelar cita" {{ in_array($appointment->status, ['cancelada', 'completada']) ? 'disabled' : '' }}>
+                                                    {{ $appointment->status == 'cancelada' ? 'Cancelada' : ($appointment->status == 'completada' ? 'Completada' : 'Cancelar') }}
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; padding: 20px;">No se encontraron citas.</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <!-- Paginación -->
+                    <div class="pagination">
+                        @if ($appointments->onFirstPage())
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                        @else
+                            <a href="{{ $appointments->previousPageUrl() }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        @endif
+
+                        {{-- Pagination Elements --}}
+                        @foreach ($appointments->links()->elements as $element)
+                            {{-- "Three Dots" Separator --}}
+                            @if (is_string($element))
+                                <span class="pagination-ellipsis">{{ $element }}</span>
+                            @endif
+
+                            {{-- Array Of Links --}}
+                            @if (is_array($element))
+                                @foreach ($element as $page => $url)
+                                    @if ($page == $appointments->currentPage())
+                                        <button class="pagination-btn active">{{ $page }}</button>
+                                    @else
+                                        <a href="{{ $url }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">{{ $page }}</a>
+                                    @endif
+                                @endforeach
+                            @endif
+                        @endforeach
+
+                        @if ($appointments->hasMorePages())
+                            <a href="{{ $appointments->nextPageUrl() }}" class="pagination-btn" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        @else
+                            <button class="pagination-btn" disabled>
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        @endif
                     </div>
                 </div>
 
@@ -94,7 +221,7 @@
                             <i class="fas fa-calendar-day"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="stat-citas-hoy">0</h3>
+                            <h3 id="stat-citas-hoy">{{ $stats['today'] }}</h3>
                             <p>Citas Hoy</p>
                         </div>
                     </div>
@@ -103,7 +230,7 @@
                             <i class="fas fa-calendar-check"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="stat-confirmadas">0</h3>
+                            <h3 id="stat-confirmadas">{{ $stats['confirmed'] }}</h3>
                             <p>Confirmadas</p>
                         </div>
                     </div>
@@ -112,7 +239,7 @@
                             <i class="fas fa-user-clock"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="stat-agendadas">0</h3>
+                            <h3 id="stat-agendadas">{{ $stats['scheduled'] }}</h3>
                             <p>Citas Agendadas</p>
                         </div>
                     </div>
@@ -121,7 +248,7 @@
                             <i class="fas fa-calendar-times"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="stat-canceladas">0</h3>
+                            <h3 id="stat-canceladas">{{ $stats['cancelled'] }}</h3>
                             <p>Canceladas</p>
                         </div>
                     </div>
