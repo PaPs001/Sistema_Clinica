@@ -70,8 +70,8 @@
                                 <td>{{ $cita->appointment_date }}</td>
                                 <td>{{ $cita->appointment_time }}</td>
                                 <td>{{ optional($cita->patient)->display_name ?? 'N/A' }}</td>
-                                <td>{{ $cita->doctor->user->name ?? 'N/A' }}</td>
-                                <td>{{ optional($cita->receptionist->user)->name ?? 'N/A' }}</td>
+                                <td>{{ $cita->doctor?->user?->name ?? 'N/A' }}</td>
+                                <td>{{ $cita->receptionist?->user?->name ?? 'N/A' }}</td>
                                 <td>{{ $cita->reason }}</td>
                                 <td>
                                     @foreach($cita->consultDiseases as $consult)
