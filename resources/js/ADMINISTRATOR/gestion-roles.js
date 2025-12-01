@@ -151,10 +151,23 @@ function guardarPermisos() {
         .then(res => res.json())
         .then(data => {
             console.log("Respuesta:", data);
-            alert("Permisos guardados correctamente");
+            Swal.fire({
+                icon: 'success',
+                title: '¡Éxito!',
+                text: 'Permisos guardados correctamente',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#061175'
+            });
             cerrarModalPermisos('#modalPermisos');
         })
         .catch(err => {
             console.error("Error al guardar:", err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrió un error al guardar los permisos',
+                confirmButtonText: 'Cerrar',
+                confirmButtonColor: '#dc3545'
+            });
         });
 }
