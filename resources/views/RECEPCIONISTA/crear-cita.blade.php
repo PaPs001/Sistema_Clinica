@@ -1,5 +1,5 @@
 @extends('plantillas.dashboard_recepcionista')
-@section('title', 'Agendar Cita - Hospital Naval')
+@section('title', 'Agendar Cita - Clinica Ultima Asignatura')
 @section('content')
             <header class="content-header">
                 <h1>Agendar Nueva Cita</h1>

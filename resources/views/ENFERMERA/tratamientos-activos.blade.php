@@ -14,77 +14,96 @@
 </div>
 
 <div class="content">
-    <div class="card">
-        <div class="card-header">
-            <h3>Pacientes con Tratamientos en Seguimiento</h3>
+    <div class="filters-section">
+        <div class="filter-group">
+            <label for="status-filter">Estado:</label>
+            <select id="status-filter">
+                <option value="todos">Todos los estados</option>
+                <option value="En seguimiento">En seguimiento</option>
+                <option value="Completado">Completado</option>
+                <option value="suspendido">Suspendido</option>
+            </select>
+
+            <label for="medication-filter">Medicamento:</label>
+            <input type="text" id="medication-filter" placeholder="Buscar por medicamento...">
+
+            <button type="button" class="btn-primary" id="btn-clear-filters">
+                <i class="fas fa-redo"></i> Limpiar
+            </button>
         </div>
-        <div class="card-body">
-            @if($patients->isEmpty())
-                <div class="alert alert-info">
-                    No hay pacientes con tratamientos activos en este momento.
-                </div>
-            @else
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Paciente</th>
-                                <th>Tratamiento</th>
-                                <th>Inicio</th>
-                                <th>Fin Programado</th>
-                                <th>Médico</th>
-                                <th>Estado</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($patients as $patient)
-                                @foreach($patient->patient->medicalRecords as $record)
-                                    @foreach($record->treatmentRecords as $treatment)
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar-circle mr-2">{{ substr($patient->name, 0, 1) }}</div>
-                                                    <div>
-                                                        <div class="font-weight-bold">{{ $patient->name }}</div>
-                                                        <small class="text-muted">DNI: {{ $patient->patient->DNI }}</small>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <strong>{{ $treatment->treatment->treatment_description ?? 'Tratamiento General' }}</strong>
-                                                <br>
-                                                <small>{{ Str::limit($treatment->notes, 50) }}</small>
-                                            </td>
-                                            <td>{{ $treatment->start_date->format('d/m/Y') }}</td>
-                                            <td>
-                                                @if($treatment->end_date)
-                                                    {{ $treatment->end_date->format('d/m/Y') }}
-                                                    <br>
-                                                    <small class="{{ $treatment->end_date->isPast() ? 'text-danger' : 'text-success' }}">
-                                                        ({{ $treatment->end_date->diffForHumans() }})
-                                                    </small>
-                                                @else
-                                                    <span class="text-muted">Indefinido</span>
-                                                @endif
-                                            </td>
-                                            <td>Dr. {{ $treatment->medicUser->name ?? 'N/A' }}</td>
-                                            <td>
-                                                <span class="badge badge-success">En Seguimiento</span>
-                                            </td>
-                                            <td>
-                                                <button class="btn-edit" onclick="openEditModal({{ $treatment->id }})" title="Editar tratamiento">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @endforeach
+    </div>
+
+    <div class="appointments-section">
+        <h2>Pacientes con Tratamientos en Seguimiento</h2>
+        <div class="appointments-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Tratamiento</th>
+                        <th>Medicamentos</th>
+                        <th>Inicio</th>
+                        <th>Fin Programado</th>
+                        <th>Médico</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="treatments-tbody">
+                    @forelse($patients as $patient)
+                        @foreach($patient->patient->medicalRecords as $record)
+                            @foreach($record->treatmentRecords as $treatment)
+                                <tr class="treatment-row" data-status="{{ $treatment->status ?? 'En seguimiento' }}">
+                                    <td>
+                                        <div class="doctor-info">
+                                            <div class="doctor-avatar">
+                                                <i class="fas fa-user-injured"></i>
+                                            </div>
+                                            <div>
+                                                <strong>{{ $patient->name }}</strong>
+                                                <span>DNI: {{ $patient->patient->DNI }}</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{ $treatment->treatment->treatment_description ?? 'Tratamiento General' }}</strong>
+                                        <br>
+                                        <small>{{ Str::limit($treatment->notes, 60) }}</small>
+                                    </td>
+                                    <td class="treatment-medications">
+                                        <span class="medications-placeholder">—</span>
+                                    </td>
+                                    <td>{{ optional($treatment->start_date)->format('d/m/Y') }}</td>
+                                    <td>
+                                        @if($treatment->end_date)
+                                            {{ $treatment->end_date->format('d/m/Y') }}
+                                            <br>
+                                            <small class="{{ $treatment->end_date->isPast() ? 'text-danger' : 'text-success' }}">
+                                                ({{ $treatment->end_date->diffForHumans() }})
+                                            </small>
+                                        @else
+                                            <span class="text-muted">Indefinido</span>
+                                        @endif
+                                    </td>
+                                    <td>Dr. {{ $treatment->medicUser->name ?? 'N/A' }}</td>
+                                    <td>
+                                        <span class="badge badge-success">{{ $treatment->status ?? 'En seguimiento' }}</span>
+                                    </td>
+                                    <td>
+                                        <button class="btn-edit" onclick="openEditModal({{ $treatment->id }})" title="Editar tratamiento">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                    </td>
+                                </tr>
                             @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
+                        @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="8" style="text-align:center; padding:20px;">No hay pacientes con tratamientos activos en este momento.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

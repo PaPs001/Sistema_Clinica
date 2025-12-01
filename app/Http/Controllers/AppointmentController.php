@@ -377,6 +377,8 @@ class AppointmentController extends Controller
     public function reminders(Request $request)
     {
         $query = appointment::with(['patient.user', 'doctor.user'])
+            // Solo mostrar citas agendadas
+            ->where('status', 'agendada')
             // Excluir pacientes temporales de los recordatorios
             ->whereHas('patient', function ($q) {
                 $q->where('is_Temporary', false);
@@ -390,13 +392,10 @@ class AppointmentController extends Controller
             $query->where('appointment_date', $request->date);
         }
 
-        if ($request->filled('type')) {
-            $query->where('reason', $request->type);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+        // Filtro por estado removido ya que solo mostramos 'agendada'
+        // if ($request->filled('status')) {
+        //     $query->where('status', $request->status);
+        // }
 
         // Filtro por nombre de paciente (solo definitivos)
         if ($request->filled('search')) {
@@ -410,7 +409,7 @@ class AppointmentController extends Controller
             });
         }
 
-        $appointments = $query->paginate(5)->withQueryString();
+        $appointments = $query->paginate(10)->withQueryString();
 
         return view('RECEPCIONISTA.recordatorios', compact('appointments'));
     }

@@ -79,9 +79,9 @@
                         <table class="patients-table">
                             <thead>
                                 <tr>
-                                    <th class="select-column">
+                                    <!--<th class="select-column">
                                         <input type="checkbox" id="select-all">
-                                    </th>
+                                    </th>-->
                                     <th>Paciente</th>
                                     <th>Contacto</th>
                                     <th>Información</th>
@@ -93,9 +93,9 @@
                             <tbody>
                                 @forelse($patients as $patient)
                                 <tr class="patient-row" data-status="{{ $patient->status }}">
-                                    <td class="select-column">
+                                    <!--<td class="select-column">
                                         <input type="checkbox" class="patient-select" value="{{ $patient->id }}">
-                                    </td>
+                                    </td>-->
                                     <td>
                                         <div class="patient-info-compact">
                                             <div class="patient-avatar {{ $patient->status == 'inactive' ? 'inactive' : '' }}">

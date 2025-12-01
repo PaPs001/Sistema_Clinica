@@ -18,12 +18,12 @@
         </div>
         
         <ul class="sidebar-menu">
-            <!--<li>
+            <li>
                 <a href="{{ route('dashboardMedico') }}">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
                 </a>
-            </li>-->
+            </li>
             <li>
                 <a href="{{ route('registro-expediente') }}" class="{{ request()->routeIs('registro-expediente') ? 'active' : '' }}">
                     <i class="fas fa-file-medical"></i>

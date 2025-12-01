@@ -12,6 +12,7 @@ use App\Http\Controllers\ControladoresMedico\historialMedicoController;
 use App\Http\Controllers\ControladoresMedico\filtradoExpedientesController;
 use App\Http\Controllers\passwordFirstLoginController;
 use App\Http\Controllers\ControladoresPaciente\HistorialPacienteController;
+use App\Http\Controllers\ControladoresPaciente\PacienteDashboardController;
 use App\Http\Controllers\CorreoController;
 
 //controladores del administrador
@@ -78,11 +79,16 @@ Route::middleware(['auth', 'role:medic'])->group(function (){
     Route::get('/buscar-alergenos', [buscadoresController::class, 'autocompletarAlergenos'])->name('autocompletar_Alergenos');
     Route::get('/buscar-alergias', [buscadoresController::class, 'autocompletarAlergias'])->name('autocompletar_Alergias');
     Route::post('agregar-Alergia', [antecedentesMedicosController::class, 'agregarAlergia'])->name('agregar_Alergia');
+    
+    // Rutas para citas semanales y datos de paciente
+    Route::get('/dashboard/citas-semanales', [App\Http\Controllers\ControladoresMedico\MedicoController::class, 'getWeeklyAppointments'])->name('dashboard.citas.semanales');
+    Route::get('/cita/{id}/datos-paciente', [App\Http\Controllers\ControladoresMedico\MedicoController::class, 'getAppointmentPatientData'])->name('cita.datos.paciente');
 });
 //Rutas a paginas paciente ---------------------------------------------------------------
 Route::middleware(['auth', 'role:patient'])->group(function (){
     Route::get('/listar-consultas-dashboard-paciente', [HistorialPacienteController::class, 'listarProximasConsultas'])->name('listado.consultas');
-    Route::get('/dashboard-paciente', [HistorialPacienteController::class, 'dashboard'])->name('dashboard.paciente');
+    Route::get('/dashboard-paciente', [PacienteDashboardController::class, 'show'])->name('dashboard.paciente');
+    Route::get('/tratamientos-activos-paciente', [HistorialPacienteController::class, 'tratamientosActivosPaciente'])->name('tratamientos.activos.paciente');
     Route::get('/historial_Paciente', function(){
         return view('PACIENTE.mi-historial');
     })->name('historialPaciente');

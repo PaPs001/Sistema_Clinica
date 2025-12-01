@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const query = this.value.trim();
         clearTimeout(timeout);
         sugerenciasDiv.innerHTML = '';
+        sugerenciasDiv.style.display = 'none';
 
         if (query.length < 2) return;
 
@@ -98,6 +99,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     console.log("Respuesta del servidor:", data);
                     sugerenciasDiv.innerHTML = '';
+                    sugerenciasDiv.style.display = 'none';
 
                     if (!Array.isArray(data)) {
                         console.error("El servidor no devolvió un array:", data);
@@ -109,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         item.classList.add('sugerencia-item', 'text-muted');
                         item.textContent = 'Sin resultados';
                         sugerenciasDiv.appendChild(item);
+                        sugerenciasDiv.style.display = 'block';
                         return;
                     }
 
@@ -121,10 +124,15 @@ document.addEventListener('DOMContentLoaded', function () {
                             inputNombre.value = paciente.user?.name ?? '';
                             inputId.value = paciente.id;
                             sugerenciasDiv.innerHTML = '';
+                            sugerenciasDiv.style.display = 'none';
                         });
 
                         sugerenciasDiv.appendChild(item);
                     });
+
+                    if (sugerenciasDiv.childElementCount > 0) {
+                        sugerenciasDiv.style.display = 'block';
+                    }
                 })
                 .catch(err => {
                     console.error("Error al buscar pacientes:", err);
@@ -135,6 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('click', (e) => {
         if (!sugerenciasDiv.contains(e.target) && e.target !== inputNombre) {
             sugerenciasDiv.innerHTML = '';
+            sugerenciasDiv.style.display = 'none';
         }
     });
 

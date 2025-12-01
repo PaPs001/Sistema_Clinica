@@ -1,5 +1,50 @@
 // tratamientos-activos.js - Gestión de tratamientos activos
 
+// Filtros en tabla (estado + medicamento)
+document.addEventListener('DOMContentLoaded', function () {
+    const statusSelect = document.getElementById('status-filter');
+    const medicationInput = document.getElementById('medication-filter');
+    const clearBtn = document.getElementById('btn-clear-filters');
+
+    function applyFilters() {
+        const status = statusSelect ? statusSelect.value : 'todos';
+        const medText = medicationInput ? medicationInput.value.trim().toLowerCase() : '';
+
+        document.querySelectorAll('.treatment-row').forEach(row => {
+            const rowStatus = row.dataset.status || 'En seguimiento';
+            const medsCell = row.querySelector('.treatment-medications');
+            const medsText = medsCell ? medsCell.textContent.toLowerCase() : '';
+
+            const statusMatch = status === 'todos' || rowStatus === status;
+            const medMatch = !medText || medsText.includes(medText);
+
+            row.style.display = statusMatch && medMatch ? '' : 'none';
+        });
+    }
+
+    if (statusSelect) {
+        statusSelect.addEventListener('change', applyFilters);
+    }
+
+    let medTimeout = null;
+    if (medicationInput) {
+        medicationInput.addEventListener('input', () => {
+            clearTimeout(medTimeout);
+            medTimeout = setTimeout(applyFilters, 300);
+        });
+    }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            if (statusSelect) statusSelect.value = 'todos';
+            if (medicationInput) medicationInput.value = '';
+            applyFilters();
+        });
+    }
+
+    applyFilters();
+});
+
 // Abrir modal de edición y cargar datos del tratamiento
 window.openEditModal = async function (treatmentId) {
     const modal = document.getElementById('modal-edit-treatment');
@@ -129,7 +174,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Función para mostrar notificaciones
 function showNotification(message, type = 'info') {
-    // Crear elemento de notificación
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
@@ -137,20 +181,17 @@ function showNotification(message, type = 'info') {
         <span>${message}</span>
     `;
 
-    // Agregar al body
     document.body.appendChild(notification);
 
-    // Mostrar con animación
     setTimeout(() => notification.classList.add('show'), 100);
 
-    // Ocultar después de 3 segundos
     setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
 
-// Función para mostrar loading
+// Loading
 function showLoading() {
     let loader = document.getElementById('loading-overlay');
     if (!loader) {
@@ -162,7 +203,6 @@ function showLoading() {
     loader.classList.add('active');
 }
 
-// Función para ocultar loading
 function hideLoading() {
     const loader = document.getElementById('loading-overlay');
     if (loader) {

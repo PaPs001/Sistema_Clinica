@@ -25,9 +25,22 @@ export async function cargarDatos({
     if (!cont || !tmplt) return;
 
 
+    function buildUrl(page) {
+        if (typeof url !== "string") {
+            return url;
+        }
+
+        if (url.includes("?")) {
+            return `${url}&page=${page}`;
+        }
+
+        return `${url}?page=${page}`;
+    }
+
     async function cargarPagina(page = 1) {
         try {
-            const res = await fetch(`${url}?page=${page}`);
+            const finalUrl = buildUrl(page);
+            const res = await fetch(finalUrl);
             const data = await res.json();
 
             console.log("=== DEBUG cargarDatos ===");

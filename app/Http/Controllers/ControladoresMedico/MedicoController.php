@@ -14,10 +14,6 @@ use Illuminate\Support\Facades\Log;
 
 class MedicoController extends Controller
 {
-    /**
-     * Obtiene las citas de la semana actual con estado 'agendada' para el m�dico autenticado,
-     * permitiendo filtrar por nombre de paciente (registrado o temporal).
-     */
     public function getWeeklyAppointments(Request $request)
     {
         try {
@@ -26,7 +22,7 @@ class MedicoController extends Controller
             if (!$doctor) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No se encontr� el perfil de m�dico'
+                    'message' => 'No se encontró el perfil de médico'
                 ], 404);
             }
 
@@ -34,40 +30,44 @@ class MedicoController extends Controller
             $startOfWeek = $today->copy()->startOfWeek();
             $endOfWeek = $today->copy()->endOfWeek();
             $rangeStart = $today;
-
-            $search = trim((string) $request->input('q', ''));
+            
+            $searchQuery = $request->input('q', '');
 
             Log::info('Buscando citas semanales', [
                 'doctor_id' => $doctor->id,
                 'start' => $rangeStart->toDateString(),
                 'end' => $endOfWeek->toDateString(),
-                'search' => $search,
+                'search' => $searchQuery
             ]);
 
-            $appointmentsQuery = appointment::with(['patient.user', 'doctor.user'])
+            $query = appointment::with(['patient.user', 'doctor.user'])
                 ->where('doctor_id', $doctor->id)
                 ->where('status', 'agendada')
                 ->whereBetween('appointment_date', [$rangeStart->toDateString(), $endOfWeek->toDateString()]);
-
-            if ($search !== '') {
-                $appointmentsQuery->where(function ($q) use ($search) {
-                    $q->whereHas('patient.user', function ($sub) use ($search) {
-                        $sub->where('name', 'LIKE', '%' . $search . '%');
-                    })->orWhereHas('patient', function ($sub) use ($search) {
-                        $sub->where('is_Temporary', true)
-                            ->where('temporary_name', 'LIKE', '%' . $search . '%');
+            
+            // Filtrar por nombre de paciente si hay búsqueda
+            if (!empty($searchQuery)) {
+                $query->whereHas('patient', function ($q) use ($searchQuery) {
+                    $q->where(function ($subQ) use ($searchQuery) {
+                        // Buscar en pacientes temporales
+                        $subQ->where('temporary_name', 'like', "%{$searchQuery}%")
+                            // O buscar en pacientes registrados
+                            ->orWhereHas('user', function ($userQ) use ($searchQuery) {
+                                $userQ->where('name', 'like', "%{$searchQuery}%");
+                            });
                     });
                 });
             }
-
-            $appointments = $appointmentsQuery
-                ->orderBy('appointment_date', 'asc')
+            
+            $appointments = $query->orderBy('appointment_date', 'asc')
                 ->orderBy('appointment_time', 'asc')
                 ->get();
 
             $formattedAppointments = $appointments->map(function ($appointment) {
                 $patientName = 'Desconocido';
                 $isTemporary = false;
+                $age = null;
+                $gender = null;
                 
                 if ($appointment->patient) {
                     if ($appointment->patient->is_Temporary) {
@@ -75,6 +75,13 @@ class MedicoController extends Controller
                         $isTemporary = true;
                     } elseif ($appointment->patient->user) {
                         $patientName = $appointment->patient->user->name;
+                        $gender = $appointment->patient->user->genre;
+                        
+                        // Calcular edad si existe fecha de nacimiento
+                        if ($appointment->patient->user->birthdate) {
+                            $birthdate = Carbon::parse($appointment->patient->user->birthdate);
+                            $age = $birthdate->age;
+                        }
                     }
                 }
 
@@ -83,6 +90,8 @@ class MedicoController extends Controller
                     'patient_name' => $patientName,
                     'patient_id' => $appointment->patient_id,
                     'is_temporary' => $isTemporary,
+                    'age' => $age,
+                    'gender' => $gender,
                     'date' => Carbon::parse($appointment->appointment_date)->format('d/m/Y'),
                     'time' => Carbon::parse($appointment->appointment_time)->format('H:i'),
                     'datetime' => $appointment->appointment_date . ' ' . $appointment->appointment_time,
@@ -105,9 +114,6 @@ class MedicoController extends Controller
         }
     }
 
-    /**
-     * Obtiene los datos completos del paciente asociado a una cita espec�fica
-     */
     public function getAppointmentPatientData($appointmentId)
     {
         try {
@@ -118,7 +124,7 @@ class MedicoController extends Controller
             if (!$patient) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'No se encontr� el paciente asociado a la cita'
+                    'message' => 'No se encontró el paciente asociado a la cita'
                 ], 404);
             }
 

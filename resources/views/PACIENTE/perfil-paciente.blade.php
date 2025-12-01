@@ -1,6 +1,12 @@
 @extends('plantillas.dashboard_paciente')
 @section('title', 'Mi Perfil - Hospital Naval')
 @section('content')
+    @php
+        $user = Auth::user();
+        $patient = $user->patient;
+        $lastVitals = $patient?->vitalSigns()->orderByDesc('created_at')->first();
+        $birth = $user->birthdate ? \Carbon\Carbon::parse($user->birthdate) : null;
+    @endphp
             <header class="content-header">
                 <h1>Mi Perfil</h1>
                 <div class="header-actions">
@@ -31,27 +37,41 @@
                         <div class="info-grid">
                             <div class="info-group">
                                 <label>Nombre Completo</label>
-                                <p class="info-value">María González Rodríguez</p>
+                                <p class="info-value">{{ $user->name }}</p>
                             </div>
                             <div class="info-group">
                                 <label>Fecha de Nacimiento</label>
-                                <p class="info-value">15 de Agosto de 1985</p>
+                                <p class="info-value">
+                                    @if($birth)
+                                        {{ $birth->format('d/m/Y') }} ({{ $birth->age }} años)
+                                    @else
+                                        No registrada
+                                    @endif
+                                </p>
                             </div>
                             <div class="info-group">
                                 <label>Género</label>
-                                <p class="info-value">Femenino</p>
+                                <p class="info-value">
+                                    @if($user->genre === 'M')
+                                        Masculino
+                                    @elseif($user->genre === 'F')
+                                        Femenino
+                                    @else
+                                        No especificado
+                                    @endif
+                                </p>
                             </div>
                             <div class="info-group">
                                 <label>DNI</label>
-                                <p class="info-value">12345678A</p>
+                                <p class="info-value">{{ $patient->DNI ?? 'No registrado' }}</p>
                             </div>
                             <div class="info-group">
                                 <label>Teléfono</label>
-                                <p class="info-value">+34 612 345 678</p>
+                                <p class="info-value">{{ $user->phone ?? 'No registrado' }}</p>
                             </div>
                             <div class="info-group">
                                 <label>Correo Electrónico</label>
-                                <p class="info-value">maria.gonzalez@email.com</p>
+                                <p class="info-value">{{ $user->email }}</p>
                             </div>
                         </div>
                     </div>
@@ -70,27 +90,39 @@
                         <div class="info-grid medical-info">
                             <div class="info-group">
                                 <label>Grupo Sanguíneo</label>
-                                <p class="info-value">O+</p>
+                                <p class="info-value">No registrado</p>
                             </div>
                             <div class="info-group">
                                 <label>Peso</label>
-                                <p class="info-value">65 kg</p>
+                                <p class="info-value">
+                                    @if($lastVitals && $lastVitals->weight)
+                                        {{ $lastVitals->weight }} kg
+                                    @else
+                                        No registrado
+                                    @endif
+                                </p>
                             </div>
                             <div class="info-group">
                                 <label>Altura</label>
-                                <p class="info-value">165 cm</p>
+                                <p class="info-value">
+                                    @if($lastVitals && $lastVitals->height)
+                                        {{ $lastVitals->height }} cm
+                                    @else
+                                        No registrada
+                                    @endif
+                                </p>
                             </div>
                             <div class="info-group">
                                 <label>Alergias Conocidas</label>
-                                <p class="info-value">Penicilina, Mariscos</p>
+                                <p class="info-value">No registradas en el sistema</p>
                             </div>
                             <div class="info-group">
                                 <label>Condiciones Crónicas</label>
-                                <p class="info-value">Hipertensión, Hipercolesterolemia</p>
+                                <p class="info-value">No registradas en el sistema</p>
                             </div>
                             <div class="info-group">
                                 <label>Médico de Cabecera</label>
-                                <p class="info-value">Dra. Ana Martínez</p>
+                                <p class="info-value">No asignado</p>
                             </div>
                         </div>
                     </div>
@@ -99,7 +131,7 @@
                 <!-- Contacto de Emergencia -->
                 <div class="profile-section">
                     <div class="section-header">
-                        <h2><i class="fas fa-address-book"></i> Contacto de Emergencia</h2>
+                        <h2><i class="fas fa-phone-alt"></i> Contacto de Emergencia</h2>
                         <button class="btn-edit" id="edit-emergency">
                             <i class="fas fa-edit"></i>
                             Editar
@@ -112,10 +144,10 @@
                                     <i class="fas fa-user-friends"></i>
                                 </div>
                                 <div class="contact-info">
-                                    <h4>Juan González</h4>
-                                    <p><strong>Parentesco:</strong> Esposo</p>
-                                    <p><strong>Teléfono:</strong> +34 623 456 789</p>
-                                    <p><strong>Correo:</strong> juan.gonzalez@email.com</p>
+                                    <h4>Contacto 1</h4>
+                                    <p><strong>Parentesco:</strong> No registrado</p>
+                                    <p><strong>Teléfono:</strong> No registrado</p>
+                                    <p><strong>Correo:</strong> No registrado</p>
                                 </div>
                             </div>
                             <div class="contact-card">
@@ -123,10 +155,10 @@
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div class="contact-info">
-                                    <h4>Laura González</h4>
-                                    <p><strong>Parentesco:</strong> Hija</p>
-                                    <p><strong>Teléfono:</strong> +34 634 567 890</p>
-                                    <p><strong>Correo:</strong> laura.gonzalez@email.com</p>
+                                    <h4>Contacto 2</h4>
+                                    <p><strong>Parentesco:</strong> No registrado</p>
+                                    <p><strong>Teléfono:</strong> No registrado</p>
+                                    <p><strong>Correo:</strong> No registrado</p>
                                 </div>
                             </div>
                         </div>

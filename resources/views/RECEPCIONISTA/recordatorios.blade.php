@@ -41,36 +41,12 @@
                 <div class="reminders-controls">
                     <form action="{{ route('recordatorios') }}" method="GET" class="filters-container">
                         <div class="filter-group">
-                            <label for="reminder-type">Tipo:</label>
-                            <select id="reminder-type" name="type">
-                                <option value="">Todos los tipos</option>
-                                <option value="consulta" {{ request('type') == 'consulta' ? 'selected' : '' }}>Consulta</option>
-                                <option value="control" {{ request('type') == 'control' ? 'selected' : '' }}>Control</option>
-                                <option value="emergencia" {{ request('type') == 'emergencia' ? 'selected' : '' }}>Urgencia</option>
-                                <option value="seguimiento" {{ request('type') == 'seguimiento' ? 'selected' : '' }}>Seguimiento</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
-                            <label for="reminder-status">Estado:</label>
-                            <select id="reminder-status" name="status">
-                                <option value="">Todos los estados</option>
-                                <option value="Confirmada" {{ request('status') == 'Confirmada' ? 'selected' : '' }}>Confirmada</option>
-                                <option value="agendada" {{ request('status') == 'agendada' ? 'selected' : '' }}>Agendada</option>
-                                <option value="En curso" {{ request('status') == 'En curso' ? 'selected' : '' }}>En consulta</option>
-                                <option value="completada" {{ request('status') == 'completada' ? 'selected' : '' }}>Completada</option>
-                                <option value="cancelada" {{ request('status') == 'cancelada' ? 'selected' : '' }}>Cancelada</option>
-                                <option value="Sin confirmar" {{ request('status') == 'Sin confirmar' ? 'selected' : '' }}>Sin confirmar</option>
-                            </select>
-                        </div>
-                        
-                        <div class="filter-group">
                             <label for="date-range">Fecha:</label>
                             <input type="date" id="date-range" name="date" value="{{ request('date') }}" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
                         </div>
 
                         <!-- Buscador por nombre de paciente -->
-                        <div class="filter-group" style="margin-left: auto; position: relative;">
+                        <div class="filter-group" style="position: relative;">
                             <label for="reminder-search">Paciente:</label>
                             <div class="search-box" style="display: flex; align-items: center; background: #f0f2f5; border-radius: 20px; padding: 5px 15px; border: 1px solid #ddd;">
                                 <input
@@ -86,6 +62,7 @@
                                     <i class="fas fa-search"></i>
                                 </button>
                             </div>
+                            <div id="sugerencias-recordatorios" class="sugerencias-lista"></div>
                         </div>
 
                         <button type="submit" class="section-btn" id="apply-filters">

@@ -1,5 +1,5 @@
 @extends('plantillas.dashboard_medico')
-@section('title', 'Dashboard M�dico - Hospital Naval')
+@section('title', 'Dashboard Médico - Hospital Naval')
 @section('styles')
     @vite('resources/css/medic/paginas/pagina_principal_medico.css')
 @endsection
@@ -8,7 +8,7 @@
             <h1>Hola {{ Auth::user()->name }}</h1>
             <div class="header-actions">
                 <div class="search-box">
-                    <input type="text" placeholder="Buscar paciente...">
+                    <input type="text" id="appointmentSearch" placeholder="Buscar cita por paciente...">
                     <i class="fas fa-search"></i>
                 </div>
                 @include('partials.header-notifications')
@@ -16,7 +16,7 @@
         </header>
         
         <div class="content">
-            <!-- Estad�sticas -->
+            <!-- Estadísticas -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -56,12 +56,9 @@
                 </div>
             </div>
 
-            <!-- Pr�ximas Citas de la Semana -->
+            <!-- Próximas Citas de la Semana -->
             <div class="recent-patients">
-                <h2>Pr�ximas Citas de la Semana</h2>
-                <div class="appointments-search">
-                    <input type="text" id="appointmentSearch" placeholder="Buscar cita por nombre de paciente...">
-                </div>
+                <h2>Próximas Citas de la Semana</h2>
                 <div class="patients-table">
                     <table id="appointments-table">
                         <thead>
@@ -85,9 +82,9 @@
                 </div>
             </div>
 
-            <!-- Acciones R�pidas -->
+            <!-- Acciones Rápidas -->
             <div class="quick-actions">
-                <h2>Acciones R�pidas</h2>
+                <h2>Acciones Rápidas</h2>
                 <div class="actions-grid">
                     <a href="{{ route('registro-expediente') }}" class="action-card">
                         <i class="fas fa-file-medical"></i>

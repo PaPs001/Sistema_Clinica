@@ -11,8 +11,8 @@
 .filters-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px;
-    align-items: end;
+    gap: 10px;
+    align-items: center;
     padding: 20px;
     background: var(--card-bg);
     border-radius: 10px;
@@ -34,7 +34,8 @@
 .filter-group {
     display: flex;
     flex-direction: column;
-    min-width: 150px;
+    min-width: 140px;
+    margin-right: 10px;
 }
 
 .filter-group label {
@@ -79,6 +80,42 @@
     width: 5px;
     height: 100%;
     background: linear-gradient(to bottom, var(--accent-color), #764ba2);
+}
+
+/* Sugerencias de pacientes en filtros */
+.sugerencias-lista {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 100%;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    margin-top: 4px;
+    padding: 4px 0;
+}
+
+.item-sugerencia {
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s ease, color 0.2s ease;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.item-sugerencia:last-child {
+    border-bottom: none;
+}
+
+.item-sugerencia:hover {
+    background-color: #f0f4ff;
+    color: var(--primary-color);
 }
 
 /* Lista de Recordatorios */

@@ -6,13 +6,21 @@ cargarDatos({
     template: "#consulta-template",
     paginationContainer: "#paginationContainer-consulta",
     campos: {
-        ".titulo-consulta": c => `${c.servicio} — ${c.fecha}`,
+        ".titulo-consulta": c => `${c.servicio} - ${c.fecha}`,
         ".medico": c => c.doctor,
         ".diagnostico": c => c.diagnostico,
         ".tratamiento": c => c.tratamiento,
         ".sintomas": c => c.sintomas,
         ".razon": c => c.razon,
         ".revision": c => c.revision,
+        ".medicamentos": c => (c.medicamentos && c.medicamentos.length)
+            ? c.medicamentos.join(", ")
+            : "Sin medicamentos",
+        ".tratamientos-detalle": c => (c.tratamientos_detalle && c.tratamientos_detalle.length)
+            ? c.tratamientos_detalle
+                .map(t => `${t.descripcion}${t.inicio ? ` (${t.inicio}` : ""}${t.fin ? ` - ${t.fin}` : (t.inicio ? ")" : "")}`)
+                .join(" | ")
+            : "Sin tratamientos",
     }
 })
 

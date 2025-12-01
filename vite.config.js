@@ -17,6 +17,7 @@ export default defineConfig({
                 'resources/js/auth_log/script.js',
                 // JS del médico
                 'resources/js/medic/script-medico.js',
+                'resources/js/medic/pagina-principal-medico.js',
                 'resources/js/medic/script-agregar-alergias.js',
                 'resources/js/medic/script-filtrar-expedientes.js',
                 'resources/js/medic/script-filtro-expediente.js',
@@ -41,6 +42,7 @@ export default defineConfig({
                 'resources/js/RECEPCIONISTA/script-recepcionista.js',
                 'resources/js/RECEPCIONISTA/script-recordatorios.js',
                 'resources/js/RECEPCIONISTA/script-registro-paciente.js',
+                'resources/js/RECEPCIONISTA/script-agendar-cita.js',
                 // ENFERMERA - Dashboard
                 'resources/js/ENFERMERA/script-enfermera.js',
                 // ENFERMERA - Pacientes

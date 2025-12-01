@@ -29,6 +29,7 @@ export default defineConfig({
                 'resources/css/medic/paginas/filtrar_exp_medico.css',
                 'resources/css/medic/paginas/registro_alergias_medico.css',
                 'resources/css/medic/paginas/registro-expediente.css',
+                'resources/js/medic/script-consulta-historial.js',
                 // CSS del paginador
                 'resources/css/PACIENTE/paginas/paginador.css',
                 // JS de la enfermera
@@ -43,6 +44,7 @@ export default defineConfig({
                 'resources/js/RECEPCIONISTA/script-recepcionista.js',
                 'resources/js/RECEPCIONISTA/script-recordatorios.js',
                 'resources/js/RECEPCIONISTA/script-registro-paciente.js',
+                'resources/js/RECEPCIONISTA/script-agendar-cita.js',
                 // ENFERMERA - Dashboard
                 'resources/js/ENFERMERA/script-enfermera.js',
                 // ENFERMERA - Pacientes

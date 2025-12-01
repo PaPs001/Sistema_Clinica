@@ -4,7 +4,7 @@ namespace App\Http\Controllers\ControladoresMedico;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\medical_Records;
+use App\Models\medical_records;
 use App\Models\UserModel;
 use App\Models\patientUser;
 use App\Models\vital_sign;

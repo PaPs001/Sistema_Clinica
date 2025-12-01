@@ -5,81 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Pagina')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    @vite('resources/css/ENFERMERA/general.css')
+    @vite(['resources/css/medic/paginas/modulo_plantilla.css', 'resources/css/ENFERMERA/general.css'])
     @yield('styles')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <div class="hospital-icon">
-                    <i class="fas fa-hospital"></i>
-                </div>
-                <h2>Clinica Ultima Asignatura</h2>
-                <p>Módulo Enfermera</p>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="{{ route('dashboardEnfermera') }}" class="nav-item {{ request()->routeIs('dashboardEnfermera') ? 'active' : '' }}">
+    <!-- Sidebar CON ESTILOS MODERNOS -->
+    <aside class="sidebar">
+        <div class="clinic-info">
+            <h3>Clinica Ultima Asignatura</h3>
+            <p>Sistema Médico</p>
+        </div>
+        
+        <ul class="sidebar-menu">
+            <li>
+                <a href="{{ route('dashboardEnfermera') }}" class="{{ request()->routeIs('dashboardEnfermera') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
                 </a>
-                <a href="{{ route('pacientesEnfermera') }}" class="nav-item {{ request()->routeIs('pacientesEnfermera') ? 'active' : '' }}">
+            </li>
+            <li>
+                <a href="{{ route('pacientesEnfermera') }}" class="{{ request()->routeIs('pacientesEnfermera') ? 'active' : '' }}">
                     <i class="fas fa-user-injured"></i>
                     <span>Pacientes</span>
                 </a>
-                <a href="{{ route('tratamientosActivos') }}" class="nav-item {{ request()->routeIs('tratamientosActivos') ? 'active' : '' }}">
+            </li>
+            <li>
+                <a href="{{ route('tratamientosActivos') }}" class="{{ request()->routeIs('tratamientosActivos') ? 'active' : '' }}">
                     <i class="fas fa-pills"></i>
                     <span>Tratamientos Activos</span>
                 </a>
-                <a href="{{ route('signosVitales') }}" class="nav-item {{ request()->routeIs('signosVitales') ? 'active' : '' }}">
+            </li>
+            <li>
+                <a href="{{ route('signosVitales') }}" class="{{ request()->routeIs('signosVitales') ? 'active' : '' }}">
                     <i class="fas fa-heartbeat"></i>
                     <span>Signos Vitales</span>
                 </a>
-                <a href="{{ route('tratamientos') }}" class="nav-item {{ request()->routeIs('tratamientos') ? 'active' : '' }}">
+            </li>
+            <li>
+                <a href="{{ route('tratamientos') }}" class="{{ request()->routeIs('tratamientos') ? 'active' : '' }}">
                     <i class="fas fa-syringe"></i>
                     <span>Tratamientos</span>
                 </a>
-                <!--<a href="{{ route('medicamentos') }}" class="nav-item {{ request()->routeIs('medicamentos') ? 'active' : '' }}">
-                    <i class="fas fa-pills"></i>
-                    <span>Medicamentos</span>
-                </a>-->
-                <!--<a href="{{ route('citasEnfermera') }}" class="nav-item {{ request()->routeIs('citasEnfermera') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Citas del Día</span>
-                </a>-->
-                <!--<a href="{{ route('reportesEnfermera') }}" class="nav-item {{ request()->routeIs('reportesEnfermera') ? 'active' : '' }}">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Reportes</span>
-                </a>-->
-            </nav>
-            
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <div class="user-avatar">
-                        <i class="fas fa-user-nurse"></i>
-                    </div>
-                    <div class="user-details">
-                        <strong>Laura Martínez</strong>
-                        <span>Enfermera</span>
-                    </div>
-                </div>
-                <form id="logout-form" method="post" style="display: none;"action="{{ route('logout') }}">
-                    @csrf
-                </form>
-                <a href="#" class="logout-btn" onClick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Cerrar Sesión</span>
+            </li>
+            <li>
+                <a href="{{ route('notifications.index') }}" class="{{ request()->routeIs('notifications.index') ? 'active' : '' }}">
+                    <i class="fas fa-envelope"></i>
+                    <span>Notificaciones</span>
+                    <span class="badge notification-badge" style="display: none; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-left: 5px;">0</span>
                 </a>
+            </li>
+        </ul>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <i class="fas fa-user-nurse"></i>
+                </div>
+                <div>
+                    <strong>{{ Auth::user()->name }}</strong>
+                    <div>Enfermera</div>
+                </div>
             </div>
+            <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" style="text-decoration: none; color: inherit;">
+                <div class="weather-info">
+                    <span>Cerrar Sesión</span>
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+            </a>
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
         </div>
+    </aside>
+        <!-- Main Content -->
         <div class="main-content">
             @yield('content')
         </div>
     </div>
-    
+
     @yield('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            updateNotificationCount();
+            setInterval(updateNotificationCount, 30000);
+        });
+
+        function updateNotificationCount() {
+            fetch('{{ route("notifications.count") }}')
+                .then(response => response.json())
+                .then(data => {
+                    const badges = document.querySelectorAll('.notification-badge');
+                    badges.forEach(badge => {
+                        if (data.count > 0) {
+                            badge.textContent = data.count;
+                            badge.style.display = 'inline-block';
+                        } else {
+                            badge.style.display = 'none';
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching notifications:', error));
+        }
+    </script>
 </body>
 </html>
