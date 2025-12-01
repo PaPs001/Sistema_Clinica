@@ -17,11 +17,8 @@ class AdminBackupController extends Controller
 {
     public function createDataBackup(){
         try {
-            // Set dump options at runtime instead of modifying files
-            // We target the database config as per Spatie docs
             config(['database.connections.mysql.dump.add_extra_option' => '--no-create-info --skip-triggers --skip-add-locks']);
             
-            // Ensure the backups directory exists
             if (!File::exists(storage_path('app/backups'))) {
                 File::makeDirectory(storage_path('app/backups'), 0755, true);
             }
@@ -60,7 +57,6 @@ class AdminBackupController extends Controller
     
     public function createFullBackup(){
         try {
-            // Ensure the backups directory exists
             if (!File::exists(storage_path('app/backups'))) {
                 File::makeDirectory(storage_path('app/backups'), 0755, true);
             }
@@ -96,7 +92,6 @@ class AdminBackupController extends Controller
     
     public function listBackups(){
         $backups = [];
-        // Use allFiles to find files in subdirectories (e.g. <APP_NAME>/file.zip)
         $files = Storage::disk('backups')->allFiles();
         
         foreach ($files as $file) {
@@ -118,12 +113,8 @@ class AdminBackupController extends Controller
     }
     
     public function downloadBackup($filename){
-        // $filename might contain slashes (e.g. Laravel/backup.zip), which is fine for Storage::disk()->path()
-        // But we need to ensure we don't allow directory traversal if we were using local FS directly.
-        // Storage::disk handles this safely usually.
-        
+
         if (!Storage::disk('backups')->exists($filename)) {
-             // Return 404 so the fetch client knows it failed, instead of a redirect
             abort(404, 'Backup no encontrado.');
         }
 
@@ -343,9 +334,17 @@ class AdminBackupController extends Controller
         try {
             Artisan::call('backup:clean');
             Log::info('Old backups cleaned');
+            
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Backups antiguos eliminados correctamente.']);
+            }
             return back()->with('success', 'Backups antiguos eliminados correctamente.');
         } catch (\Exception $e) {
             Log::error('Clean backups failed', ['error' => $e->getMessage()]);
+            
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Error al limpiar: ' . $e->getMessage()], 500);
+            }
             return back()->with('error', 'Error al limpiar: ' . $e->getMessage());
         }
     }
