@@ -135,7 +135,7 @@
                                             <td><span class="status-badge {{ $appointment->status == 'agendada' ? 'pending' : ($appointment->status == 'Confirmada' ? 'confirmed' : 'completed') }}">{{ ucfirst($appointment->status) }}</span></td>
                                             <td>
                                                 <div class="action-buttons">
-                                                    @hasPermission('gestionar_citas')
+                                                    @hasPermission('editar_citas')
                                                     <button class="btn-send" title="Enviar Recordatorio" onclick="sendReminder({{ $appointment->id }})">
                                                         <i class="fas fa-paper-plane"></i>
                                                     </button>

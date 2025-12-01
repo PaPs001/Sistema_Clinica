@@ -108,7 +108,7 @@
                                             Por asignar
                                         @endif
                                     </td>
-                                    <td>-</td> <!-- Consultorio not in DB yet -->
+                                    <td>-</td> 
                                     <td><span class="type-badge consulta">{{ $appointment->reason }}</span></td>
                                     <td>
                                         @php
@@ -126,7 +126,7 @@
                                     </td>
                                     <td>
                                         <!-- Actions can be added here, maybe link to management page -->
-                                        @hasPermission('gestionar_citas')
+                                        @hasPermission('editar_citas')
                                         <a href="{{ route('gestionCitas') }}" class="btn-view" aria-label="Gestionar cita">Gestionar</a>
                                         @endhasPermission
                                     </td>
