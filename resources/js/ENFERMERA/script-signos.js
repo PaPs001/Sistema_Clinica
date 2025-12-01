@@ -154,14 +154,6 @@ function showNewVitalSignsForm() {
                                 <label>Sat. Oxígeno (%) *</label>
                                 <input type="number" id="oxygen-saturation" placeholder="Ej: 98" min="0" max="100" required>
                             </div>
-                            <div class="form-group">
-                                <label>Peso (kg) *</label>
-                                <input type="number" id="weight" step="0.1" placeholder="Ej: 70.5" required>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>Altura (cm) *</label>
-                            <input type="number" id="height" step="0.1" placeholder="Ej: 175" required>
                         </div>
                         <div class="form-actions">
                             <button type="button" class="btn-cancel">Cancelar</button>
@@ -209,9 +201,7 @@ function setupVitalsModal() {
             heart_rate: document.getElementById('heart-rate').value,
             temperature: document.getElementById('temperature').value,
             respiratory_rate: document.getElementById('respiratory-rate').value,
-            oxygen_saturation: document.getElementById('oxygen-saturation').value,
-            weight: document.getElementById('weight').value,
-            height: document.getElementById('height').value
+            oxygen_saturation: document.getElementById('oxygen-saturation').value
         };
 
         try {

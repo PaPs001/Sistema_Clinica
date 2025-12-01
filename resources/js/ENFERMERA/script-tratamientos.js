@@ -1,4 +1,4 @@
-// script-tratamientos.js - FUNCIONALIDAD COMPLETA MEJORADA
+﻿// script-tratamientos.js - FUNCIONALIDAD COMPLETA MEJORADA
 console.log('Script tratamientos cargado');
 
 let tratamientos = [];
@@ -549,7 +549,137 @@ function verDetalles(id) {
 }
 
 function editarTratamiento(id) {
-    mostrarNotificacion('Función de edición en desarrollo. ID: ' + id, 'success');
+    const tratamiento = tratamientos.find(t => t.id === id);
+    if (!tratamiento) {
+        mostrarNotificacion('No se encontró el tratamiento', 'error');
+        return;
+    }
+
+    const modalHTML = `
+        <div class="modal-overlay active" id="modal-editar-tratamiento">
+            <div class="modal">
+                <div class="modal-header">
+                    <h3>Editar Tratamiento</h3>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form id="form-editar-tratamiento" style="display: grid; gap: 12px;">
+                        <div class="form-group">
+                            <label>Tratamiento</label>
+                            <input type="text" id="edit-nombre-tratamiento" value="${tratamiento.medicamento || tratamiento.tratamiento || ''}" required>
+                        </div>
+                        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div class="form-group">
+                                <label>Fecha inicio</label>
+                                <input type="date" id="edit-fecha-inicio" value="${formatearFechaInput(tratamiento.start_date)}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Fecha fin</label>
+                                <input type="date" id="edit-fecha-fin" value="${formatearFechaInput(tratamiento.end_date)}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Médico responsable</label>
+                            <select id="edit-medico">
+                                <option value="">Seleccionar médico</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Estado</label>
+                            <select id="edit-estado">
+                                <option value="En seguimiento">En Seguimiento</option>
+                                <option value="Completado">Completado</option>
+                                <option value="suspendido">Suspendido</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Notas</label>
+                            <textarea id="edit-notas" rows="3" placeholder="Detalles adicionales...">${tratamiento.notes || ''}</textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-cancel" id="cancelar-edicion">Cancelar</button>
+                            <button type="submit" class="btn-primary">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    const modal = document.getElementById('modal-editar-tratamiento');
+    const form = document.getElementById('form-editar-tratamiento');
+
+    // Llenar select de médicos y preseleccionar
+    const medicoSelect = document.getElementById('edit-medico');
+    if (medicosData && medicosData.length > 0) {
+        medicosData.forEach(m => {
+            const option = document.createElement('option');
+            option.value = m.id;
+            option.textContent = m.name;
+            if (tratamiento.prescribed_by && Number(tratamiento.prescribed_by) === Number(m.id)) {
+                option.selected = true;
+            }
+            medicoSelect.appendChild(option);
+        });
+    }
+
+    // Preseleccionar estado
+    const estadoSelect = document.getElementById('edit-estado');
+    if (estadoSelect && tratamiento.status) {
+        estadoSelect.value = tratamiento.status;
+    }
+
+    const cerrarModal = () => {
+        if (modal && modal.parentElement) modal.remove();
+    };
+
+    modal.querySelector('.close-modal')?.addEventListener('click', cerrarModal);
+    document.getElementById('cancelar-edicion')?.addEventListener('click', cerrarModal);
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) cerrarModal();
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const payload = {
+            treatment_name: document.getElementById('edit-nombre-tratamiento').value,
+            start_date: document.getElementById('edit-fecha-inicio').value,
+            end_date: document.getElementById('edit-fecha-fin').value || null,
+            status: document.getElementById('edit-estado').value,
+            notes: document.getElementById('edit-notas').value
+        };
+
+        const medicoSeleccionado = document.getElementById('edit-medico').value;
+        if (medicoSeleccionado) {
+            payload.prescribed_by = medicoSeleccionado;
+        }
+
+        try {
+            const response = await fetch(`/api/tratamientos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                mostrarNotificacion('Tratamiento actualizado', 'success');
+                cerrarModal();
+                cargarTratamientos();
+            } else {
+                const error = await response.json();
+                mostrarNotificacion('Error al actualizar: ' + (error.message || 'Error desconocido'), 'error');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            mostrarNotificacion('Error de conexión al actualizar', 'error');
+        }
+    });
 }
 
 function mostrarNotificacion(mensaje, tipo = 'success') {
@@ -631,3 +761,11 @@ function formatearFecha(fecha) {
     const date = new Date(fecha);
     return date.toLocaleDateString('es-ES');
 }
+
+function formatearFechaInput(fecha) {
+    if (!fecha) return '';
+    const date = new Date(fecha);
+    if (isNaN(date.getTime())) return '';
+    return date.toISOString().split('T')[0];
+}
+
