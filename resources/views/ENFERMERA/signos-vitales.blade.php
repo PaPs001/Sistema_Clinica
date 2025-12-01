@@ -7,12 +7,12 @@
 @section('content')
     <header class="content-header">
         <h1>Registro de Signos Vitales</h1>
-        <div class="header-actions">
+        <!--<div class="header-actions">
             <button class="btn-primary" id="nuevo-registro">
                 <i class="fas fa-plus"></i>
                 Nuevo Registro
             </button>
-        </div>
+        </div>-->
     </header>
 
     <div class="content">

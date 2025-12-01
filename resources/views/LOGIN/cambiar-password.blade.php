@@ -1,4 +1,4 @@
-@extends('plantillas.dashboard_general')
+@extends('plantillas.dashboard_medico')
 
 @section('title', 'Primer Cambio de Contraseña')
 

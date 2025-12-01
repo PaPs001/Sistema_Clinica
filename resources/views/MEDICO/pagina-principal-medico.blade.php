@@ -15,8 +15,8 @@
             </div>
         </header>
         
+        <!-- Estadísticas 
         <div class="content">
-            <!-- Estadísticas -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -54,7 +54,7 @@
                         <p>Pendientes</p>
                     </div>
                 </div>
-            </div>
+            </div>-->
 
             <!-- Próximas Citas de la Semana -->
             <div class="recent-patients">
@@ -100,11 +100,11 @@
                     </a>
                     @endhasPermission
                     
-                    @hasPermission('subir_archivos')
+                    <!--@hasPermission('subir_archivos')
                     <a href="{{ route('iniciar-Upload-files') }}" class="action-card">
                         <i class="fas fa-upload"></i>
                         <span>Subir Documentos</span>
-                    </a>
+                    </a>-->
                     @endhasPermission
                     @hasPermission('crear_expedientes')
                     <a href="{{ route('registro-alergias') }}" class="action-card">

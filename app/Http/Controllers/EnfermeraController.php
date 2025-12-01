@@ -56,26 +56,16 @@ class EnfermeraController extends Controller
         try {
             $validated = $request->validate([
                 'patient_id' => 'required|exists:patient_users,id',
+                'appointment_id' => 'required|exists:appointments,id',
                 'blood_pressure' => 'required|string',
                 'heart_rate' => 'required|integer',
                 'temperature' => 'required|numeric',
                 'respiratory_rate' => 'required|integer',
                 'oxygen_saturation' => 'required|numeric',
+                'weight' => 'nullable|numeric',
+                'height' => 'nullable|numeric',
                 'notes' => 'nullable|string',
             ]);
-
-            // Buscar la cita más reciente del paciente para vincular los signos vitales
-            $appointmentId = DB::table('appointments')
-                ->where('patient_id', $validated['patient_id'])
-                ->orderByDesc('appointment_date')
-                ->orderByDesc('appointment_time')
-                ->value('id');
-
-            if (!$appointmentId) {
-                return response()->json([
-                    'message' => 'El paciente no tiene citas registradas para asociar los signos vitales.'
-                ], 422);
-            }
 
             $id = DB::table('vital_signs')->insertGetId([
                 'patient_id' => $validated['patient_id'],
@@ -84,8 +74,10 @@ class EnfermeraController extends Controller
                 'temperature' => $validated['temperature'],
                 'respiratory_rate' => $validated['respiratory_rate'],
                 'oxygen_saturation' => $validated['oxygen_saturation'],
+                'weight' => $validated['weight'] ?? null,
+                'height' => $validated['height'] ?? null,
                 'register_by' => 1, // TODO: Get from auth
-                'register_date' => $appointmentId,
+                'register_date' => $validated['appointment_id'],
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -150,10 +142,19 @@ class EnfermeraController extends Controller
                 ->join('general_users', 'patient_users.userId', '=', 'general_users.id')
                 ->leftJoin('medic_users', 'treatments_records.prescribed_by', '=', 'medic_users.id')
                 ->leftJoin('general_users as medic_general', 'medic_users.userId', '=', 'medic_general.id')
+                // Consulta asociada al tratamiento (misma cita)
+                ->leftJoin('consult_disease', 'treatments_records.appointment_id', '=', 'consult_disease.appointment_id')
+                ->leftJoin('chronics_diseases', 'consult_disease.diagnosis_id', '=', 'chronics_diseases.id')
                 ->select(
                     'treatments_records.*',
                     'general_users.name as paciente',
-                    'treatments.treatment_description as medicamento',
+                    'patient_users.id as patient_id',
+                    // Nombre del tratamiento
+                    'treatments.treatment_description as tratamiento',
+                    // Diagnóstico de la consulta
+                    'chronics_diseases.name as diagnostico',
+                    // Medicamentos prescritos en esa consulta (texto)
+                    'consult_disease.prescribed_medications as medicamento',
                     'medic_general.name as medico'
                 );
 
@@ -311,11 +312,6 @@ class EnfermeraController extends Controller
         }
     }
 
-    /**
-     * Citas del día (o rango) para la pantalla de signos vitales.
-     * Devuelve las citas junto con paciente y médico para que la enfermera
-     * pueda registrar signos vitales ligados a una cita específica.
-     */
     public function getCitasParaSignos(Request $request)
     {
         try {
@@ -324,6 +320,8 @@ class EnfermeraController extends Controller
                 ->join('general_users as patient_general', 'patient_users.userId', '=', 'patient_general.id')
                 ->join('medic_users', 'appointments.doctor_id', '=', 'medic_users.id')
                 ->join('general_users as medic_general', 'medic_users.userId', '=', 'medic_general.id')
+                // Saber si ya existen signos vitales registrados para esa cita
+                ->leftJoin('vital_signs', 'appointments.id', '=', 'vital_signs.register_date')
                 ->select(
                     'appointments.id',
                     'appointments.appointment_date',
@@ -332,7 +330,8 @@ class EnfermeraController extends Controller
                     'patient_users.id as patient_id',
                     'patient_general.name as paciente',
                     'medic_users.id as doctor_id',
-                    'medic_general.name as medico'
+                    'medic_general.name as medico',
+                    'vital_signs.id as vital_id'
                 );
 
             $today = Carbon::today();
@@ -366,11 +365,12 @@ class EnfermeraController extends Controller
                 $query->where('medic_general.name', 'like', '%' . $nombreMedico . '%');
             }
 
-            // Solo citas agendadas por defecto
-            if ($request->has('status') && $request->status !== 'todos') {
+            // Solo mostrar citas en estados permitidos: agendada o en consulta
+            $allowedStatuses = ['agendada', 'En curso'];
+            if ($request->has('status') && $request->status !== 'todos' && in_array($request->status, $allowedStatuses)) {
                 $query->where('appointments.status', $request->status);
             } else {
-                $query->where('appointments.status', 'agendada');
+                $query->whereIn('appointments.status', $allowedStatuses);
             }
 
             $citas = $query

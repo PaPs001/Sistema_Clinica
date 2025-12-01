@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        {{-- Alertas urgentes --}}
+        <!--{{-- Alertas urgentes --}}
         <div class="recent-section">
             <h2>
                 <i class="fas fa-exclamation-triangle"></i> Alertas Urgentes
@@ -45,7 +45,7 @@
             <div class="alerts-grid" id="alertas-container">
                 <div class="alert-empty">Sin alertas pendientes</div>
             </div>
-        </div>
+        </div>-->
 
         {{-- Pacientes activos --}}
                 <div class="recent-section">
@@ -78,13 +78,13 @@
             </div>
         </div>
 
-        {{-- Tareas del turno --}}
+        <!--{{-- Tareas del turno --}}
         <div class="info-card">
             <h3><i class="fas fa-tasks"></i> Tareas del Turno</h3>
             <div class="tasks-list" id="tareas-container">
                 <div class="task-empty">Sin tareas para este turno</div>
             </div>
-        </div>
+        </div>-->
 
         {{-- Acciones rápidas --}}
         <div class="quick-actions">

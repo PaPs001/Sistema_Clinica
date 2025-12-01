@@ -128,7 +128,7 @@
                     </div>
                 </div>
 
-                <!-- Contacto de Emergencia -->
+                <!-- Contacto de Emergencia
                 <div class="profile-section">
                     <div class="section-header">
                         <h2><i class="fas fa-phone-alt"></i> Contacto de Emergencia</h2>
@@ -163,7 +163,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>-->
 
                 <!-- Configuración de Cuenta -->
                 <div class="profile-section">

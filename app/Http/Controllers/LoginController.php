@@ -28,10 +28,10 @@ class LoginController extends Controller
             }
             $routes = [
                 usersType::ROLE_ADMIN => 'gestionRoles',
-                usersType::ROLE_MEDIC => 'registro-expediente',
+                usersType::ROLE_MEDIC => 'dashboardMedico',
                 usersType::ROLE_PATIENT => 'dashboard.paciente',
                 usersType::ROLE_RECEPTIONIST => 'dashboardRecepcionista',
-                usersType::ROLE_NURSE => 'dashboardEnfermera',
+                usersType::ROLE_NURSE => 'tratamientosActivos',
             ];
 
             return redirect()->route($routes[$user->typeUser_id] ?? 'login');

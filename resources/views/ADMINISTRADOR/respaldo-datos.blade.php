@@ -266,14 +266,14 @@
 
         @hasPermission('crear_reportes')
             {{-- Acciones de Backup --}}
-            <div class="backup-actions-grid">
+            <!--<div class="backup-actions-grid">
                 <div class="backup-card">
                     <h3><i class="fas fa-database"></i> Backup Solo Datos</h3>
                     <p>Crea un respaldo de los datos sin incluir la estructura de las tablas. Ideal para restauraciones rápidas.</p>
                     <button onclick="createDataBackup()" class="backup-btn backup-btn-primary">
                         <i class="fas fa-save"></i> Crear Backup de Datos
                     </button>
-                </div>
+                </div>-->
 
                 <div class="backup-card">
                     <h3><i class="fas fa-archive"></i> Backup Completo</h3>
@@ -283,13 +283,13 @@
                     </button>
                 </div>
 
-                <div class="backup-card">
+                <!--<div class="backup-card">
                     <h3><i class="fas fa-broom"></i> Limpiar Antiguos</h3>
                     <p>Elimina backups antiguos según la política de retención configurada.</p>
                     <button onclick="cleanOldBackups()" class="backup-btn backup-btn-warning">
                         <i class="fas fa-trash-alt"></i> Limpiar Backups
                     </button>
-                </div>
+                </div>-->
             </div>
 
             {{-- Restaurar Backup --}}

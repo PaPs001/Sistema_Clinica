@@ -1,4 +1,4 @@
-﻿// script-tratamientos.js - FUNCIONALIDAD COMPLETA MEJORADA
+// script-tratamientos.js - FUNCIONALIDAD COMPLETA MEJORADA
 console.log('Script tratamientos cargado');
 
 let tratamientos = [];
@@ -150,7 +150,7 @@ function renderTratamientos(tratamientosParaMostrar = tratamientos) {
     const tbody = document.getElementById('tbody-tratamientos');
 
     if (tratamientosParaMostrar.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No hay tratamientos registrados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No hay tratamientos registrados</td></tr>';
         return;
     }
 
@@ -175,21 +175,20 @@ function renderTratamientos(tratamientosParaMostrar = tratamientos) {
 
         // Columnas: ID, Paciente, Diagnóstico, Medicamento, Dosis, Estado, Fecha Inicio, Acciones
         fila.innerHTML = `
-            <td>${tratamiento.id}</td>
+            
             <td>
                 <div class="patient-info">
                     <div class="patient-avatar">${tratamiento.paciente?.charAt(0) || 'P'}</div>
                     <div>
                         <strong>${tratamiento.paciente || 'N/A'}</strong>
-                        <span>ID: ${tratamiento.patient_id || 'N/A'}</span>
                     </div>
                 </div>
             </td>
             <td>${tratamiento.diagnostico || 'N/A'}</td>
             <td>${tratamiento.medicamento || tratamiento.tratamiento || 'N/A'}</td>
-            <td>${tratamiento.dosis || 'N/A'}</td>
             <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
             <td>${formatearFecha(tratamiento.start_date)}</td>
+            <td>${formatearFecha(tratamiento.end_date)}</td>
             <td>
                 <div class="action-buttons">
                     <button class="btn-view" onclick="verDetalles(${tratamiento.id})" title="Ver">
@@ -565,37 +564,77 @@ function editarTratamiento(id) {
                 <div class="modal-body">
                     <form id="form-editar-tratamiento" style="display: grid; gap: 12px;">
                         <div class="form-group">
-                            <label>Tratamiento</label>
-                            <input type="text" id="edit-nombre-tratamiento" value="${tratamiento.medicamento || tratamiento.tratamiento || ''}" required>
+                            <label>Paciente</label>
+                            <input
+                                type="text"
+                                id="edit-paciente"
+                                value="${tratamiento.paciente || 'N/A'}"
+                                readonly
+                                class="readonly-input"
+                            >
                         </div>
+
+                        <div class="form-group">
+                            <label>Tratamiento</label>
+                            <input
+                                type="text"
+                                id="edit-nombre-tratamiento"
+                                value="${tratamiento.tratamiento || tratamiento.medicamento || ''}"
+                                readonly
+                                class="readonly-input"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label>Medicamentos recetados</label>
+                            <textarea
+                                id="edit-medicamentos"
+                                rows="3"
+                                readonly
+                                class="readonly-input"
+                            >${(tratamiento.medicamento || '').trim() || 'Sin medicamentos registrados'}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Médico responsable</label>
+                            <input
+                                type="text"
+                                id="edit-medico"
+                                value="${tratamiento.medico || 'N/A'}"
+                                readonly
+                                class="readonly-input"
+                            >
+                        </div>
+
                         <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
                             <div class="form-group">
                                 <label>Fecha inicio</label>
-                                <input type="date" id="edit-fecha-inicio" value="${formatearFechaInput(tratamiento.start_date)}" required>
+                                <input
+                                    type="date"
+                                    id="edit-fecha-inicio"
+                                    value="${formatearFechaInput(tratamiento.start_date)}"
+                                    required
+                                >
                             </div>
                             <div class="form-group">
                                 <label>Fecha fin</label>
-                                <input type="date" id="edit-fecha-fin" value="${formatearFechaInput(tratamiento.end_date)}">
+                                <input
+                                    type="date"
+                                    id="edit-fecha-fin"
+                                    value="${formatearFechaInput(tratamiento.end_date)}"
+                                >
                             </div>
                         </div>
+
                         <div class="form-group">
-                            <label>Médico responsable</label>
-                            <select id="edit-medico">
-                                <option value="">Seleccionar médico</option>
-                            </select>
+                            <label>Notas adicionales</label>
+                            <textarea
+                                id="edit-notas"
+                                rows="3"
+                                placeholder="Detalles adicionales..."
+                            >${tratamiento.notes || ''}</textarea>
                         </div>
-                        <div class="form-group">
-                            <label>Estado</label>
-                            <select id="edit-estado">
-                                <option value="En seguimiento">En Seguimiento</option>
-                                <option value="Completado">Completado</option>
-                                <option value="suspendido">Suspendido</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Notas</label>
-                            <textarea id="edit-notas" rows="3" placeholder="Detalles adicionales...">${tratamiento.notes || ''}</textarea>
-                        </div>
+
                         <div class="form-actions">
                             <button type="button" class="btn-cancel" id="cancelar-edicion">Cancelar</button>
                             <button type="submit" class="btn-primary">Guardar cambios</button>
@@ -645,17 +684,10 @@ function editarTratamiento(id) {
         e.preventDefault();
 
         const payload = {
-            treatment_name: document.getElementById('edit-nombre-tratamiento').value,
             start_date: document.getElementById('edit-fecha-inicio').value,
             end_date: document.getElementById('edit-fecha-fin').value || null,
-            status: document.getElementById('edit-estado').value,
-            notes: document.getElementById('edit-notas').value
+            notes: document.getElementById('edit-notas').value,
         };
-
-        const medicoSeleccionado = document.getElementById('edit-medico').value;
-        if (medicoSeleccionado) {
-            payload.prescribed_by = medicoSeleccionado;
-        }
 
         try {
             const response = await fetch(`/api/tratamientos/${id}`, {
