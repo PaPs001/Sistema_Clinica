@@ -64,6 +64,19 @@ class EnfermeraController extends Controller
                 'notes' => 'nullable|string',
             ]);
 
+            // Buscar la cita más reciente del paciente para vincular los signos vitales
+            $appointmentId = DB::table('appointments')
+                ->where('patient_id', $validated['patient_id'])
+                ->orderByDesc('appointment_date')
+                ->orderByDesc('appointment_time')
+                ->value('id');
+
+            if (!$appointmentId) {
+                return response()->json([
+                    'message' => 'El paciente no tiene citas registradas para asociar los signos vitales.'
+                ], 422);
+            }
+
             $id = DB::table('vital_signs')->insertGetId([
                 'patient_id' => $validated['patient_id'],
                 'blood_pressure' => $validated['blood_pressure'],
@@ -72,7 +85,7 @@ class EnfermeraController extends Controller
                 'respiratory_rate' => $validated['respiratory_rate'],
                 'oxygen_saturation' => $validated['oxygen_saturation'],
                 'register_by' => 1, // TODO: Get from auth
-                'register_date' => 1, // TODO: Fix this FK issue
+                'register_date' => $appointmentId,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
