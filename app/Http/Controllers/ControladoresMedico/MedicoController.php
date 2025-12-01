@@ -33,15 +33,11 @@ class MedicoController extends Controller
             
             $searchQuery = $request->input('q', '');
 
-            Log::info('Buscando citas semanales - DEBUG VPS', [
+            Log::info('Buscando citas semanales', [
                 'doctor_id' => $doctor->id,
-                'server_timezone' => date_default_timezone_get(),
-                'now_formatted' => Carbon::now()->format('Y-m-d H:i:s'),
-                'today_var' => $today->toDateString(),
-                'start_of_week' => $startOfWeek->toDateString(),
-                'end_of_week' => $endOfWeek->toDateString(),
-                'range_start' => $rangeStart->toDateString(),
-                'search_query' => $searchQuery
+                'start' => $rangeStart->toDateString(),
+                'end' => $endOfWeek->toDateString(),
+                'search' => $searchQuery
             ]);
 
             $query = appointment::with(['patient.user', 'doctor.user'])
@@ -67,7 +63,7 @@ class MedicoController extends Controller
                 ->orderBy('appointment_time', 'asc')
                 ->get();
 
-            Log::info('Citas encontradas: ' . $appointments->count());
+
 
             $formattedAppointments = $appointments->map(function ($appointment) {
                 $patientName = 'Desconocido';

@@ -165,6 +165,6 @@
     // Initial load and polling (every 5 seconds)
     document.addEventListener('DOMContentLoaded', function() {
         updateHeaderBadge();
-        setInterval(updateHeaderBadge, 5000);
+        setInterval(updateHeaderBadge, 60000);
     });
 </script>
