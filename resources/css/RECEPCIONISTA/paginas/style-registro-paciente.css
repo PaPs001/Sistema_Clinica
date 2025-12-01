@@ -8,7 +8,9 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 30px;
     position: relative;
-    overflow: hidden;
+    /* Permitimos que las listas de sugerencias (autocompletado)
+       puedan mostrarse por fuera del contenedor sin ser recortadas */
+    overflow: visible;
 }
 
 .registration-form::before {
