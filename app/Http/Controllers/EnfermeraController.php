@@ -334,22 +334,10 @@ class EnfermeraController extends Controller
                     'vital_signs.id as vital_id'
                 );
 
+            // Siempre limitar a las citas del mes actual
             $today = Carbon::today();
-            if ($request->has('date_filter')) {
-                switch ($request->date_filter) {
-                    case 'today':
-                        $query->whereDate('appointments.appointment_date', $today);
-                        break;
-                    case 'week':
-                        $query->whereBetween('appointments.appointment_date', [$today->copy()->startOfWeek(), $today->copy()->endOfWeek()]);
-                        break;
-                    case 'month':
-                        $query->whereMonth('appointments.appointment_date', $today->month);
-                        break;
-                }
-            } else {
-                $query->whereDate('appointments.appointment_date', $today);
-            }
+            $query->whereYear('appointments.appointment_date', $today->year)
+                  ->whereMonth('appointments.appointment_date', $today->month);
 
             if ($request->filled('patient_id')) {
                 $query->where('appointments.patient_id', $request->patient_id);

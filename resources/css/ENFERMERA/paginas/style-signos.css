@@ -337,6 +337,36 @@ body {
     color: #666;
 }
 
+/* Paginación de tabla de citas */
+.table-pagination {
+    margin-top: 15px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.85rem;
+}
+
+.table-pagination button {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.table-pagination button:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: #fff;
+    border-color: var(--primary-color);
+}
+
+.table-pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .vital-reading {
     font-weight: 600;
     padding: 4px 8px;
@@ -629,4 +659,51 @@ body {
 
 .form-actions .btn-primary:hover {
     background: var(--secondary-color);
+}
+
+/* Paginador de signos vitales */
+.table-pagination {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+/* Wrapper que crea el paginador */
+.table-pagination > div {
+    background: #f5f7fa;
+    border-radius: 999px;
+    padding: 6px 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Texto "Página X de Y" */
+.table-pagination .text-muted {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+/* Botones Anterior / Siguiente */
+.table-pagination .btn {
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 0.8rem;
+    border: 1px solid var(--primary-color);
+    background: white;
+    color: var(--primary-color);
+    box-shadow: none;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.1s ease;
+}
+
+.table-pagination .btn:hover:not(:disabled) {
+    background: var(--primary-color);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.table-pagination .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
 }

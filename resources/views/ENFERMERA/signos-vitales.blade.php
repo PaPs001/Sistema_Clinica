@@ -26,14 +26,14 @@
                 <label for="filter-doctor-name">Médico:</label>
                 <input id="filter-doctor-name" type="text" placeholder="Buscar por nombre de médico...">
             </div>
-            <div class="filter-group">
+            <!--<div class="filter-group">
                 <label for="filter-date">Fecha:</label>
                 <select id="filter-date">
                     <option value="today">Hoy</option>
                     <option value="week">Esta semana</option>
                     <option value="month">Este mes</option>
                 </select>
-            </div>
+            </div>-->
         </div>
 
         <!-- Citas del día para registrar signos vitales -->
@@ -53,6 +53,8 @@
                     </tbody>
                 </table>
             </div>
+            </div>
+            <div id="vitals-pagination" class="table-pagination"></div>
         </div>
 
         <!-- Valores de referencia -->
@@ -83,3 +85,4 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     @vite(['resources/js/ENFERMERA/script-signos.js'])
 @endsection
+

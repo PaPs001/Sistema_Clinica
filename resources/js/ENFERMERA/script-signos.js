@@ -1,3 +1,4 @@
+import { renderPaginator } from "../medic/util/paginador.js";
 // script-signos.js - Registro de signos vitales basado en citas del día
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -65,7 +66,7 @@ async function cargarCitasParaSignos(updatePatientList = false) {
         // Siempre trabajamos solo con las citas del día de hoy
         params.append('date_filter', 'today');
 
-        const response = await fetch(`/api/citas-signos?${params.toString()}`);
+         const response = await fetch(`/api/citas-signos?${params.toString()}`);
 
         if (!response.ok) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Error al cargar datos</td></tr>';
@@ -73,10 +74,33 @@ async function cargarCitasParaSignos(updatePatientList = false) {
         }
 
         const citas = await response.json();
-        renderCitasParaSignos(citas);
+        const allCitas = Array.isArray(citas) ? citas : [];
+
+        const pagination = document.getElementById('vitals-pagination');
+        const pageSize = 5;
+
+        function renderPage(page = 1) {
+            const totalPages = Math.max(1, Math.ceil(allCitas.length / pageSize));
+            const safePage = Math.min(Math.max(page, 1), totalPages);
+            const start = (safePage - 1) * pageSize;
+            const citasPagina = allCitas.slice(start, start + pageSize);
+
+            renderCitasParaSignos(citasPagina);
+
+            if (pagination) {
+                renderPaginator({
+                    currentPage: safePage,
+                    totalPages,
+                    container: pagination,
+                    onPageChange: renderPage,
+                });
+            }
+        }
+
+        renderPage(1);
 
         if (updatePatientList) {
-            actualizarPacientesDesdeCitas(citas);
+            actualizarPacientesDesdeCitas(allCitas);
         }
     } catch (error) {
         console.error('Error al cargar citas para signos:', error);
@@ -371,3 +395,7 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+
+
+
