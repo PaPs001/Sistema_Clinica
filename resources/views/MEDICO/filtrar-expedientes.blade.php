@@ -71,12 +71,15 @@
                     <button class="btn-secondary" onclick="limpiarFiltros()">
                         <i class="fas fa-eraser"></i> Limpiar Filtros
                     </button>
+                    @hasPermission('ver_expedientes')
                     <button id="btnBuscar" class="btn-primary">
                         <i class="fas fa-search"></i> Aplicar Filtros
                     </button>
+                    @endhasPermission
                 </div>
             </div>
 
+            @hasPermission('ver_expedientes')
             <div class="results-section">
                 <div class="results-header">
                     <h3>Resultados de la Búsqueda</h3>
@@ -94,6 +97,8 @@
                 <div class="pagination-container mt-3 text-center" id="paginationContainer">
                     <!-- Los controles de paginación se cargarán aquí -->
                 </div>
+            </div>
+            @endhasPermission
 
                 <!-- Estadísticas
                 <div class="stats-cards">

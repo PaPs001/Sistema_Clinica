@@ -86,22 +86,32 @@
             <div class="quick-actions">
                 <h2>Acciones Rápidas</h2>
                 <div class="actions-grid">
+                    @hasPermission('crear_expedientes')
                     <a href="{{ route('registro-expediente') }}" class="action-card">
                         <i class="fas fa-file-medical"></i>
                         <span>Nuevo Expediente</span>
                     </a>
+                    @endhasPermission
+                    
+                    @hasPermission('ver_expedientes')
                     <a href="{{ route('consulta-historial') }}" class="action-card">
                         <i class="fas fa-search"></i>
                         <span>Buscar Paciente</span>
                     </a>
+                    @endhasPermission
+                    
+                    @hasPermission('subir_archivos')
                     <a href="{{ route('iniciar-Upload-files') }}" class="action-card">
                         <i class="fas fa-upload"></i>
                         <span>Subir Documentos</span>
                     </a>
+                    @endhasPermission
+                    @hasPermission('crear_expedientes')
                     <a href="{{ route('registro-alergias') }}" class="action-card">
                         <i class="fas fa-allergies"></i>
                         <span>Registrar Alergias</span>
                     </a>
+                    @endhasPermission
                 </div>
             </div>
         </div>

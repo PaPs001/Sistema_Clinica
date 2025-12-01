@@ -62,10 +62,12 @@ class UserModel extends Authenticatable
 
     public function hasPermission(string $permission): bool
     {
-        if (! $this->isAdmin()) {
-            return false;
+        // Los administradores tienen acceso a todo
+        if ($this->isAdmin()) {
+            return true;
         }
 
+        // 1) Permisos asignados directamente al usuario
         $directPermission = $this->userPermissions()
             ->where('permissions.name_permission', $permission)
             ->exists();
@@ -74,11 +76,8 @@ class UserModel extends Authenticatable
             return true;
         }
 
-        if ($this->relationLoaded('role')) {
-            $role = $this->role;
-        } else {
-            $role = $this->role()->first();
-        }
+        // 2) Permisos asignados por rol
+        $role = $this->relationLoaded('role') ? $this->role : $this->role()->first();
 
         if (! $role) {
             return false;

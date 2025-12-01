@@ -102,9 +102,11 @@
                                 <button class="section-btn" onclick="clearFilters()">
                                     <i class="fas fa-eraser"></i> Limpiar Filtros
                                 </button>
+                                @hasPermission('descargar_reportes')
                                 <button class="section-btn btn-success" onclick="exportAuditLogs()">
                                     <i class="fas fa-download"></i> Exportar Logs
                                 </button>
+                                @endhasPermission
                             </div>
                         </div>
                     </div>
@@ -159,12 +161,14 @@
                             <button class="section-btn" onclick="refreshLogs()">
                                 <i class="fas fa-sync-alt"></i> Actualizar
                             </button>
+                            @hasPermission('administrar_roles')
                             <button class="section-btn btn-danger" onclick="clearOldLogs()">
                                 <i class="fas fa-trash"></i> Limpiar Antiguos
                             </button>
                             <button class="section-btn" onclick="showLogSettings()">
                                 <i class="fas fa-cog"></i> Configuración
                             </button>
+                            @endhasPermission
                         </div>
                     </h2>
                     

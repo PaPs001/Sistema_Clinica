@@ -58,6 +58,7 @@
                 </div>
 
                 <!-- Gestión de Roles -->
+                @hasPermission('ver_usuarios')
                 <div class="recent-section">
                     <h2>
                         <i class="fas fa-user-shield"></i> Gestión de Roles de Usuario
@@ -65,9 +66,11 @@
                             <button class="section-btn" id="filter-roles">
                                 <i class="fas fa-filter"></i> Filtrar
                             </button>
+                            @hasPermission('administrar_roles')
                             <button class="section-btn" id="add-user">
                                 <i class="fas fa-user-plus"></i> Agregar Usuario
                             </button>
+                            @endhasPermission
                         </div>
                     </h2>
                     <div class="users-table">
@@ -100,8 +103,10 @@
                                     <td><span class="status-badge active">Activo</span></td>
                                     <td>Hoy, 08:45 AM</td>
                                     <td>
+                                        @hasPermission('administrar_roles')
                                         <button class="btn-view" aria-label="Editar rol de Dra. Elena Morales">Editar</button>
                                         <button class="btn-cancel" aria-label="Desactivar usuario Dra. Elena Morales">Desactivar</button>
+                                        @endhasPermission
                                     </td>
                                 </tr>
                                 <tr>
@@ -121,8 +126,10 @@
                                     <td><span class="status-badge active">Activo</span></td>
                                     <td>Hoy, 07:30 AM</td>
                                     <td>
+                                        @hasPermission('administrar_roles')
                                         <button class="btn-view" aria-label="Editar rol de Laura Martínez">Editar</button>
                                         <button class="btn-cancel" aria-label="Desactivar usuario Laura Martínez">Desactivar</button>
+                                        @endhasPermission
                                     </td>
                                 </tr>
                                 <tr>
@@ -142,23 +149,29 @@
                                     <td><span class="status-badge inactive">Inactivo</span></td>
                                     <td>Ayer, 05:20 PM</td>
                                     <td>
+                                        @hasPermission('administrar_roles')
                                         <button class="btn-view" aria-label="Editar rol de Ana Rodríguez">Editar</button>
                                         <button class="btn-cancel" aria-label="Activar usuario Ana Rodríguez">Activar</button>
+                                        @endhasPermission
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
+                @endhasPermission
 
                 <!-- Control de Accesos -->
+                @hasPermission('ver_usuarios')
                 <div class="recent-section">
                     <h2>
                         <i class="fas fa-lock"></i> Control de Accesos por Niveles
                         <div class="section-actions">
+                            @hasPermission('administrar_roles')
                             <button class="section-btn" id="manage-permissions">
                                 <i class="fas fa-cog"></i> Gestionar Permisos
                             </button>
+                            @endhasPermission
                             <button class="section-btn" id="access-log">
                                 <i class="fas fa-history"></i> Ver Historial
                             </button>
@@ -176,7 +189,9 @@
                                 <p><i class="fas fa-users"></i> <strong>Usuarios:</strong> 15</p>
                             </div>
                             <div class="access-actions">
+                                @hasPermission('administrar_roles')
                                 <button class="btn-view" aria-label="Configurar permisos de médicos">Configurar</button>
+                                @endhasPermission
                                 <button class="btn-cancel" aria-label="Ver usuarios médicos">Ver Usuarios</button>
                             </div>
                         </div>
@@ -192,7 +207,9 @@
                                 <p><i class="fas fa-users"></i> <strong>Usuarios:</strong> 22</p>
                             </div>
                             <div class="access-actions">
+                                @hasPermission('administrar_roles')
                                 <button class="btn-view" aria-label="Configurar permisos de enfermeras">Configurar</button>
+                                @endhasPermission
                                 <button class="btn-cancel" aria-label="Ver usuarios enfermeras">Ver Usuarios</button>
                             </div>
                         </div>
@@ -208,12 +225,15 @@
                                 <p><i class="fas fa-users"></i> <strong>Usuarios:</strong> 5</p>
                             </div>
                             <div class="access-actions">
+                                @hasPermission('administrar_roles')
                                 <button class="btn-view" aria-label="Configurar permisos de recepcionistas">Configurar</button>
+                                @endhasPermission
                                 <button class="btn-cancel" aria-label="Ver usuarios recepcionistas">Ver Usuarios</button>
                             </div>
                         </div>
                     </div>
                 </div>
+                @endhasPermission
 
                 <!-- Información del Sistema 
                 <div class="health-info">
@@ -253,6 +273,7 @@
                     </div>
 -->
                     
+                    @hasPermission('ver_reportes')
                     <div class="info-card">
                         <h3><i class="fas fa-chart-line"></i> Reportes Recientes</h3>
                         <div class="reports-list">
@@ -291,28 +312,40 @@
                             </div>
                         </div>
                     </div>
+                    @endhasPermission
                 </div>
 
                 <!-- Acciones Rápidas -->
                 <div class="quick-actions">
                     <h2>Acciones Rápidas</h2>
                     <div class="actions-grid">
-                        <a href="gestion-roles.html" class="action-card">
-                            <i class="fas fa-user-shield"></i>
-                            <span>Gestionar Roles</span>
-                        </a>
-                        <a href="control-accesos.html" class="action-card">
-                            <i class="fas fa-lock"></i>
-                            <span>Control de Accesos</span>
-                        </a>
-                        <a href="respaldo-datos.html" class="action-card">
-                            <i class="fas fa-database"></i>
-                            <span>Respaldo de Datos</span>
-                        </a>
-                        <a href="reportes-admin.html" class="action-card">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Generar Reportes</span>
-                        </a>
+                        @hasPermission('administrar_roles')
+                            <a href="{{ route('gestionRoles') }}" class="action-card">
+                                <i class="fas fa-user-shield"></i>
+                                <span>Gestionar Roles</span>
+                            </a>
+                        @endhasPermission
+                        
+                        @hasPermission('ver_usuarios')
+                            <a href="{{ route('controlAccesos') }}" class="action-card">
+                                <i class="fas fa-lock"></i>
+                                <span>Control de Accesos</span>
+                            </a>
+                        @endhasPermission
+                        
+                        @hasPermission('crear_reportes')
+                            <a href="{{ route('respaldoDatos') }}" class="action-card">
+                                <i class="fas fa-database"></i>
+                                <span>Respaldo de Datos</span>
+                            </a>
+                        @endhasPermission
+                        
+                        @hasPermission('ver_reportes')
+                            <a href="{{ route('reportes.pacientesAtendidos') }}" class="action-card">
+                                <i class="fas fa-chart-bar"></i>
+                                <span>Generar Reportes</span>
+                            </a>
+                        @endhasPermission
                     </div>
                 </div>
             </div>

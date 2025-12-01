@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ControladoresMedico\mediController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\passwordFirstLoginController;
 use App\Http\Controllers\ControladoresPaciente\HistorialPacienteController;
 use App\Http\Controllers\ControladoresPaciente\PacienteDashboardController;
 use App\Http\Controllers\CorreoController;
+use App\Models\usersType;
 
 //controladores del administrador
 use App\Http\Controllers\Administrador\RolesPermisosController;
@@ -21,7 +23,29 @@ use App\Http\Controllers\Administrador\AdminReportsController;
 use App\Http\Controllers\Administrador\AdminBackupController;
 
 Route::get('/', function () {
-    return view('LOGIN.login');
+    if (Auth::check()) {
+        $user = Auth::user();
+
+        $routes = [
+            usersType::ROLE_ADMIN => 'dashboardAdmin',
+            usersType::ROLE_MEDIC => 'dashboardMedico',
+            usersType::ROLE_PATIENT => 'dashboard.paciente',
+            usersType::ROLE_RECEPTIONIST => 'dashboardRecepcionista',
+            usersType::ROLE_NURSE => 'dashboardEnfermera',
+        ];
+
+        $routeName = $routes[$user->typeUser_id] ?? null;
+
+        if ($routeName && Route::has($routeName)) {
+            return redirect()->route($routeName);
+        }
+    }
+
+    return response()
+        ->view('LOGIN.login')
+        ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
 })->name('login');
 Route::post('login', [LoginController::class, 'LoginRequest'])->name('login_Attempt');
 Route::post('logout', [LoginController::class, 'logout'])->name('logout');

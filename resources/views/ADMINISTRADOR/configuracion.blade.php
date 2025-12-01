@@ -213,6 +213,7 @@
                             <i class="fas fa-wrench"></i> Configuración de Módulos
                         </h2>
                         <div class="modules-grid">
+                            @hasPermission('ver_usuarios')
                             <div class="module-card">
                                 <div class="module-header">
                                     <i class="fas fa-users"></i>
@@ -232,6 +233,7 @@
                                     <i class="fas fa-cog"></i> Configurar
                                 </button>
                             </div>
+                            @endhasPermission
 
                             <div class="module-card">
                                 <div class="module-header">
@@ -273,6 +275,7 @@
                                 </button>
                             </div>
 
+                            @hasPermission('ver_reportes')
                             <div class="module-card">
                                 <div class="module-header">
                                     <i class="fas fa-chart-line"></i>
@@ -292,6 +295,7 @@
                                     <i class="fas fa-cog"></i> Configurar
                                 </button>
                             </div>
+                            @endhasPermission
                         </div>
                     </div>
                 </div>

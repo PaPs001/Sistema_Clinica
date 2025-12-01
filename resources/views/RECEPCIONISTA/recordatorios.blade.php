@@ -135,9 +135,11 @@
                                             <td><span class="status-badge {{ $appointment->status == 'agendada' ? 'pending' : ($appointment->status == 'Confirmada' ? 'confirmed' : 'completed') }}">{{ ucfirst($appointment->status) }}</span></td>
                                             <td>
                                                 <div class="action-buttons">
+                                                    @hasPermission('gestionar_citas')
                                                     <button class="btn-send" title="Enviar Recordatorio" onclick="sendReminder({{ $appointment->id }})">
                                                         <i class="fas fa-paper-plane"></i>
                                                     </button>
+                                                    @endhasPermission
                                                 </div>
                                             </td>
                                         </tr>
@@ -287,12 +289,14 @@
                         <button type="button" class="section-btn btn-cancel" id="cancel-reminder">
                             Cancelar
                         </button>
+                        @hasPermission('gestionar_citas')
                         <button type="submit" class="section-btn">
                             <i class="fas fa-save"></i> Guardar Recordatorio
                         </button>
                         <button type="button" class="section-btn" id="send-now-btn">
                             <i class="fas fa-paper-plane"></i> Enviar Ahora
                         </button>
+                        @endhasPermission
                     </div>
                 </form>
             </div>

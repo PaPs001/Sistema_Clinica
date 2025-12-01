@@ -16,6 +16,7 @@
                         @csrf 
                         
                         <div style="margin-bottom: 25px;">
+                            @hasPermission('crear_expedientes')
                             <div style="display: flex; gap: 15px; flex-wrap: wrap;">
                                 <button type="button" class="btn-primary" onclick="agregarAlergia()">
                                     <i class="fas fa-plus"></i> Agregar otra alergia
@@ -24,6 +25,7 @@
                                     <i class="fas fa-heartbeat"></i> Agregar enfermedad crónica
                                 </button>
                             </div>
+                            @endhasPermission
                         </div>
                         
                         <div class="form-grid">
@@ -55,9 +57,11 @@
                             <button type="button" class="btn-secondary" onclick="limpiarFormulario()">
                                 <i class="fas fa-eraser"></i> Limpiar
                             </button>
+                            @hasPermission('crear_expedientes')
                             <button type="submit" class="btn-primary">
                                 <i class="fas fa-save"></i> Registrar Alergia
                             </button>
+                            @endhasPermission
                         </div>
                     </form>
                 </div>  

@@ -87,9 +87,11 @@
                                             <td>{{ $patient->user->genre }}</td>
                                             <td>{{ $patient->user->phone }}</td>
                                             <td>
+                                                @hasPermission('ver_expedientes')
                                                 <button class="btn-view" onclick="verHistorial({{ $patient->id }})">
                                                     Ver historial
                                                 </button>
+                                                @endhasPermission
                                             </td>
                                         </tr>
                                     @endif

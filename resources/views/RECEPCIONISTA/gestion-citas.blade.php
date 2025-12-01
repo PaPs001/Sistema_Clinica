@@ -8,9 +8,11 @@
                         <input type="text" placeholder="Buscar cita por paciente, médico o fecha..." aria-label="Buscar citas">
                         <i class="fas fa-search"></i>
                     </div>-->
+                    @hasPermission('gestionar_citas')
                     <button class="section-btn" id="new-appointment-btn">
                         <i class="fas fa-plus"></i> Nueva Cita
                     </button>
+                    @endhasPermission
                 </div>
             </header>
 
@@ -169,10 +171,12 @@
                                         <td>
                                             <div style="display: flex; gap: 5px;">
                                                 <button class="btn-view" aria-label="Ver detalles de cita">Detalles</button>
+                                                @hasPermission('gestionar_citas')
                                                 <button class="section-btn btn-status" style="background-color: #ffc107; color: #000; padding: 5px 10px; font-size: 0.8rem;" aria-label="Cambiar estado" {{ $appointment->status == 'cancelada' ? 'disabled' : '' }}>Estado</button>
                                                 <button class="btn-cancel" aria-label="Cancelar cita" {{ in_array($appointment->status, ['cancelada', 'completada']) ? 'disabled' : '' }}>
                                                     {{ $appointment->status == 'cancelada' ? 'Cancelada' : ($appointment->status == 'completada' ? 'Completada' : 'Cancelar') }}
                                                 </button>
+                                                @endhasPermission
                                             </div>
                                         </td>
                                     </tr>

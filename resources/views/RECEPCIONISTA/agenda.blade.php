@@ -323,6 +323,7 @@
                 </div>
                 
                 <div class="modal-actions">
+                    @hasPermission('gestionar_citas')
                     <button class="section-btn" id="edit-appointment">
                         <i class="fas fa-edit"></i> Editar Cita
                     </button>
@@ -332,6 +333,7 @@
                     <button class="section-btn" id="send-reminder">
                         <i class="fas fa-bell"></i> Enviar Recordatorio
                     </button>
+                    @endhasPermission
                 </div>
             </div>
         </div>

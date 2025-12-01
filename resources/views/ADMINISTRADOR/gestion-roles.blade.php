@@ -92,16 +92,17 @@
                         </td>
 
                         <td class="role-actions">
-                            @if(auth()->user() && auth()->user()->hasPermission('asignar_permisos'))
+                            @hasPermission('asignar_permisos')
                                 <button class="btn-action btn-permissions btn-abrir-permisos" data-id="">
                                     <i class="fas fa-edit"></i><span>Editar permisos</span>
                                 </button>
-                            @endif
-                            @if(auth()->user() && auth()->user()->hasPermission('ver_usuarios'))
+                            @endhasPermission
+                            
+                            @hasPermission('ver_usuarios')
                                 <button class="btn-action btn-secondary btn-view-users" data-role-id="">
                                     <i class="fas fa-eye"></i><span>Ver usuarios</span>
                                 </button>
-                            @endif
+                            @endhasPermission
                         </td>
                     </tr>
                 </template>
@@ -174,9 +175,11 @@
                 <button id="btnCerrar" class="btn-secondary" onclick="cerrarModalPermisos('#modalPermisos')">
                     <i class="fas fa-times"></i> Cancelar
                 </button>
-                <button id="btnGuardarPermisos" class="btn-primary">
-                    <i class="fas fa-save"></i> Guardar Cambios
-                </button>
+                @hasPermission('asignar_permisos')
+                    <button id="btnGuardarPermisos" class="btn-primary">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                @endhasPermission
             </div>
         </div>
     </div>
