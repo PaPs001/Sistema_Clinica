@@ -205,6 +205,14 @@ class AdminBackupController extends Controller
             'size' => $fileSizeMB . ' MB',
         ]);
         
+        $sqlContent = file_get_contents($sqlFile);
+        $isDataOnly = !str_contains($sqlContent, 'CREATE TABLE');
+        
+        if ($isDataOnly) {
+            Log::info('Detected data-only backup, truncating tables before restore');
+            $this->truncateAllTables();
+        }
+        
         $threshold = 50 * 1024 * 1024; 
         
         if ($fileSize < $threshold) {
@@ -216,6 +224,34 @@ class AdminBackupController extends Controller
         }
         
         Log::info('Database restored successfully');
+    }
+    
+    private function truncateAllTables(){
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            
+            $tables = DB::select('SHOW TABLES');
+            $dbName = DB::getDatabaseName();
+            $tableKey = "Tables_in_{$dbName}";
+            
+            foreach ($tables as $table) {
+                $tableName = $table->$tableKey;
+                
+                if ($tableName === 'migrations') {
+                    continue;
+                }
+                
+                Log::info("Truncating table: {$tableName}");
+                DB::table($tableName)->truncate();
+            }
+            
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            
+            Log::info('All tables truncated successfully');
+        } catch (\Exception $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            throw new \Exception('Error al limpiar tablas: ' . $e->getMessage());
+        }
     }
     
     private function restoreWithUnprepared($sqlFile){
