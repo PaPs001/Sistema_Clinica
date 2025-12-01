@@ -58,12 +58,12 @@ class RolesPermisosController extends Controller
 
         $users = $role->General_user()->paginate(5);
         return response()->json([
-            'name' => $role->name,
+            'name' => $role->name_type,
             'status' => $role->status ?? 'active',
             'data' => $users->items(),
             'current_page' => $users->currentPage(),
             'last_page' => $users->lastPage(),
-            'pagination' => view('plantillas.pagination', ['paginator' => $users])->render()
+            'pagination' => (string) $users->onEachSide(1)->links('plantillas.pagination'),
         ]);
     }
 
