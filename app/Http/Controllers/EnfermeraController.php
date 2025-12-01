@@ -335,7 +335,6 @@ class EnfermeraController extends Controller
                     'medic_general.name as medico'
                 );
 
-            // Filtro por fecha (hoy, semana, mes)
             $today = Carbon::today();
             if ($request->has('date_filter')) {
                 switch ($request->date_filter) {
@@ -353,9 +352,18 @@ class EnfermeraController extends Controller
                 $query->whereDate('appointments.appointment_date', $today);
             }
 
-            // Filtro opcional por paciente
-            if ($request->has('patient_id') && $request->patient_id !== '') {
+            if ($request->filled('patient_id')) {
                 $query->where('appointments.patient_id', $request->patient_id);
+            }
+
+            if ($request->filled('patient_name')) {
+                $nombrePaciente = $request->patient_name;
+                $query->where('patient_general.name', 'like', '%' . $nombrePaciente . '%');
+            }
+
+            if ($request->filled('doctor_name')) {
+                $nombreMedico = $request->doctor_name;
+                $query->where('medic_general.name', 'like', '%' . $nombreMedico . '%');
             }
 
             // Solo citas agendadas por defecto

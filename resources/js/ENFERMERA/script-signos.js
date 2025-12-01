@@ -1,4 +1,4 @@
-// script-signos.js - Registro de signos vitales basado en citas del d�a
+// script-signos.js - Registro de signos vitales basado en citas del día
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Página Signos Vitales cargada');
@@ -10,18 +10,25 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    const filterPatient = document.getElementById('filter-patient');
+    const filterPatientName = document.getElementById('filter-patient-name');
+    const filterDoctorName = document.getElementById('filter-doctor-name');
     const filterDate = document.getElementById('filter-date');
 
-    if (filterPatient) {
-        filterPatient.addEventListener('change', function () {
+    if (filterPatientName) {
+        filterPatientName.addEventListener('input', function () {
+            cargarCitasParaSignos(false);
+        });
+    }
+
+    if (filterDoctorName) {
+        filterDoctorName.addEventListener('input', function () {
             cargarCitasParaSignos(false);
         });
     }
 
     if (filterDate) {
         filterDate.addEventListener('change', function () {
-            cargarCitasParaSignos(true);
+            cargarCitasParaSignos(false);
         });
     }
 
@@ -31,19 +38,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // ==================== LISTADO PRINCIPAL ====================
 
-async function cargarCitasParaSignos(updatePatientFilter = false) {
+async function cargarCitasParaSignos(updatePatientList = false) {
     const tbody = document.querySelector('.vitals-table tbody');
     if (!tbody) return;
 
-    tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Cargando...</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">Cargando...</td></tr>';
 
     try {
-        const filterPatient = document.getElementById('filter-patient')?.value || '';
+        const filterPatientName = document.getElementById('filter-patient-name')?.value || '';
+        const filterDoctorName = document.getElementById('filter-doctor-name')?.value || '';
         const filterDate = document.getElementById('filter-date')?.value || '';
 
         const params = new URLSearchParams();
-        if (filterPatient) {
-            params.append('patient_id', filterPatient);
+        if (filterPatientName) {
+            params.append('patient_name', filterPatientName);
+        }
+        if (filterDoctorName) {
+            params.append('doctor_name', filterDoctorName);
         }
         if (filterDate) {
             params.append('date_filter', filterDate);
@@ -52,19 +63,19 @@ async function cargarCitasParaSignos(updatePatientFilter = false) {
         const response = await fetch(`/api/citas-signos?${params.toString()}`);
 
         if (!response.ok) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: red;">Error al cargar datos</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Error al cargar datos</td></tr>';
             return;
         }
 
         const citas = await response.json();
         renderCitasParaSignos(citas);
 
-        if (updatePatientFilter) {
-            actualizarFiltroPacientesDesdeCitas(citas);
+        if (updatePatientList) {
+            actualizarPacientesDesdeCitas(citas);
         }
     } catch (error) {
         console.error('Error al cargar citas para signos:', error);
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: red;">Error de conexión</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Error de conexión</td></tr>';
     }
 }
 
@@ -73,7 +84,7 @@ function renderCitasParaSignos(citas) {
     if (!tbody) return;
 
     if (!citas || citas.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No hay citas para el período seleccionado</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay citas para el período seleccionado</td></tr>';
         return;
     }
 
@@ -94,11 +105,6 @@ function renderCitasParaSignos(citas) {
             </td>
             <td>${hora || 'N/A'}</td>
             <td>${cita.medico || 'N/A'}</td>
-            <td><span class="vital-reading">-</span></td>
-            <td><span class="vital-reading">-</span></td>
-            <td><span class="vital-reading">-</span></td>
-            <td><span class="vital-reading">-</span></td>
-            <td><span class="vital-reading">-</span></td>
             <td>
                 <button class="btn-view-enfermera btn-registrar-signos" data-patient-id="${cita.patient_id}">
                     Registrar
@@ -120,29 +126,20 @@ function renderCitasParaSignos(citas) {
     });
 }
 
-function actualizarFiltroPacientesDesdeCitas(citas) {
-    const filterSelect = document.getElementById('filter-patient');
-    if (!filterSelect) return;
+function actualizarPacientesDesdeCitas(citas) {
+    const pacientesData = [];
+    const vistos = new Set();
 
-    const mapaPacientes = new Map();
     citas.forEach(cita => {
-        if (cita.patient_id && cita.paciente && !mapaPacientes.has(cita.patient_id)) {
-            mapaPacientes.set(cita.patient_id, cita.paciente);
+        if (cita.patient_id && cita.paciente && !vistos.has(cita.patient_id)) {
+            vistos.add(cita.patient_id);
+            pacientesData.push({
+                id: cita.patient_id,
+                name: cita.paciente,
+            });
         }
     });
 
-    filterSelect.innerHTML = '<option value=\"\">Todos los pacientes</option>';
-
-    const pacientesData = [];
-    mapaPacientes.forEach((nombre, id) => {
-        const option = document.createElement('option');
-        option.value = id;
-        option.textContent = nombre;
-        filterSelect.appendChild(option);
-        pacientesData.push({ id, name: nombre });
-    });
-
-    // Guardar para el modal de nuevo registro
     window.pacientesData = pacientesData;
 }
 

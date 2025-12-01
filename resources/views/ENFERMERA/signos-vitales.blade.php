@@ -19,10 +19,15 @@
         <!-- Filtros -->
         <div class="filters-section">
             <div class="filter-group">
-                <label>Filtrar por:</label>
-                <select id="filter-patient">
-                    <option value="">Todos los pacientes</option>
-                </select>
+                <label for="filter-patient-name">Paciente:</label>
+                <input id="filter-patient-name" type="text" placeholder="Buscar por nombre de paciente...">
+            </div>
+            <div class="filter-group">
+                <label for="filter-doctor-name">Médico:</label>
+                <input id="filter-doctor-name" type="text" placeholder="Buscar por nombre de médico...">
+            </div>
+            <div class="filter-group">
+                <label for="filter-date">Fecha:</label>
                 <select id="filter-date">
                     <option value="today">Hoy</option>
                     <option value="week">Esta semana</option>
@@ -41,11 +46,6 @@
                             <th>Paciente</th>
                             <th>Hora de cita</th>
                             <th>Médico</th>
-                            <th>Presión Arterial</th>
-                            <th>Frec. Cardíaca</th>
-                            <th>Temperatura</th>
-                            <th>Frec. Respiratoria</th>
-                            <th>Sat. O2</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
