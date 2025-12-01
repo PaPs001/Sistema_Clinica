@@ -46,15 +46,24 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 // Abrir modal de edición y cargar datos del tratamiento
+// Variables globales para medicamentos
+let currentMedications = [];
+let consultDiseaseId = null;
+
+// Abrir modal de edición y cargar datos del tratamiento
 window.openEditModal = async function (treatmentId) {
     const modal = document.getElementById('modal-edit-treatment');
     const form = document.getElementById('form-edit-treatment');
 
     try {
-        // Mostrar loading
         showLoading();
 
-        // Obtener datos del tratamiento
+        // Resetear variables
+        currentMedications = [];
+        consultDiseaseId = null;
+        document.getElementById('medications-list').innerHTML = '';
+        document.getElementById('medication-search').value = '';
+
         const response = await fetch(`/tratamientos/${treatmentId}`, {
             method: 'GET',
             headers: {
@@ -68,7 +77,6 @@ window.openEditModal = async function (treatmentId) {
         if (data.success) {
             const treatment = data.treatment;
 
-            // Llenar el formulario con los datos
             document.getElementById('treatment-id').value = treatment.id;
             document.getElementById('patient-name').value = treatment.patient_name;
             document.getElementById('treatment-description').value = treatment.treatment_description;
@@ -78,7 +86,14 @@ window.openEditModal = async function (treatmentId) {
             document.getElementById('end-date').value = treatment.end_date || '';
             document.getElementById('notes').value = treatment.notes || '';
 
-            // Mostrar modal
+            consultDiseaseId = treatment.consult_disease_id;
+
+            // Cargar medicamentos
+            if (treatment.medications) {
+                currentMedications = treatment.medications;
+                renderMedications();
+            }
+
             modal.classList.add('active');
             hideLoading();
         } else {
@@ -92,12 +107,113 @@ window.openEditModal = async function (treatmentId) {
     }
 };
 
-// Cerrar modal
+// Cerrar modal de edición
 window.closeEditModal = function () {
     const modal = document.getElementById('modal-edit-treatment');
-    modal.classList.remove('active');
-    document.getElementById('form-edit-treatment').reset();
+    const form = document.getElementById('form-edit-treatment');
+
+    if (modal) {
+        modal.classList.remove('active');
+    }
+
+    if (form) {
+        form.reset();
+    }
+
+    const medsList = document.getElementById('medications-list');
+    const medSearch = document.getElementById('medication-search');
+    const resultsContainer = document.getElementById('med-search-results');
+
+    if (medsList) medsList.innerHTML = '';
+    if (medSearch) medSearch.value = '';
+    if (resultsContainer) resultsContainer.style.display = 'none';
+
+    currentMedications = [];
+    consultDiseaseId = null;
 };
+
+// Renderizar lista de medicamentos
+function renderMedications() {
+    const container = document.getElementById('medications-list');
+    container.innerHTML = '';
+
+    currentMedications.forEach((med, index) => {
+        const item = document.createElement('div');
+        item.className = 'medication-item';
+        item.innerHTML = `
+            <span>${med.name} ${med.presentation ? `(${med.presentation})` : ''}</span>
+            <button type="button" class="btn-remove-med" onclick="removeMedication(${index})">
+                <i class="fas fa-times"></i>
+            </button>
+        `;
+        container.appendChild(item);
+    });
+}
+
+// Remover medicamento
+window.removeMedication = function (index) {
+    currentMedications.splice(index, 1);
+    renderMedications();
+};
+
+// Agregar medicamento
+function addMedication(med) {
+    if (!currentMedications.find(m => m.id === med.id)) {
+        currentMedications.push(med);
+        renderMedications();
+    }
+    document.getElementById('medication-search').value = '';
+    document.getElementById('med-search-results').style.display = 'none';
+}
+
+// Buscador de medicamentos
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('medication-search');
+    const resultsContainer = document.getElementById('med-search-results');
+    let searchTimeout;
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                resultsContainer.style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const response = await fetch(`/enfermeria/buscar-medicamentos?query=${encodeURIComponent(query)}`);
+                    const meds = await response.json();
+
+                    resultsContainer.innerHTML = '';
+                    if (meds.length > 0) {
+                        meds.forEach(med => {
+                            const div = document.createElement('div');
+                            div.className = 'search-result-item';
+                            div.textContent = `${med.name} - ${med.presentation || ''}`;
+                            div.onclick = () => addMedication(med);
+                            resultsContainer.appendChild(div);
+                        });
+                        resultsContainer.style.display = 'block';
+                    } else {
+                        resultsContainer.style.display = 'none';
+                    }
+                } catch (error) {
+                    console.error('Error searching medications:', error);
+                }
+            }, 300);
+        });
+
+        // Cerrar resultados al hacer clic fuera
+        document.addEventListener('click', function (e) {
+            if (e.target !== searchInput && e.target !== resultsContainer) {
+                resultsContainer.style.display = 'none';
+            }
+        });
+    }
+});
 
 // Manejar envío del formulario
 document.addEventListener('DOMContentLoaded', function () {
@@ -112,8 +228,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const endDate = document.getElementById('end-date').value;
             const notes = document.getElementById('notes').value;
             const startDate = document.getElementById('start-date').value;
+            const treatmentDescription = document.getElementById('treatment-description').value;
 
-            // Validación de fecha
             if (endDate && new Date(endDate) < new Date(startDate)) {
                 showNotification('La fecha de finalización debe ser posterior a la fecha de inicio', 'error');
                 return;
@@ -134,7 +250,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         status: status,
                         end_date: endDate || null,
                         notes: notes,
-                        start_date: startDate
+                        start_date: startDate,
+                        treatment_description: treatmentDescription,
+                        medications: currentMedications.map(m => m.id),
+                        consult_disease_id: consultDiseaseId
                     })
                 });
 
@@ -145,8 +264,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.success) {
                     showNotification(data.message || 'Tratamiento actualizado exitosamente', 'success');
                     closeEditModal();
-
-                    // Recargar la página después de 1 segundo
                     setTimeout(() => {
                         window.location.reload();
                     }, 1000);
@@ -209,3 +326,4 @@ function hideLoading() {
         loader.classList.remove('active');
     }
 }
+

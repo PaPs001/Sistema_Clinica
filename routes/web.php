@@ -28,10 +28,10 @@ Route::get('/', function () {
 
         $routes = [
             usersType::ROLE_ADMIN => 'gestionRoles',
-            usersType::ROLE_MEDIC => 'registro-expediente',
+            usersType::ROLE_MEDIC => 'dashboardMedico',
             usersType::ROLE_PATIENT => 'dashboard.paciente',
             usersType::ROLE_RECEPTIONIST => 'dashboardRecepcionista',
-            usersType::ROLE_NURSE => 'dashboardEnfermera',
+            usersType::ROLE_NURSE => 'tratamientosActivos',
         ];
 
         $routeName = $routes[$user->typeUser_id] ?? null;
@@ -283,6 +283,11 @@ Route::middleware(['auth', 'role:nurse'])->group(function (){
     // Rutas AJAX para gestión de tratamientos
     Route::get('/tratamientos/{id}', [App\Http\Controllers\TreatmentController::class, 'getTreatment'])->name('tratamientos.get')->middleware('permission:ver_expedientes');
     Route::put('/tratamientos/{id}', [App\Http\Controllers\TreatmentController::class, 'updateTreatment'])->name('tratamientos.update')->middleware('permission:editar_expedientes');
+
+    // Buscador de medicamentos para enfermería (autocompletado)
+    Route::get('/enfermeria/buscar-medicamentos', [buscadoresController::class, 'autocompletarMedicamentos'])
+        ->name('enfermeria.buscar_medicamentos')
+        ->middleware('permission:ver_expedientes');
 
     Route::get('/tratamientos', function(){
         return view('ENFERMERA.tratamientos');

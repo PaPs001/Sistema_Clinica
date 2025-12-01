@@ -61,6 +61,12 @@ function inicializarBuscadores(bloque) {
     }
 }
 document.addEventListener("DOMContentLoaded", () => {
+    const successAlert = document.querySelector('.alert-success');
+    if (successAlert) {
+        setTimeout(() => {
+            window.location.href = window.location.pathname;
+        }, 2000);
+    }
     const urlParams = new URLSearchParams(window.location.search);
     const appointmentId = urlParams.get('appointment_id');
 

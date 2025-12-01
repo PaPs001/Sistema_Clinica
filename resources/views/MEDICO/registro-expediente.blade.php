@@ -23,7 +23,7 @@
                         <h3><i class="fas fa-calendar-check"></i> Datos de la Consulta</h3>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="fechaConsulta">Fecha de Consulta *</label>
+                                <label for="fechaConsulta" disabled>Fecha de Consulta *</label>
                                 <input type="datetime-local" id="fechaConsulta" name="fechaConsulta" required>
                             </div>
                         </div>
@@ -34,7 +34,7 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="nombre">Nombre Completo *</label>
-                                <input type="text" id="nombre" name="nombre" required autocomplete="off">
+                                <input type="text" id="nombre" name="nombre" required autocomplete="off" disabled>
                                 <div id="sugerencias-pacientes" class="sugerencias-lista"></div>
                                 <input type="hidden" id="paciente_id" name="paciente_id">
                             </div>

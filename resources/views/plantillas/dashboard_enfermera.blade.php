@@ -18,18 +18,18 @@
         </div>
         
         <ul class="sidebar-menu">
-            <li>
+            <!--<li>
                 <a href="{{ route('dashboardEnfermera') }}" class="{{ request()->routeIs('dashboardEnfermera') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
                 </a>
-            </li>
-            <li>
+            </li>-->
+            <!--<li>
                 <a href="{{ route('pacientesEnfermera') }}" class="{{ request()->routeIs('pacientesEnfermera') ? 'active' : '' }}">
                     <i class="fas fa-user-injured"></i>
                     <span>Pacientes</span>
                 </a>
-            </li>
+            </li>-->
             <li>
                 <a href="{{ route('tratamientosActivos') }}" class="{{ request()->routeIs('tratamientosActivos') ? 'active' : '' }}">
                     <i class="fas fa-pills"></i>

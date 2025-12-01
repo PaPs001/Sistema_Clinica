@@ -19,7 +19,7 @@
         
         <ul class="sidebar-menu">
             <li>
-                <a href="{{ route('dashboardMedico') }}">
+                <a href="{{ route('dashboardMedico') }}" class="{{ request()->routeIs('dashboardMedico') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
                     <span>Inicio</span>
                 </a>

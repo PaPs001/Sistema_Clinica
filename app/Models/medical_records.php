@@ -20,6 +20,12 @@ class medical_records extends Model
     public function patientUser(){
         return $this->belongsTo(patientUser::class, 'patient_id', 'id');
     }
+
+    // Alias para compatibilidad con código antiguo
+    public function patient()
+    {
+        return $this->patientUser();
+    }
     //Relacion completada a tratamientos medicos
     public function treatmentRecords(){
         return $this->hasMany(treatment_record::class, 'id_record', 'id');

@@ -92,7 +92,7 @@ class HistorialPacienteController extends Controller
                 'total' => 0,
             ]);
         }
-        $fileRecord = $expediente->files()->paginate(1);
+        $fileRecord = $expediente->files()->paginate(5);
 
         return response()->json([
             'data' => $fileRecord->items(),
@@ -124,7 +124,7 @@ class HistorialPacienteController extends Controller
                 'allergieAllergene.allergene',
                 'allergieAllergene.allergie',
             ])
-            ->paginate(2);
+            ->paginate(5);
 
         return response()->json([
             'data' => $alergias->items(),
@@ -162,7 +162,6 @@ class HistorialPacienteController extends Controller
         return response()->download($ruta, $fileRecord->file_name);
     }
 
-    // Próximas citas para dashboard de paciente (JSON)
     public function listarProximasConsultas(Request $request)
     {
         $patient = Auth::user()->patient;

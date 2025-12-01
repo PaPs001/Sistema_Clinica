@@ -6,37 +6,15 @@
 @section('content')
             <header class="content-header">
                 <h1>Gestión de Tratamientos Médicos</h1>
-                <div class="header-actions">
+                <!--<div class="header-actions">
                     <button class="btn-primary" id="nuevo-tratamiento-btn">
                         <i class="fas fa-plus"></i>
                         Nuevo Tratamiento
                     </button>
-                </div>
+                </div>-->
             </header>
 
             <div class="content">
-                <!-- Filtros Mejorados -->
-                <div class="filters-section">
-                    <div class="filter-group">
-                        <label>Filtrar por:</label>
-                        <select id="filter-status" aria-label="Filtrar por estado">
-                            <option value="todos">Todos los estados</option>
-                            <option value="activo">Activos</option>
-                            <option value="completado">Completados</option>
-                            <option value="suspendido">Suspendidos</option>
-                        </select>
-                        <select id="filter-paciente" aria-label="Filtrar por paciente">
-                            <option value="todos">Todos los pacientes</option>
-                        </select>
-                        <select id="filter-medico" aria-label="Filtrar por médico">
-                            <option value="todos">Todos los médicos</option>
-                        </select>
-                        <button class="section-btn" id="reset-filters">
-                            <i class="fas fa-redo"></i> Limpiar
-                        </button>
-                    </div>
-                </div>
-
                 <!-- Estadísticas Mejoradas -->
                     <div class="info-card">
                         <h3><i class="fas fa-chart-bar"></i> Resumen de Tratamientos</h3>
@@ -59,6 +37,28 @@
                             </div>
                         </div>
                     </div>
+                <!-- Filtros Mejorados -->
+                <div class="filters-section">
+                    <div class="filter-group">
+                        <label>Filtrar por:</label>
+                        <select id="filter-status" aria-label="Filtrar por estado">
+                            <option value="todos">Todos los estados</option>
+                            <option value="activo">Activos</option>
+                            <option value="completado">Completados</option>
+                            <option value="suspendido">Suspendidos</option>
+                        </select>
+                        <select id="filter-paciente" aria-label="Filtrar por paciente">
+                            <option value="todos">Todos los pacientes</option>
+                        </select>
+                        <select id="filter-medico" aria-label="Filtrar por médico">
+                            <option value="todos">Todos los médicos</option>
+                        </select>
+                        <button class="section-btn" id="reset-filters">
+                            <i class="fas fa-redo"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+
 
 
                 <!-- Lista de Tratamientos Mejorada -->
@@ -75,13 +75,12 @@
                         <table id="tabla-tratamientos">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
                                     <th>Paciente</th>
                                     <th>Diagnóstico</th>
                                     <th>Medicamento</th>
-                                    <th>Dosis</th>
                                     <th>Estado</th>
                                     <th>Fecha Inicio</th>
+                                    <th>Fecha Fin</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
@@ -93,7 +92,7 @@
                 </div>
 
                 <!-- Acciones Rápidas -->
-                <div class="quick-actions">
+                <!--<div class="quick-actions">
                     <h2>Acciones Rápidas</h2>
                     <div class="actions-grid">
                         <a href="{{ route('pacientesEnfermera') }}" class="action-card">
@@ -110,7 +109,7 @@
                         </a>
                     </div>
                 </div>
-            </div>
+            </div>-->
 
     <!-- Modal para Nuevo/Editar Tratamiento Mejorado -->
     <div class="modal-overlay" id="modal-tratamiento">
@@ -205,9 +204,6 @@
     </div>
 @endsection
 @section('scripts')
-<<<<<<< HEAD
-=======
 <meta name="csrf-token" content="{{ csrf_token() }}">
->>>>>>> e0c9e08e56ac51648f68884e5af6292a21ba6ea5
 @vite(['resources/js/ENFERMERA/script-tratamientos.js'])
 @endsection

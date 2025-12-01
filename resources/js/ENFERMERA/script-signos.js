@@ -1,3 +1,4 @@
+import { renderPaginator } from "../medic/util/paginador.js";
 // script-signos.js - Registro de signos vitales basado en citas del día
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -14,16 +15,23 @@ document.addEventListener('DOMContentLoaded', function () {
     const filterDoctorName = document.getElementById('filter-doctor-name');
     const filterDate = document.getElementById('filter-date');
 
+    // Debounce function to prevent excessive API calls
+    function debounce(func, wait) {
+        let timeout;
+        return function (...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    const debouncedLoad = debounce(() => cargarCitasParaSignos(false), 500);
+
     if (filterPatientName) {
-        filterPatientName.addEventListener('input', function () {
-            cargarCitasParaSignos(false);
-        });
+        filterPatientName.addEventListener('input', debouncedLoad);
     }
 
     if (filterDoctorName) {
-        filterDoctorName.addEventListener('input', function () {
-            cargarCitasParaSignos(false);
-        });
+        filterDoctorName.addEventListener('input', debouncedLoad);
     }
 
     if (filterDate) {
@@ -47,7 +55,6 @@ async function cargarCitasParaSignos(updatePatientList = false) {
     try {
         const filterPatientName = document.getElementById('filter-patient-name')?.value || '';
         const filterDoctorName = document.getElementById('filter-doctor-name')?.value || '';
-        const filterDate = document.getElementById('filter-date')?.value || '';
 
         const params = new URLSearchParams();
         if (filterPatientName) {
@@ -56,11 +63,10 @@ async function cargarCitasParaSignos(updatePatientList = false) {
         if (filterDoctorName) {
             params.append('doctor_name', filterDoctorName);
         }
-        if (filterDate) {
-            params.append('date_filter', filterDate);
-        }
+        // Siempre trabajamos solo con las citas del día de hoy
+        params.append('date_filter', 'today');
 
-        const response = await fetch(`/api/citas-signos?${params.toString()}`);
+         const response = await fetch(`/api/citas-signos?${params.toString()}`);
 
         if (!response.ok) {
             tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: red;">Error al cargar datos</td></tr>';
@@ -68,10 +74,33 @@ async function cargarCitasParaSignos(updatePatientList = false) {
         }
 
         const citas = await response.json();
-        renderCitasParaSignos(citas);
+        const allCitas = Array.isArray(citas) ? citas : [];
+
+        const pagination = document.getElementById('vitals-pagination');
+        const pageSize = 5;
+
+        function renderPage(page = 1) {
+            const totalPages = Math.max(1, Math.ceil(allCitas.length / pageSize));
+            const safePage = Math.min(Math.max(page, 1), totalPages);
+            const start = (safePage - 1) * pageSize;
+            const citasPagina = allCitas.slice(start, start + pageSize);
+
+            renderCitasParaSignos(citasPagina);
+
+            if (pagination) {
+                renderPaginator({
+                    currentPage: safePage,
+                    totalPages,
+                    container: pagination,
+                    onPageChange: renderPage,
+                });
+            }
+        }
+
+        renderPage(1);
 
         if (updatePatientList) {
-            actualizarPacientesDesdeCitas(citas);
+            actualizarPacientesDesdeCitas(allCitas);
         }
     } catch (error) {
         console.error('Error al cargar citas para signos:', error);
@@ -94,6 +123,17 @@ function renderCitasParaSignos(citas) {
         const row = document.createElement('tr');
         const hora = (cita.appointment_time || '').substring(0, 5);
 
+        const status = (cita.status || '').toLowerCase();
+        const tieneSignos = !!cita.vital_id;
+
+        const puedeRegistrar =
+            !tieneSignos &&
+            (status === 'en consulta' || status === 'en curso');
+
+        const btnAttrs = puedeRegistrar
+            ? `class="btn-view-enfermera btn-registrar-signos" data-patient-id="${cita.patient_id}" data-appointment-id="${cita.id}"`
+            : `class="btn-view-enfermera btn-registrar-signos" disabled style="opacity:0.5; cursor:not-allowed;" title="${tieneSignos ? 'Ya se registraron signos en esta cita' : 'Solo se pueden registrar signos cuando la cita está en consulta'}"`;
+
         row.innerHTML = `
             <td>
                 <div class="patient-info">
@@ -106,7 +146,7 @@ function renderCitasParaSignos(citas) {
             <td>${hora || 'N/A'}</td>
             <td>${cita.medico || 'N/A'}</td>
             <td>
-                <button class="btn-view-enfermera btn-registrar-signos" data-patient-id="${cita.patient_id}">
+                <button ${btnAttrs}>
                     Registrar
                 </button>
             </td>
@@ -115,11 +155,12 @@ function renderCitasParaSignos(citas) {
         tbody.appendChild(row);
 
         const registrarBtn = row.querySelector('.btn-registrar-signos');
-        if (registrarBtn) {
+        if (puedeRegistrar && registrarBtn) {
             registrarBtn.addEventListener('click', function () {
                 const patientId = registrarBtn.getAttribute('data-patient-id');
-                if (patientId) {
-                    abrirRegistroSignos(patientId);
+                const appointmentId = registrarBtn.getAttribute('data-appointment-id');
+                if (patientId && appointmentId) {
+                    abrirRegistroSignos(patientId, appointmentId);
                 }
             });
         }
@@ -145,11 +186,11 @@ function actualizarPacientesDesdeCitas(citas) {
 
 // ==================== NUEVO REGISTRO ====================
 
-function abrirRegistroSignos(patientId) {
-    showNewVitalSignsForm(patientId);
+function abrirRegistroSignos(patientId, appointmentId) {
+    showNewVitalSignsForm(patientId, appointmentId);
 }
 
-function showNewVitalSignsForm(patientId = null) {
+function showNewVitalSignsForm(patientId = null, appointmentId = null) {
     const formHTML = `
         <div class="modal-overlay active">
             <div class="modal">
@@ -159,6 +200,7 @@ function showNewVitalSignsForm(patientId = null) {
                 </div>
                 <div class="modal-body">
                     <form id="new-vitals-form">
+                        <input type="hidden" id="appointment-id" value="${appointmentId || ''}">
                         <div class="form-group">
                             <label>Paciente *</label>
                             <select id="patient-select" required>
@@ -189,6 +231,16 @@ function showNewVitalSignsForm(patientId = null) {
                             <div class="form-group">
                                 <label>Sat. Oxígeno (%) *</label>
                                 <input type="number" id="oxygen-saturation" placeholder="Ej: 98" min="0" max="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Peso (kg)</label>
+                                <input type="number" id="weight" step="0.1" placeholder="Ej: 70.5">
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="form-group">
+                                <label>Estatura (cm)</label>
+                                <input type="number" id="height" step="0.1" placeholder="Ej: 175">
                             </div>
                         </div>
                         <div class="form-actions">
@@ -236,12 +288,15 @@ function setupVitalsModal() {
         e.preventDefault();
 
         const payload = {
+            appointment_id: document.getElementById('appointment-id').value,
             patient_id: document.getElementById('patient-select').value,
             blood_pressure: document.getElementById('blood-pressure').value,
             heart_rate: document.getElementById('heart-rate').value,
             temperature: document.getElementById('temperature').value,
             respiratory_rate: document.getElementById('respiratory-rate').value,
-            oxygen_saturation: document.getElementById('oxygen-saturation').value
+            oxygen_saturation: document.getElementById('oxygen-saturation').value,
+            weight: document.getElementById('weight').value,
+            height: document.getElementById('height').value
         };
 
         try {
@@ -340,4 +395,9 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+
+
+
+
 

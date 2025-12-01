@@ -16,13 +16,13 @@
 <div class="content">
     <div class="filters-section">
         <div class="filter-group">
-            <label for="status-filter">Estado:</label>
+            <!--<label for="status-filter">Estado:</label>
             <select id="status-filter">
                 <option value="todos">Todos los estados</option>
                 <option value="En seguimiento">En seguimiento</option>
                 <option value="Completado">Completado</option>
                 <option value="suspendido">Suspendido</option>
-            </select>
+            </select>-->
 
             <label for="medication-filter">Medicamento:</label>
             <input type="text" id="medication-filter" placeholder="Buscar por medicamento...">
@@ -71,7 +71,24 @@
                                         <small>{{ Str::limit($treatment->notes, 60) }}</small>
                                     </td>
                                     <td class="treatment-medications">
-                                        <span class="medications-placeholder">—</span>
+                                        @php
+                                            $hasMeds = false;
+                                        @endphp
+                                        
+                                        @foreach($record->consultDiseases as $consult)
+                                            @if($consult->medications->isNotEmpty())
+                                                @php $hasMeds = true; @endphp
+                                                <ul style="padding-left: 15px; margin: 0; font-size: 0.85rem;">
+                                                    @foreach($consult->medications as $med)
+                                                        <li>{{ $med->name }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            @endif
+                                        @endforeach
+
+                                        @if(!$hasMeds)
+                                            <span class="medications-placeholder">—</span>
+                                        @endif
                                     </td>
                                     <td>{{ optional($treatment->start_date)->format('d/m/Y') }}</td>
                                     <td>
@@ -85,7 +102,7 @@
                                             <span class="text-muted">Indefinido</span>
                                         @endif
                                     </td>
-                                    <td>Dr. {{ $treatment->medicUser->name ?? 'N/A' }}</td>
+                                    <td>Dr. {{ $treatment->medicUser->user->name ?? 'N/A' }}</td>
                                     <td>
                                         <span class="badge badge-success">{{ $treatment->status ?? 'En seguimiento' }}</span>
                                     </td>
@@ -126,7 +143,20 @@
 
                 <div class="form-group">
                     <label>Tratamiento</label>
-                    <textarea id="treatment-description" readonly class="readonly-input" rows="2"></textarea>
+                    <textarea id="treatment-description" class="form-control" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Medicamentos Recetados</label>
+                    <div class="medications-container">
+                        <div class="med-search-box">
+                            <input type="text" id="medication-search" placeholder="Buscar medicamento para agregar..." autocomplete="off">
+                            <div id="med-search-results" class="search-results"></div>
+                        </div>
+                        <div id="medications-list" class="medications-list">
+                            <!-- Medications will be added here dynamically -->
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-row">
