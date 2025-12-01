@@ -138,9 +138,6 @@
                                                     <button class="btn-send" title="Enviar Recordatorio" onclick="sendReminder({{ $appointment->id }})">
                                                         <i class="fas fa-paper-plane"></i>
                                                     </button>
-                                                    <button class="btn-edit" title="Programar">
-                                                        <i class="fas fa-clock"></i>
-                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -306,29 +303,62 @@
 @vite('resources/js/RECEPCIONISTA/script-recordatorios.js')
 <script>
     function sendReminder(appointmentId) {
-        if (!confirm('¿Estás seguro de enviar un recordatorio al médico?')) {
-            return;
-        }
+        Swal.fire({
+            title: '¿Enviar Recordatorio?',
+            text: "¿Estás seguro de enviar un recordatorio al médico?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sí, enviar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Mostrar loading
+                Swal.fire({
+                    title: 'Enviando...',
+                    text: 'Por favor espere',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
 
-        fetch('{{ route("notifications.sendReminder") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ appointment_id: appointmentId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert(data.message);
-            } else {
-                alert('Error: ' + data.message);
+                fetch('{{ route("notifications.sendReminder") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({ appointment_id: appointmentId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Enviado!',
+                            text: data.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ocurrió un error al enviar el recordatorio.'
+                    });
+                });
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Ocurrió un error al enviar el recordatorio.');
         });
     }
 </script>

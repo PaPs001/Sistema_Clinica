@@ -608,25 +608,68 @@ function showAppointmentDetails(patientName, row) {
 }
 
 async function changeAppointmentStatus(patientName, row, currentStatus) {
+    // Definir opciones de estado con estilos
+    const statusOptions = [
+        { value: 'agendada', label: 'Agendada', icon: 'fa-calendar-check', color: '#3498db' },
+        { value: 'Confirmada', label: 'Confirmada', icon: 'fa-check-circle', color: '#2ecc71' },
+        { value: 'En curso', label: 'En Consulta', icon: 'fa-user-md', color: '#f39c12' },
+        { value: 'completada', label: 'Completada', icon: 'fa-clipboard-check', color: '#8e44ad' },
+        { value: 'cancelada', label: 'Cancelada', icon: 'fa-ban', color: '#e74c3c' },
+        { value: 'Sin confirmar', label: 'Sin confirmar', icon: 'fa-question-circle', color: '#95a5a6' }
+    ];
+
+    // Generar HTML para los botones
+    let buttonsHtml = '<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px;">';
+
+    statusOptions.forEach(opt => {
+        const isSelected = opt.value === currentStatus;
+        const borderStyle = isSelected
+            ? `border: 2px solid ${opt.color}; background-color: #f8f9fa; box-shadow: 0 0 10px rgba(0,0,0,0.05);`
+            : `border: 1px solid #e0e0e0; background-color: white;`;
+
+        buttonsHtml += `
+            <button type="button" class="status-btn-option" data-value="${opt.value}" 
+                style="${borderStyle} border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 15px; text-align: left;"
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.1)'"
+                onmouseout="this.style.transform='none'; this.style.boxShadow='none'"
+            >
+                <div style="width: 40px; height: 40px; border-radius: 50%; background-color: ${opt.color}20; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas ${opt.icon}" style="font-size: 1.2rem; color: ${opt.color};"></i>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-weight: 600; color: #333; font-size: 1rem;">${opt.label}</span>
+                    ${isSelected ? '<span style="font-size: 0.75rem; color: ' + opt.color + '; font-weight: 500;">Actual</span>' : ''}
+                </div>
+            </button>
+        `;
+    });
+    buttonsHtml += '</div><input type="hidden" id="selected-status-input">';
+
     const { value: newStatus } = await Swal.fire({
-        title: 'Cambiar Estado de Cita',
+        title: 'Actualizar Estado',
         html: `
-            <p>Paciente: <strong>${patientName}</strong></p>
-            <label for="swal-status-select">Seleccione el nuevo estado:</label>
-            <select id="swal-status-select" class="swal2-select" style="width: 100%; margin-top: 10px;">
-                <option value="agendada" ${currentStatus === 'agendada' ? 'selected' : ''}>Agendada</option>
-                <option value="Confirmada" ${currentStatus === 'Confirmada' ? 'selected' : ''}>Confirmada</option>
-                <option value="En curso" ${currentStatus === 'En curso' ? 'selected' : ''}>En Consulta (En curso)</option>
-                <option value="completada" ${currentStatus === 'completada' ? 'selected' : ''}>Completada</option>
-                <option value="cancelada" ${currentStatus === 'cancelada' ? 'selected' : ''}>Cancelada</option>
-                <option value="Sin confirmar" ${currentStatus === 'Sin confirmar' ? 'selected' : ''}>Sin confirmar</option>
-            </select>
+            <div style="text-align: left; margin-bottom: 10px;">
+                <p style="color: #666; font-size: 1.1rem;">Paciente: <strong style="color: #333;">${patientName}</strong></p>
+                <p style="color: #888; font-size: 0.9rem;">Seleccione el nuevo estado para esta cita:</p>
+            </div>
+            ${buttonsHtml}
         `,
+        showConfirmButton: false,
         showCancelButton: true,
-        confirmButtonText: 'Actualizar',
         cancelButtonText: 'Cancelar',
+        width: '650px',
+        padding: '2em',
+        didOpen: () => {
+            const buttons = Swal.getHtmlContainer().querySelectorAll('.status-btn-option');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.getElementById('selected-status-input').value = btn.dataset.value;
+                    Swal.clickConfirm();
+                });
+            });
+        },
         preConfirm: () => {
-            return document.getElementById('swal-status-select').value;
+            return document.getElementById('selected-status-input').value;
         }
     });
 

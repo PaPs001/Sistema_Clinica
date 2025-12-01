@@ -95,12 +95,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (!data.email || !data.doctor_id || !data.date || !data.time) {
-            alert("Por favor completa correo, médico, fecha y hora de la cita.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos Incompletos',
+                text: 'Por favor completa correo, médico, fecha y hora de la cita.',
+                confirmButtonText: 'Entendido'
+            });
             return;
         }
 
         if (data.is_new === "true" && (!data.name || !data.phone)) {
-            alert("Para un paciente nuevo, nombre y teléfono son obligatorios.");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Datos Faltantes',
+                text: 'Para un paciente nuevo, nombre y teléfono son obligatorios.',
+                confirmButtonText: 'Entendido'
+            });
             return;
         }
 
@@ -121,14 +131,30 @@ document.addEventListener("DOMContentLoaded", () => {
             const result = await response.json();
 
             if (result.success) {
-                alert("Cita agendada correctamente.");
-                window.location.href = "/gestion-citas";
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Cita Agendada!',
+                    text: 'La cita se ha agendado correctamente.',
+                    confirmButtonText: 'Aceptar'
+                }).then(() => {
+                    window.location.href = "/gestion-citas";
+                });
             } else {
-                alert(result.message || "Ocurrió un error al agendar la cita.");
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: result.message || "Ocurrió un error al agendar la cita.",
+                    confirmButtonText: 'Cerrar'
+                });
             }
         } catch (error) {
             console.error("Error al agendar cita:", error);
-            alert("Error al agendar la cita.");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error del Sistema',
+                text: 'Ocurrió un error inesperado al agendar la cita.',
+                confirmButtonText: 'Cerrar'
+            });
         }
     });
 });
