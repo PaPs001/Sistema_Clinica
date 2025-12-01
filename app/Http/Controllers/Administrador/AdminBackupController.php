@@ -60,10 +60,14 @@ class AdminBackupController extends Controller
     
     public function createFullBackup(){
         try {
-            config(['backup.backup.source.databases.mysql.dump.add_extra_option' => '']);
+            // Ensure the backups directory exists
+            if (!File::exists(storage_path('app/backups'))) {
+                File::makeDirectory(storage_path('app/backups'), 0755, true);
+            }
             
             Artisan::call('backup:run', [
                 '--filename' => 'full-' . now()->format('Y-m-d_H-i-s') . '.zip',
+                '--disable-notifications' => true,
             ]);
             
             $output = Artisan::output();
@@ -76,6 +80,9 @@ class AdminBackupController extends Controller
                     ->deleteFileAfterSend(false);
             }
             
+            if (request()->expectsJson()) {
+                 return response()->json(['message' => 'Backup creado pero no se encontró el archivo.'], 500);
+            }
             return back()->with('success', 'Backup completo creado exitosamente.');
             
         } catch (\Exception $e) {
