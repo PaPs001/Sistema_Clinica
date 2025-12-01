@@ -3,9 +3,6 @@ document.addEventListener('DOMContentLoaded', function () {
     loadBackupsList();
 });
 
-/**
- * Cargar lista de backups desde el servidor
- */
 function loadBackupsList() {
     fetch('/admin/backup/list')
         .then(response => response.json())
@@ -47,9 +44,6 @@ function loadBackupsList() {
         });
 }
 
-/**
- * Crear backup de solo datos
- */
 function createDataBackup() {
     if (!confirm('¿Crear un backup de SOLO DATOS (sin estructura de tablas)?')) {
         return;
@@ -71,7 +65,6 @@ function createDataBackup() {
             throw new Error('Error al crear backup');
         })
         .then(blob => {
-            // Descargar archivo
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -92,9 +85,6 @@ function createDataBackup() {
         });
 }
 
-/**
- * Crear backup completo
- */
 function createFullBackup() {
     if (!confirm('¿Crear un backup COMPLETO (estructura + datos + archivos)?')) {
         return;
@@ -116,7 +106,6 @@ function createFullBackup() {
             throw new Error('Error al crear backup');
         })
         .then(blob => {
-            // Descargar archivo
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -137,16 +126,11 @@ function createFullBackup() {
         });
 }
 
-/**
- * Descargar backup
- */
+
 function downloadBackup(filename) {
     window.location.href = `/admin/backup/download/${filename}`;
 }
 
-/**
- * Confirmar restauración
- */
 function confirmRestore(filename) {
     const modal = document.getElementById('restoreModal');
     document.getElementById('restoreFilename').textContent = filename;
@@ -154,16 +138,11 @@ function confirmRestore(filename) {
     modal.style.display = 'flex';
 }
 
-/**
- * Cerrar modal de restauración
- */
+
 function closeRestoreModal() {
     document.getElementById('restoreModal').style.display = 'none';
 }
 
-/**
- * Confirmar eliminación
- */
 function confirmDelete(filename) {
     if (!confirm(`¿Estás seguro de eliminar el backup "${filename}"?\n\nEsta acción no se puede deshacer.`)) {
         return;
@@ -191,9 +170,6 @@ function confirmDelete(filename) {
         });
 }
 
-/**
- * Limpiar backups antiguos
- */
 function cleanOldBackups() {
     if (!confirm('¿Limpiar backups antiguos según la política de retención?')) {
         return;
@@ -221,11 +197,7 @@ function cleanOldBackups() {
         });
 }
 
-/**
- * Mostrar notificación
- */
 function showNotification(message, type = 'info') {
-    // Crear elemento de notificación
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
@@ -235,19 +207,14 @@ function showNotification(message, type = 'info') {
 
     document.body.appendChild(notification);
 
-    // Mostrar con animación
     setTimeout(() => notification.classList.add('show'), 10);
 
-    // Ocultar después de 3 segundos
     setTimeout(() => {
         notification.classList.remove('show');
         setTimeout(() => notification.remove(), 300);
     }, 3000);
 }
 
-/**
- * Mostrar loading overlay
- */
 function showLoading(message = 'Procesando...') {
     const loading = document.createElement('div');
     loading.id = 'loadingOverlay';
@@ -260,9 +227,6 @@ function showLoading(message = 'Procesando...') {
     document.body.appendChild(loading);
 }
 
-/**
- * Ocultar loading overlay
- */
 function hideLoading() {
     const loading = document.getElementById('loadingOverlay');
     if (loading) {
