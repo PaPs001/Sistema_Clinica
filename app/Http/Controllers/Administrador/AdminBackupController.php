@@ -51,6 +51,10 @@ class AdminBackupController extends Controller
             
         } catch (\Exception $e) {
             Log::error('Data backup failed', ['error' => $e->getMessage()]);
+            // If request expects JSON (AJAX), return JSON
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Error al crear backup: ' . $e->getMessage()], 500);
+            }
             return back()->with('error', 'Error al crear backup: ' . $e->getMessage());
         }
     }
@@ -77,24 +81,28 @@ class AdminBackupController extends Controller
             
         } catch (\Exception $e) {
             Log::error('Full backup failed', ['error' => $e->getMessage()]);
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Error al crear backup: ' . $e->getMessage()], 500);
+            }
             return back()->with('error', 'Error al crear backup: ' . $e->getMessage());
         }
     }
     
     public function listBackups(){
         $backups = [];
-        $files = Storage::disk('backups')->files();
+        // Use allFiles to find files in subdirectories (e.g. <APP_NAME>/file.zip)
+        $files = Storage::disk('backups')->allFiles();
         
         foreach ($files as $file) {
             if (str_ends_with($file, '.zip')) {
                 $backups[] = [
-                    'name' => basename($file),
+                    'name' => $file, // Return full relative path (e.g. "Laravel/backup.zip")
                     'path' => Storage::disk('backups')->path($file),
                     'size' => $this->formatBytes(Storage::disk('backups')->size($file)),
                     'size_bytes' => Storage::disk('backups')->size($file),
                     'date' => date('Y-m-d H:i:s', Storage::disk('backups')->lastModified($file)),
                     'timestamp' => Storage::disk('backups')->lastModified($file),
-                    'type' => str_starts_with(basename($file), 'data-only') ? 'Solo Datos' : 'Completo',
+                    'type' => str_contains(basename($file), 'data-only') ? 'Solo Datos' : 'Completo',
                 ];
             }
         }
@@ -104,11 +112,16 @@ class AdminBackupController extends Controller
     }
     
     public function downloadBackup($filename){
-        $path = Storage::disk('backups')->path($filename);
+        // $filename might contain slashes (e.g. Laravel/backup.zip), which is fine for Storage::disk()->path()
+        // But we need to ensure we don't allow directory traversal if we were using local FS directly.
+        // Storage::disk handles this safely usually.
         
-        if (!file_exists($path)) {
-            return back()->with('error', 'Backup no encontrado.');
+        if (!Storage::disk('backups')->exists($filename)) {
+             // Return 404 so the fetch client knows it failed, instead of a redirect
+            abort(404, 'Backup no encontrado.');
         }
+
+        $path = Storage::disk('backups')->path($filename);
         
         return response()->download($path);
     }
@@ -288,13 +301,13 @@ class AdminBackupController extends Controller
     }
     
     private function getLatestBackup(){
-        $files = Storage::disk('backups')->files();
+        $files = Storage::disk('backups')->allFiles();
         $backups = [];
         
         foreach ($files as $file) {
             if (str_ends_with($file, '.zip')) {
                 $backups[] = [
-                    'name' => basename($file),
+                    'name' => $file,
                     'path' => Storage::disk('backups')->path($file),
                     'time' => Storage::disk('backups')->lastModified($file),
                 ];
