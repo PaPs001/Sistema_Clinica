@@ -22,7 +22,6 @@ function configurarEventos() {
     document.getElementById('filter-alerts')?.addEventListener('click', () =>
         notificar('Filtro de alertas en desarrollo', 'info')
     );
-    document.getElementById('mark-all-read')?.addEventListener('click', marcarTodasLeidas);
 
     const filterBtn = document.getElementById('filter-patients');
     if (filterBtn) {
@@ -228,21 +227,19 @@ function renderTareas(tareas) {
 
 // -------- Acciones ----------
 function marcarTodasLeidas() {
-    document.querySelectorAll('.alert-card').forEach((c) => c.classList.add('is-read'));
-    notificar('Alertas marcadas como leídas');
 }
 
 function atenderAlerta(paciente) {
-    if (confirm(`¿Atender alerta de ${paciente}?`)) {
+    notificar(`Alerta atendida: ${paciente}`);
+    setTimeout(() => {
         window.location.href = '/signos-vitales';
-    }
+    }, 400);
 }
 
 function posponerAlerta(card) {
-    if (card && confirm('¿Posponer esta alerta?')) {
-        card.remove();
-        notificar('Alerta pospuesta');
-    }
+    if (!card) return;
+    card.remove();
+    notificar('Alerta pospuesta', 'info');
 }
 
 function realizarTarea(titulo) {

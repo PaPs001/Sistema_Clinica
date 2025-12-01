@@ -231,14 +231,58 @@ class EnfermeraController extends Controller
     {
         try {
             $validated = $request->validate([
-                'status' => 'required|string'
+                'treatment_name' => 'sometimes|required|string',
+                'start_date' => 'sometimes|required|date',
+                'end_date' => 'sometimes|nullable|date',
+                'notes' => 'sometimes|nullable|string',
+                'status' => 'sometimes|required|in:En seguimiento,Completado,suspendido',
+                'prescribed_by' => 'sometimes|nullable|exists:medic_users,id'
             ]);
+
+            $updateData = ['updated_at' => now()];
+
+            // Si cambian el nombre del tratamiento, buscamos/creamos y actualizamos el FK
+            if (isset($validated['treatment_name'])) {
+                $existingTreatment = DB::table('treatments')
+                    ->where('treatment_description', $validated['treatment_name'])
+                    ->first();
+
+                $treatmentId = $existingTreatment
+                    ? $existingTreatment->id
+                    : DB::table('treatments')->insertGetId([
+                        'treatment_description' => $validated['treatment_name'],
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+
+                $updateData['treatment_id'] = $treatmentId;
+            }
+
+            if (isset($validated['start_date'])) {
+                $updateData['start_date'] = $validated['start_date'];
+            }
+
+            if (array_key_exists('end_date', $validated)) {
+                $updateData['end_date'] = $validated['end_date'];
+            }
+
+            if (array_key_exists('notes', $validated)) {
+                $updateData['notes'] = $validated['notes'];
+            }
+
+            if (isset($validated['status'])) {
+                $updateData['status'] = $validated['status'];
+            }
+
+            if (array_key_exists('prescribed_by', $validated)) {
+                $updateData['prescribed_by'] = $validated['prescribed_by'];
+            }
 
             DB::table('treatments_records')
                 ->where('id', $id)
-                ->update(['status' => $validated['status'], 'updated_at' => now()]);
+                ->update($updateData);
 
-            return response()->json(['message' => 'Estado actualizado']);
+            return response()->json(['message' => 'Tratamiento actualizado']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error: ' . $e->getMessage()], 500);
         }
