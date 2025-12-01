@@ -45,7 +45,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     cargarCitas();
 
-    // Tratamientos / medicamentos activos
     cargarDatos({
         url: '/tratamientos-activos-paciente',
         contenedor: '#active-treatments',

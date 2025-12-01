@@ -92,20 +92,19 @@ function togglePanelNotificaciones() {
             <button class="notif-mark" type="button">Marcar leídas</button>
         </div>
         <div class="notif-list">
-            ${
-                alertas.length
-                    ? alertas
-                          .map(
-                              (a) => `
+            ${alertas.length
+            ? alertas
+                .map(
+                    (a) => `
                 <div class="notif-item">
                     <div class="notif-title">${a.titulo || 'Notificación'}</div>
                     <div class="notif-detail">${a.detalle || ''}</div>
                     <div class="notif-time">${a.hora || ''}</div>
                 </div>`
-                          )
-                          .join('')
-                    : '<div class="notif-empty">Sin notificaciones</div>'
-            }
+                )
+                .join('')
+            : '<div class="notif-empty">Sin notificaciones</div>'
+        }
         </div>
     `;
     document.body.appendChild(panel);
@@ -208,7 +207,7 @@ async function descargarReporte(tipo, url = null) {
         const link = url || data.url || '';
 
         if (!link) {
-            throw new Error(`No se recibi� URL de descarga. Respuesta: ${JSON.stringify(data)}`);
+            throw new Error(`No se recibio URL de descarga. Respuesta: ${JSON.stringify(data)}`);
         }
 
         const a = document.createElement('a');
@@ -522,7 +521,7 @@ notifyStyle.textContent = `
     .notif-empty { padding: 16px; text-align: center; color: #777; }
     .notifications { position: relative; cursor: pointer; }
 `;
-    document.head.appendChild(notifyStyle);
+document.head.appendChild(notifyStyle);
 
 // funciones accesibles globalmente si hiciera falta
 window.generarReporte = generarReporte;

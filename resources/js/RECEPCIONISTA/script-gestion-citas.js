@@ -504,8 +504,8 @@ function applyAppointmentFilters() {
 
     console.log(`Mostrando ${visibleRows} citas con los filtros aplicados`);
 
-    // La validaci�n real de "sin resultados" se hace en el backend,
-    // as� que no mostramos aqu� la alerta amarilla para evitar falsos positivos.
+    // La validacion real de "sin resultados" se hace en el backend,
+    // asi que no mostramos aqui la alerta amarilla para evitar falsos positivos.
     return;
 
     if (visibleRows === 0) {

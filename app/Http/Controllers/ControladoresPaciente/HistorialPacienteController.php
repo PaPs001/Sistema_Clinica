@@ -66,7 +66,7 @@ class HistorialPacienteController extends Controller
                 'servicio' => $cita->services->name ?? 'Sin servicio',
                 'fecha' => $cita->appointment_date,
                 'doctor' => $cita->doctor->user->name ?? 'No asignado',
-                'diagnostico' => $primeraConsulta?->disease->name ?? 'Sin diagn�stico',
+                'diagnostico' => $primeraConsulta?->disease->name ?? 'Sin diagnostico',
                 'tratamiento' => $primeraConsulta->treatment_diagnosis ?? 'Sin tratamiento',
                 'sintomas' => $primeraConsulta->symptoms ?? '',
                 'razon' => $primeraConsulta->reason ?? '',

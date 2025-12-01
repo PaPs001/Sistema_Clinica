@@ -52,9 +52,9 @@
                             <div class="info-group">
                                 <label>Género</label>
                                 <p class="info-value">
-                                    @if($user->genre === 'M')
+                                    @if($user->genre === 'hombre')
                                         Masculino
-                                    @elseif($user->genre === 'F')
+                                    @elseif($user->genre === 'mujer')
                                         Femenino
                                     @else
                                         No especificado
@@ -112,7 +112,7 @@
                                     @endif
                                 </p>
                             </div>
-                            <div class="info-group">
+                            <!--<div class="info-group">
                                 <label>Alergias Conocidas</label>
                                 <p class="info-value">No registradas en el sistema</p>
                             </div>
@@ -123,7 +123,7 @@
                             <div class="info-group">
                                 <label>Médico de Cabecera</label>
                                 <p class="info-value">No asignado</p>
-                            </div>
+                            </div>-->
                         </div>
                     </div>
                 </div>

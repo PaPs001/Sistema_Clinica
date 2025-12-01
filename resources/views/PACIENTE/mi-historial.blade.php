@@ -25,7 +25,6 @@
             <div>
                 <h2><i class="fas fa-stethoscope"></i> Historial de Consultas</h2>
             </div>
-            <!-- Template de las consultas para vision dinamica -->
             @include('plantillas.formularios.PACIENTE.template-consultas')
             <div id="lista-consultas" class="file-grid"></div>
             <div class="pagination-container mt-3 text-center" id="paginationContainer-consulta">

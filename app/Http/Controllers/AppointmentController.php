@@ -185,7 +185,7 @@ class AppointmentController extends Controller
 
             $doctorId = null;
 
-            // 3. Validar que no exista otra cita pendiente para este paciente con este mismo m�dico
+            // 3. Validar que no exista otra cita pendiente para este paciente con este mismo medico
             if ($patientId && $doctorUser && $doctorUser->medic) {
                 $existingDoctorId = $doctorUser->medic->id;
 
@@ -196,7 +196,7 @@ class AppointmentController extends Controller
 
                 if ($citaPendiente) {
                     Log::warning('Intento de crear cita duplicada paciente-doctor. Cita existente ID: ' . $citaPendiente->id);
-                    throw new \Exception('Ya existe una cita pendiente entre este paciente y este m�dico. Debe completarse o cancelarse antes de agendar una nueva.');
+                    throw new \Exception('Ya existe una cita pendiente entre este paciente y este medico. Debe completarse o cancelarse antes de agendar una nueva.');
                 }
             }
             
