@@ -49,14 +49,14 @@
                         </button>
                     </div>
 
-                    <div class="form-options">
+                    <!--<div class="form-options">
                         <label class="remember-me">
                             <input type="checkbox" id="remember">
                             <span class="checkmark"></span>
                             Recordarme
                         </label>
                         <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
-                    </div>
+                    </div>-->
 
                     <button type="submit" class="login-btn">
                         <i class="fas fa-sign-in-alt"></i>
