@@ -17,29 +17,23 @@ class AdminBackupController extends Controller
 {
     public function createDataBackup(){
         try {
-            $configPath = config_path('backup.php');
-            $originalConfig = file_get_contents($configPath);
+            config(['database.connections.mysql.dump.add_extra_option' => '--no-create-info --skip-triggers --skip-add-locks']);
             
-            $modifiedConfig = str_replace(
-                "'add_extra_option' => ''",
-                "'add_extra_option' => '--no-create-info --skip-triggers --skip-add-locks'",
-                $originalConfig
-            );
-            
-            file_put_contents($configPath, $modifiedConfig);
+            if (!File::exists(storage_path('app/backups'))) {
+                File::makeDirectory(storage_path('app/backups'), 0755, true);
+            }
             
             Artisan::call('config:clear');
             
             Artisan::call('backup:run', [
                 '--only-db' => true,
                 '--filename' => 'data-only-' . now()->format('Y-m-d_H-i-s') . '.zip',
+                '--disable-notifications' => true,
             ]);
-            
-            file_put_contents($configPath, $originalConfig);
-            Artisan::call('config:clear');
             
             $output = Artisan::output();
             Log::info('Data-only backup created', ['output' => $output]);
+            
             $latestBackup = $this->getLatestBackup();
             
             if ($latestBackup) {
@@ -47,20 +41,29 @@ class AdminBackupController extends Controller
                     ->deleteFileAfterSend(false);
             }
             
+            if (request()->expectsJson()) {
+                 return response()->json(['message' => 'Backup creado pero no se encontró el archivo.'], 500);
+            }
             return back()->with('success', 'Backup de datos creado exitosamente.');
             
         } catch (\Exception $e) {
             Log::error('Data backup failed', ['error' => $e->getMessage()]);
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Error al crear backup: ' . $e->getMessage()], 500);
+            }
             return back()->with('error', 'Error al crear backup: ' . $e->getMessage());
         }
     }
     
     public function createFullBackup(){
         try {
-            config(['backup.backup.source.databases.mysql.dump.add_extra_option' => '']);
+            if (!File::exists(storage_path('app/backups'))) {
+                File::makeDirectory(storage_path('app/backups'), 0755, true);
+            }
             
             Artisan::call('backup:run', [
                 '--filename' => 'full-' . now()->format('Y-m-d_H-i-s') . '.zip',
+                '--disable-notifications' => true,
             ]);
             
             $output = Artisan::output();
@@ -73,28 +76,34 @@ class AdminBackupController extends Controller
                     ->deleteFileAfterSend(false);
             }
             
+            if (request()->expectsJson()) {
+                 return response()->json(['message' => 'Backup creado pero no se encontró el archivo.'], 500);
+            }
             return back()->with('success', 'Backup completo creado exitosamente.');
             
         } catch (\Exception $e) {
             Log::error('Full backup failed', ['error' => $e->getMessage()]);
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Error al crear backup: ' . $e->getMessage()], 500);
+            }
             return back()->with('error', 'Error al crear backup: ' . $e->getMessage());
         }
     }
     
     public function listBackups(){
         $backups = [];
-        $files = Storage::disk('backups')->files();
+        $files = Storage::disk('backups')->allFiles();
         
         foreach ($files as $file) {
             if (str_ends_with($file, '.zip')) {
                 $backups[] = [
-                    'name' => basename($file),
+                    'name' => $file, // Return full relative path (e.g. "Laravel/backup.zip")
                     'path' => Storage::disk('backups')->path($file),
                     'size' => $this->formatBytes(Storage::disk('backups')->size($file)),
                     'size_bytes' => Storage::disk('backups')->size($file),
                     'date' => date('Y-m-d H:i:s', Storage::disk('backups')->lastModified($file)),
                     'timestamp' => Storage::disk('backups')->lastModified($file),
-                    'type' => str_starts_with(basename($file), 'data-only') ? 'Solo Datos' : 'Completo',
+                    'type' => str_contains(basename($file), 'data-only') ? 'Solo Datos' : 'Completo',
                 ];
             }
         }
@@ -104,11 +113,12 @@ class AdminBackupController extends Controller
     }
     
     public function downloadBackup($filename){
-        $path = Storage::disk('backups')->path($filename);
-        
-        if (!file_exists($path)) {
-            return back()->with('error', 'Backup no encontrado.');
+
+        if (!Storage::disk('backups')->exists($filename)) {
+            abort(404, 'Backup no encontrado.');
         }
+
+        $path = Storage::disk('backups')->path($filename);
         
         return response()->download($path);
     }
@@ -195,6 +205,14 @@ class AdminBackupController extends Controller
             'size' => $fileSizeMB . ' MB',
         ]);
         
+        $sqlContent = file_get_contents($sqlFile);
+        $isDataOnly = !str_contains($sqlContent, 'CREATE TABLE');
+        
+        if ($isDataOnly) {
+            Log::info('Detected data-only backup, truncating tables before restore');
+            $this->truncateAllTables();
+        }
+        
         $threshold = 50 * 1024 * 1024; 
         
         if ($fileSize < $threshold) {
@@ -206,6 +224,34 @@ class AdminBackupController extends Controller
         }
         
         Log::info('Database restored successfully');
+    }
+    
+    private function truncateAllTables(){
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            
+            $tables = DB::select('SHOW TABLES');
+            $dbName = DB::getDatabaseName();
+            $tableKey = "Tables_in_{$dbName}";
+            
+            foreach ($tables as $table) {
+                $tableName = $table->$tableKey;
+                
+                if ($tableName === 'migrations') {
+                    continue;
+                }
+                
+                Log::info("Truncating table: {$tableName}");
+                DB::table($tableName)->truncate();
+            }
+            
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            
+            Log::info('All tables truncated successfully');
+        } catch (\Exception $e) {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            throw new \Exception('Error al limpiar tablas: ' . $e->getMessage());
+        }
     }
     
     private function restoreWithUnprepared($sqlFile){
@@ -288,13 +334,13 @@ class AdminBackupController extends Controller
     }
     
     private function getLatestBackup(){
-        $files = Storage::disk('backups')->files();
+        $files = Storage::disk('backups')->allFiles();
         $backups = [];
         
         foreach ($files as $file) {
             if (str_ends_with($file, '.zip')) {
                 $backups[] = [
-                    'name' => basename($file),
+                    'name' => $file,
                     'path' => Storage::disk('backups')->path($file),
                     'time' => Storage::disk('backups')->lastModified($file),
                 ];
@@ -324,9 +370,17 @@ class AdminBackupController extends Controller
         try {
             Artisan::call('backup:clean');
             Log::info('Old backups cleaned');
+            
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Backups antiguos eliminados correctamente.']);
+            }
             return back()->with('success', 'Backups antiguos eliminados correctamente.');
         } catch (\Exception $e) {
             Log::error('Clean backups failed', ['error' => $e->getMessage()]);
+            
+            if (request()->expectsJson()) {
+                return response()->json(['message' => 'Error al limpiar: ' . $e->getMessage()], 500);
+            }
             return back()->with('error', 'Error al limpiar: ' . $e->getMessage());
         }
     }

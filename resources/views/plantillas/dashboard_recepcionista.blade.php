@@ -49,13 +49,13 @@
                     <span>Recordatorios</span>
                 </a>
             </li>
-            <li>
+            <!--<li>
                 <a href="{{ route('notifications.index') }}" class="{{ request()->routeIs('notifications.index') ? 'active' : '' }}">
                     <i class="fas fa-envelope"></i>
                     <span>Notificaciones</span>
                     <span class="badge notification-badge" style="display: none; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-left: 5px;">0</span>
                 </a>
-            </li>
+            </li>-->
         </ul>
         
         <div class="user-section">
