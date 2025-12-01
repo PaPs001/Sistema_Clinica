@@ -311,6 +311,71 @@ class EnfermeraController extends Controller
         }
     }
 
+    /**
+     * Citas del día (o rango) para la pantalla de signos vitales.
+     * Devuelve las citas junto con paciente y médico para que la enfermera
+     * pueda registrar signos vitales ligados a una cita específica.
+     */
+    public function getCitasParaSignos(Request $request)
+    {
+        try {
+            $query = DB::table('appointments')
+                ->join('patient_users', 'appointments.patient_id', '=', 'patient_users.id')
+                ->join('general_users as patient_general', 'patient_users.userId', '=', 'patient_general.id')
+                ->join('medic_users', 'appointments.doctor_id', '=', 'medic_users.id')
+                ->join('general_users as medic_general', 'medic_users.userId', '=', 'medic_general.id')
+                ->select(
+                    'appointments.id',
+                    'appointments.appointment_date',
+                    'appointments.appointment_time',
+                    'appointments.status',
+                    'patient_users.id as patient_id',
+                    'patient_general.name as paciente',
+                    'medic_users.id as doctor_id',
+                    'medic_general.name as medico'
+                );
+
+            // Filtro por fecha (hoy, semana, mes)
+            $today = Carbon::today();
+            if ($request->has('date_filter')) {
+                switch ($request->date_filter) {
+                    case 'today':
+                        $query->whereDate('appointments.appointment_date', $today);
+                        break;
+                    case 'week':
+                        $query->whereBetween('appointments.appointment_date', [$today->copy()->startOfWeek(), $today->copy()->endOfWeek()]);
+                        break;
+                    case 'month':
+                        $query->whereMonth('appointments.appointment_date', $today->month);
+                        break;
+                }
+            } else {
+                $query->whereDate('appointments.appointment_date', $today);
+            }
+
+            // Filtro opcional por paciente
+            if ($request->has('patient_id') && $request->patient_id !== '') {
+                $query->where('appointments.patient_id', $request->patient_id);
+            }
+
+            // Solo citas agendadas por defecto
+            if ($request->has('status') && $request->status !== 'todos') {
+                $query->where('appointments.status', $request->status);
+            } else {
+                $query->where('appointments.status', 'agendada');
+            }
+
+            $citas = $query
+                ->orderBy('appointments.appointment_date')
+                ->orderBy('appointments.appointment_time')
+                ->get();
+
+            return response()->json($citas);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
     // ==================== CITAS ====================
     
     public function getCitas(Request $request)

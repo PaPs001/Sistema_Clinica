@@ -23,6 +23,9 @@ Route::post('/tratamientos', [EnfermeraController::class, 'storeTratamiento']);
 Route::put('/tratamientos/{id}', [EnfermeraController::class, 'updateTratamiento']);
 Route::delete('/tratamientos/{id}', [EnfermeraController::class, 'deleteTratamiento']);
 
+// Citas para Signos Vitales (vista enfermera)
+Route::get('/citas-signos', [EnfermeraController::class, 'getCitasParaSignos']);
+
 // Citas
 Route::get('/citas', [EnfermeraController::class, 'getCitas']);
 Route::post('/citas', [EnfermeraController::class, 'storeCita']);
