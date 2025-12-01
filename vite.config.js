@@ -54,6 +54,7 @@ export default defineConfig({
                 // ENFERMERA - Tratamientos
                 'resources/css/ENFERMERA/paginas/style-tratamientos.css',
                 'resources/js/ENFERMERA/script-tratamientos.js',
+                'resources/js/ENFERMERA/tratamientos-activos.js',
                 // ENFERMERA - Citas
                 'resources/css/ENFERMERA/paginas/style-citas.css',
                 'resources/js/ENFERMERA/paginas/script-citas.js',
