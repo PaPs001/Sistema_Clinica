@@ -17,29 +17,26 @@ class AdminBackupController extends Controller
 {
     public function createDataBackup(){
         try {
-            $configPath = config_path('backup.php');
-            $originalConfig = file_get_contents($configPath);
+            // Set dump options at runtime instead of modifying files
+            // We target the database config as per Spatie docs
+            config(['database.connections.mysql.dump.add_extra_option' => '--no-create-info --skip-triggers --skip-add-locks']);
             
-            $modifiedConfig = str_replace(
-                "'add_extra_option' => ''",
-                "'add_extra_option' => '--no-create-info --skip-triggers --skip-add-locks'",
-                $originalConfig
-            );
-            
-            file_put_contents($configPath, $modifiedConfig);
+            // Ensure the backups directory exists
+            if (!File::exists(storage_path('app/backups'))) {
+                File::makeDirectory(storage_path('app/backups'), 0755, true);
+            }
             
             Artisan::call('config:clear');
             
             Artisan::call('backup:run', [
                 '--only-db' => true,
                 '--filename' => 'data-only-' . now()->format('Y-m-d_H-i-s') . '.zip',
+                '--disable-notifications' => true,
             ]);
-            
-            file_put_contents($configPath, $originalConfig);
-            Artisan::call('config:clear');
             
             $output = Artisan::output();
             Log::info('Data-only backup created', ['output' => $output]);
+            
             $latestBackup = $this->getLatestBackup();
             
             if ($latestBackup) {
@@ -47,11 +44,13 @@ class AdminBackupController extends Controller
                     ->deleteFileAfterSend(false);
             }
             
+            if (request()->expectsJson()) {
+                 return response()->json(['message' => 'Backup creado pero no se encontró el archivo.'], 500);
+            }
             return back()->with('success', 'Backup de datos creado exitosamente.');
             
         } catch (\Exception $e) {
             Log::error('Data backup failed', ['error' => $e->getMessage()]);
-            // If request expects JSON (AJAX), return JSON
             if (request()->expectsJson()) {
                 return response()->json(['message' => 'Error al crear backup: ' . $e->getMessage()], 500);
             }
