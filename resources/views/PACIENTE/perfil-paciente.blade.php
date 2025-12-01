@@ -170,47 +170,11 @@
                     <div class="section-header">
                         <h2><i class="fas fa-cog"></i> Configuración de Cuenta</h2>
                     </div>
-                    <div class="profile-content">
-                        <div class="settings-list">
-                            <div class="setting-item">
-                                <div class="setting-info">
-                                    <h4>Notificaciones por Correo</h4>
-                                    <p>Recibir recordatorios de citas y resultados</p>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="setting-item">
-                                <div class="setting-info">
-                                    <h4>Notificaciones por SMS</h4>
-                                    <p>Recibir alertas importantes por mensaje de texto</p>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                            <div class="setting-item">
-                                <div class="setting-info">
-                                    <h4>Compartir Datos con Médicos</h4>
-                                    <p>Permitir acceso a mi historial médico completo</p>
-                                </div>
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider"></span>
-                                </label>
-                            </div>
-                        </div>
+                    
                         <div class="account-actions">
                             <button class="btn-change-password">
                                 <i class="fas fa-key"></i>
                                 Cambiar Contraseña
-                            </button>
-                            <button class="btn-delete-account">
-                                <i class="fas fa-trash"></i>
-                                Eliminar Cuenta
                             </button>
                         </div>
                     </div>

@@ -1,13 +1,13 @@
 // script-perfil.js
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     console.log('Página Mi Perfil cargada');
-    
+
     // Modales de edición
     setupEditModals();
-    
+
     // Configuración de switches
     setupSettingsSwitches();
-    
+
     // Acciones de cuenta
     setupAccountActions();
 });
@@ -20,7 +20,7 @@ function setupEditModals() {
     const modalTitle = document.getElementById('modal-title');
     const formFields = document.getElementById('form-fields');
     const editForm = document.getElementById('edit-form');
-    
+
     // Configuraciones para cada tipo de edición
     const editConfigs = {
         'edit-personal': {
@@ -59,36 +59,36 @@ function setupEditModals() {
             ]
         }
     };
-    
+
     editButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
             const configId = this.id;
             const config = editConfigs[configId];
-            
+
             if (config) {
                 modalTitle.textContent = config.title;
                 loadFormFields(config.fields);
                 editModal.classList.add('active');
-                
+
                 // Configurar el formulario para esta edición
-                editForm.onsubmit = function(e) {
+                editForm.onsubmit = function (e) {
                     e.preventDefault();
                     handleFormSubmit(configId, config.fields);
                 };
             }
         });
     });
-    
-    closeModal.addEventListener('click', function() {
+
+    closeModal.addEventListener('click', function () {
         editModal.classList.remove('active');
     });
-    
-    cancelBtn.addEventListener('click', function() {
+
+    cancelBtn.addEventListener('click', function () {
         editModal.classList.remove('active');
     });
-    
+
     // Cerrar modal al hacer clic fuera
-    editModal.addEventListener('click', function(e) {
+    editModal.addEventListener('click', function (e) {
         if (e.target === editModal) {
             editModal.classList.remove('active');
         }
@@ -98,23 +98,23 @@ function setupEditModals() {
 function loadFormFields(fields) {
     const formFields = document.getElementById('form-fields');
     formFields.innerHTML = '';
-    
+
     fields.forEach(field => {
         const formGroup = document.createElement('div');
         formGroup.className = 'form-group';
-        
+
         const label = document.createElement('label');
         label.textContent = field.label;
         label.htmlFor = field.name;
-        
+
         let input;
-        
+
         if (field.type === 'select') {
             input = document.createElement('select');
             input.id = field.name;
             input.name = field.name;
             input.required = true;
-            
+
             field.options.forEach(option => {
                 const optionElement = document.createElement('option');
                 optionElement.value = option;
@@ -132,7 +132,7 @@ function loadFormFields(fields) {
             input.value = field.value;
             input.required = true;
         }
-        
+
         formGroup.appendChild(label);
         formGroup.appendChild(input);
         formFields.appendChild(formGroup);
@@ -145,13 +145,20 @@ function handleFormSubmit(configId, fields) {
         const input = document.getElementById(field.name);
         formData[field.name] = input.value;
     });
-    
+
     console.log('Datos del formulario:', formData);
-    
+
     // Aquí se enviarían los datos al servidor
-    alert('Cambios guardados exitosamente.');
+    // alert('Cambios guardados exitosamente.');
+    Swal.fire({
+        icon: 'success',
+        title: '¡Guardado!',
+        text: 'Cambios guardados exitosamente.',
+        timer: 2000,
+        showConfirmButton: false
+    });
     document.getElementById('edit-modal').classList.remove('active');
-    
+
     // Actualizar la interfaz con los nuevos datos
     updateProfileDisplay(configId, formData);
 }
@@ -165,11 +172,11 @@ function updateProfileDisplay(configId, formData) {
 function setupSettingsSwitches() {
     const switches = document.querySelectorAll('.switch input');
     switches.forEach(switchEl => {
-        switchEl.addEventListener('change', function() {
+        switchEl.addEventListener('change', function () {
             const setting = this.closest('.setting-item').querySelector('h4').textContent;
             const status = this.checked ? 'activada' : 'desactivada';
             console.log(`Configuración ${setting} ${status}`);
-            
+
             // Aquí se guardaría la preferencia en el servidor
         });
     });
@@ -178,25 +185,25 @@ function setupSettingsSwitches() {
 function setupAccountActions() {
     const changePasswordBtn = document.querySelector('.btn-change-password');
     const deleteAccountBtn = document.querySelector('.btn-delete-account');
-    
+
     if (changePasswordBtn) {
-        changePasswordBtn.addEventListener('click', function() {
+        changePasswordBtn.addEventListener('click', function () {
             alert('Función de cambio de contraseña.\nSe abriría un formulario para cambiar la contraseña.');
         });
     }
-    
+
     if (deleteAccountBtn) {
-        deleteAccountBtn.addEventListener('click', function() {
+        deleteAccountBtn.addEventListener('click', function () {
             if (confirm('¿Estás seguro de que quieres eliminar tu cuenta? Esta acción no se puede deshacer.')) {
                 alert('Cuenta marcada para eliminación.\nSe enviará un correo de confirmación.');
             }
         });
     }
-    
+
     // Cambiar avatar
     const changeAvatarBtn = document.querySelector('.btn-change-avatar');
     if (changeAvatarBtn) {
-        changeAvatarBtn.addEventListener('click', function() {
+        changeAvatarBtn.addEventListener('click', function () {
             alert('Función de cambio de avatar.\nSe abriría un selector de archivos para subir nueva foto.');
         });
     }
