@@ -27,7 +27,7 @@ class LoginController extends Controller
                 return redirect()->route('password.primeravez');
             }
             $routes = [
-                usersType::ROLE_ADMIN => 'dashboardAdmin',
+                usersType::ROLE_ADMIN => 'gestionRoles',
                 usersType::ROLE_MEDIC => 'registro-expediente',
                 usersType::ROLE_PATIENT => 'dashboard.paciente',
                 usersType::ROLE_RECEPTIONIST => 'dashboardRecepcionista',

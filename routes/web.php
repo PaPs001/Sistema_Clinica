@@ -27,8 +27,8 @@ Route::get('/', function () {
         $user = Auth::user();
 
         $routes = [
-            usersType::ROLE_ADMIN => 'dashboardAdmin',
-            usersType::ROLE_MEDIC => 'dashboardMedico',
+            usersType::ROLE_ADMIN => 'gestionRoles',
+            usersType::ROLE_MEDIC => 'registro-expediente',
             usersType::ROLE_PATIENT => 'dashboard.paciente',
             usersType::ROLE_RECEPTIONIST => 'dashboardRecepcionista',
             usersType::ROLE_NURSE => 'dashboardEnfermera',

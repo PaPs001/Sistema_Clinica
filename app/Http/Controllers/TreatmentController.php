@@ -31,17 +31,23 @@ class TreatmentController extends Controller
             $treatment = treatment_record::with(['treatment', 'medicUser', 'medicalRecord.patientUser.user'])
                 ->findOrFail($id);
 
+            $startDate = $treatment->start_date ? \Carbon\Carbon::parse($treatment->start_date)->format('Y-m-d') : null;
+            $endDate = $treatment->end_date ? \Carbon\Carbon::parse($treatment->end_date)->format('Y-m-d') : null;
+            $patientName = optional(optional(optional($treatment->medicalRecord)->patientUser)->user)->name ?? 'N/A';
+            $prescribedBy = optional($treatment->medicUser)->name ?? 'N/A';
+            $treatmentDescription = optional($treatment->treatment)->treatment_description ?? 'N/A';
+
             return response()->json([
                 'success' => true,
                 'treatment' => [
                     'id' => $treatment->id,
-                    'patient_name' => $treatment->medicalRecord->patientUser->user->name ?? 'N/A',
-                    'treatment_description' => $treatment->treatment->treatment_description ?? 'N/A',
-                    'start_date' => $treatment->start_date->format('Y-m-d'),
-                    'end_date' => $treatment->end_date ? $treatment->end_date->format('Y-m-d') : null,
+                    'patient_name' => $patientName,
+                    'treatment_description' => $treatmentDescription,
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
                     'notes' => $treatment->notes,
                     'status' => $treatment->status,
-                    'prescribed_by' => $treatment->medicUser->name ?? 'N/A',
+                    'prescribed_by' => $prescribedBy,
                 ]
             ]);
         } catch (\Exception $e) {
