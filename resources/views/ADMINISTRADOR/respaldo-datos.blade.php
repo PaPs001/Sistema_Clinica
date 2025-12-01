@@ -264,7 +264,7 @@
             </div>
         @endif
 
-        @if(auth()->user() && auth()->user()->hasPermission('crear_reportes'))
+        @hasPermission('crear_reportes')
             {{-- Acciones de Backup --}}
             <div class="backup-actions-grid">
                 <div class="backup-card">
@@ -309,7 +309,11 @@
                     </div>
                 </form>
             </div>
-        @endif
+        @else
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-triangle"></i> No tienes permisos para gestionar backups.
+            </div>
+        @endhasPermission
 
         {{-- Lista de Backups --}}
         <div class="recent-section">
@@ -330,7 +334,7 @@
                             <th>Fecha</th>
                             <th>Tipo</th>
                             <th>Tamaño</th>
-                            <th>Acciones</th>
+                            <!--<th>Acciones</th>-->
                         </tr>
                     </thead>
                     <tbody id="backupsTableBody">

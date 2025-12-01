@@ -126,7 +126,9 @@
                                     </td>
                                     <td>
                                         <!-- Actions can be added here, maybe link to management page -->
+                                        @hasPermission('gestionar_citas')
                                         <a href="{{ route('gestionCitas') }}" class="btn-view" aria-label="Gestionar cita">Gestionar</a>
+                                        @endhasPermission
                                     </td>
                                 </tr>
                                 @empty
@@ -186,22 +188,33 @@
                 <div class="quick-actions">
                     <h2>Acciones Rápidas</h2>
                     <div class="actions-grid">
+                        @hasPermission('registrar_pacientes')
                         <a href="{{ route('registroPaciente') }}" class="action-card">
                             <i class="fas fa-user-plus"></i>
                             <span>Nuevo Paciente</span>
                         </a>
+                        @endhasPermission
+                        
+                        @hasPermission('gestionar_citas')
                         <a href="{{ route('gestionCitas') }}" class="action-card">
                             <i class="fas fa-calendar-plus"></i>
                             <span>Agendar Cita</span>
                         </a>
+                        @endhasPermission
+                        
+                        @hasPermission('ver_pacientes')
                         <a href="{{ route('pacientesRecepcionista') }}" class="action-card">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Ver Agenda</span>
                         </a>
+                        @endhasPermission
+                        
+                        @hasPermission('gestionar_citas')
                         <a href="{{ route('recordatorios') }}" class="action-card">
                             <i class="fas fa-bell"></i>
                             <span>Enviar Recordatorios</span>
                         </a>
+                        @endhasPermission
                     </div>
                 </div>
             </div>

@@ -134,6 +134,7 @@
                         <h3><i class="fas fa-stethoscope"></i> Antecedentes Medicos</h3>
                         
                         <div class="medical-buttons-horizontal">
+                            @hasPermission('crear_expedientes')
                             <div class="medical-button-item">
                                 <h4><i class="fas fa-allergies"></i> Alergia</h4>
                                 <button type="button" class="btn-primary" onclick="agregarAlergia()">
@@ -154,6 +155,7 @@
                                     <i class="fas fa-plus"></i> Agregar medicamento
                                 </button>
                             </div>
+                            @endhasPermission
                         </div>
 
                         <div id="contenedorAlergias"></div>
@@ -226,9 +228,11 @@
                         <button type="button" class="btn-secondary" onclick="limpiarFormulario()">
                             <i class="fas fa-eraser"></i> Limpiar
                         </button>
+                        @hasPermission('crear_expedientes')
                         <button type="submit" class="btn-primary">
                             <i class="fas fa-save"></i> Guardar Expediente
                         </button>
+                        @endhasPermission
                     </div>
                 </form>
             </div>

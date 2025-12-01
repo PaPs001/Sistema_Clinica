@@ -8,9 +8,11 @@
                         <input type="text" placeholder="Buscar paciente existente..." aria-label="Buscar pacientes">
                         <i class="fas fa-search"></i>
                     </div>-->
+                    @hasPermission('registrar_pacientes')
                     <button class="section-btn" id="quick-registration-btn">
                         <i class="fas fa-bolt"></i> Registro Rápido
                     </button>
+                    @endhasPermission
                 </div>
             </header>
 
@@ -182,9 +184,11 @@
                             <button type="button" class="section-btn btn-cancel" id="clear-form">
                                 <i class="fas fa-eraser"></i> Limpiar Formulario
                             </button>
+                            @hasPermission('registrar_pacientes')
                             <button type="submit" class="section-btn" id="submit-patient">
                                 <i class="fas fa-save"></i> Registrar Paciente
                             </button>
+                            @endhasPermission
                         </div>
                     </form>
                 </div>
@@ -290,9 +294,11 @@
                         <input type="date" id="quick-dob" name="quick-dob">
                     </div>
                     <div class="form-actions">
+                        @hasPermission('registrar_pacientes')
                         <button type="submit" class="section-btn">
                             <i class="fas fa-bolt"></i> Registrar Rápidamente
                         </button>
+                        @endhasPermission
                         <button type="button" class="section-btn btn-cancel" id="cancel-quick-registration">
                             Cancelar
                         </button>

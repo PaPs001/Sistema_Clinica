@@ -136,6 +136,7 @@
                                     </td>
                                     <td>
                                         <div class="action-buttons">
+                                            @hasPermission('gestionar_citas')
                                             <a href="{{ route('crearCita', [
                                                       'name' => $patient->name,
                                                       'phone' => $patient->phone,
@@ -144,6 +145,7 @@
                                                 ]) }}" class="btn-calendar" title="Agendar cita">
                                                 <i class="fas fa-calendar-plus"></i>
                                             </a>
+                                            @endhasPermission
                                         </div>
                                     </td>
                                 </tr>

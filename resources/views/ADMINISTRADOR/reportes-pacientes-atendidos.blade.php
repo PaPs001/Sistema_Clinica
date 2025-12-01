@@ -37,11 +37,11 @@
                         <a href="{{ route('reportes.pacientesAtendidos') }}" class="section-btn" style="background-color: #6c757d; text-decoration: none; text-align: center;">
                             <i class="fas fa-eraser"></i> Limpiar filtros
                         </a>
-                        @if(auth()->user() && auth()->user()->hasPermission('descargar_reportes'))
+                        @hasPermission('descargar_reportes')
                             <a href="{{ route('reportes.pacientesAtendidos.export', request()->query()) }}" class="section-btn">
                                 <i class="fas fa-file-excel"></i> Exportar Excel
                             </a>
-                        @endif
+                        @endhasPermission
                     </div>
                 </div>
             </form>

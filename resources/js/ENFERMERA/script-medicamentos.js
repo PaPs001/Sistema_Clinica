@@ -23,30 +23,41 @@ function mostrarToast({ title, message, type = 'success' }) {
     const prev = document.querySelector('.toast-alert');
     prev?.remove();
 
+    const palette = {
+        success: '#22c55e',
+        error: '#ef4444',
+        info: '#2563eb'
+    };
+    const color = palette[type] || palette.info;
+
     const toast = document.createElement('div');
     toast.className = `toast-alert ${type}`;
     toast.innerHTML = `
-        <div class="toast-header">
-            <strong>${title}</strong>
-            <button class="toast-close" aria-label="Cerrar">&times;</button>
-        </div>
+        <div class="toast-line" style="background:${color};"></div>
         <div class="toast-body">
-            ${message}
+            <div class="toast-title">${title}</div>
+            <div class="toast-message">${message}</div>
         </div>
+        <button class="toast-close" aria-label="Cerrar">&times;</button>
     `;
     toast.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
-        min-width: 280px;
+        min-width: 260px;
         max-width: 360px;
-        background: #fff;
-        border: 1px solid ${type === 'success' ? '#28a745' : '#dc3545'};
-        border-radius: 8px;
-        box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        padding: 14px 18px 14px 16px;
+        background: #0f172a;
+        color: #e2e8f0;
+        border-radius: 10px;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.2);
         z-index: 10000;
         overflow: hidden;
         font-family: 'Segoe UI', sans-serif;
+        display: grid;
+        grid-template-columns: 6px 1fr auto;
+        gap: 12px;
+        align-items: center;
     `;
     document.body.appendChild(toast);
 
@@ -432,7 +443,9 @@ function verDetalles(id) {
 
 async function eliminarMedicamento(id) {
     console.log('Eliminar medicamento', id);
-    if (!confirm('Eliminar este medicamento?')) return;
+
+    const row = document.querySelector(`button[data-id="${id}"]`)?.closest('tr');
+    row?.classList.add('is-deleting');
 
     try {
         const response = await fetch(`/api/medicamentos/${id}`, {
@@ -464,6 +477,8 @@ async function eliminarMedicamento(id) {
             message: error.message || 'No se pudo eliminar el medicamento.',
             type: 'error'
         });
+    } finally {
+        row?.classList.remove('is-deleting');
     }
 }
 
@@ -606,8 +621,6 @@ document.head.appendChild(notifyStyle);
 window.editarMedicamento = editarMedicamento;
 window.verDetalles = verDetalles;
 window.eliminarMedicamento = eliminarMedicamento;
-
-
 
 
 

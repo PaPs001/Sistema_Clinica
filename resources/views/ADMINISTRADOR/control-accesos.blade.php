@@ -69,9 +69,11 @@
                             <button class="section-btn" onclick="refreshSessions()">
                                 <i class="fas fa-sync-alt"></i> Actualizar
                             </button>
+                            @hasPermission('administrar_roles')
                             <button class="section-btn btn-danger" onclick="terminateAllSessions()">
                                 <i class="fas fa-power-off"></i> Terminar Todas
                             </button>
+                            @endhasPermission
                         </div>
                     </h2>
                     
@@ -96,6 +98,7 @@
                 </div>
 
                 <!-- Configuración de Seguridad -->
+                @hasPermission('administrar_roles')
                 <div class="health-info">
                     <div class="info-card">
                         <h3><i class="fas fa-user-lock"></i> Políticas de Contraseñas</h3>
@@ -167,6 +170,7 @@
                         </div>
                     </div>
                 </div>
+                @endhasPermission
 <!--
                 Registro de Intentos Fallidos
                 <div class="recent-section">

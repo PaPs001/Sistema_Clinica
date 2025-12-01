@@ -40,9 +40,6 @@
                     <button class="section-btn" id="filter-alerts">
                         <i class="fas fa-filter"></i> Filtrar
                     </button>
-                    <button class="section-btn" id="mark-all-read">
-                        <i class="fas fa-check-double"></i> Marcar todo
-                    </button>
                 </div>
             </h2>
             <div class="alerts-grid" id="alertas-container">

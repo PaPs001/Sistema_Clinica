@@ -64,9 +64,11 @@
                             <button type="button" class="btn-secondary" onclick="limpiarFormulario()">
                                 <i class="fas fa-eraser"></i> Limpiar
                             </button>
+                            @hasPermission('subir_archivos')
                             <button type="submit" class="btn-primary">
                                 <i class="fas fa-upload"></i> Subir Documentos
                             </button>
+                            @endhasPermission
                         </div>
                     </form>
                 </div>

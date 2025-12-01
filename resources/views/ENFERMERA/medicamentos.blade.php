@@ -12,10 +12,6 @@
                         <input type="text" placeholder="Buscar medicamentos..." id="search-input" aria-label="Buscar medicamentos">
                         <i class="fas fa-search"></i>
                     </div>
-                    <div class="notifications" role="button" aria-label="Ver notificaciones">
-                        <i class="fas fa-bell"></i>
-                        <span class="notification-badge">2</span>
-                    </div>
                     <button class="btn-primary" id="nuevo-medicamento-btn">
                         <i class="fas fa-plus"></i>
                         Nuevo Medicamento

@@ -210,7 +210,7 @@ class AdminBackupController extends Controller
         
         if ($isDataOnly) {
             Log::info('Detected data-only backup, truncating tables before restore');
-            $this->truncateAllTables();
+            $this->truncateAllTables($sqlContent);
         }
         
         $threshold = 50 * 1024 * 1024; 
@@ -226,17 +226,22 @@ class AdminBackupController extends Controller
         Log::info('Database restored successfully');
     }
     
-    private function truncateAllTables(){
+    private function truncateAllTables($sqlContent){
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
             
-            $tables = DB::select('SHOW TABLES');
-            $dbName = DB::getDatabaseName();
-            $tableKey = "Tables_in_{$dbName}";
+            preg_match_all('/INSERT INTO `([^`]+)`/i', $sqlContent, $matches);
+            $tablesToTruncate = array_unique($matches[1]);
             
-            foreach ($tables as $table) {
-                $tableName = $table->$tableKey;
-                
+            if (empty($tablesToTruncate)) {
+                Log::warning('No tables found in SQL backup to truncate');
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+                return;
+            }
+            
+            Log::info('Tables to truncate', ['tables' => $tablesToTruncate]);
+            
+            foreach ($tablesToTruncate as $tableName) {
                 if ($tableName === 'migrations') {
                     continue;
                 }
@@ -247,7 +252,7 @@ class AdminBackupController extends Controller
             
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             
-            Log::info('All tables truncated successfully');
+            Log::info('Tables truncated successfully', ['count' => count($tablesToTruncate)]);
         } catch (\Exception $e) {
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
             throw new \Exception('Error al limpiar tablas: ' . $e->getMessage());
