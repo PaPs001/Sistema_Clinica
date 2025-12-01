@@ -31,8 +31,8 @@ class TreatmentController extends Controller
             $treatment = treatment_record::with(['treatment', 'medicUser', 'medicalRecord.patientUser.user'])
                 ->findOrFail($id);
 
-            $startDate = $treatment->start_date ? \Carbon\Carbon::parse($treatment->start_date)->format('Y-m-d') : null;
-            $endDate = $treatment->end_date ? \Carbon\Carbon::parse($treatment->end_date)->format('Y-m-d') : null;
+            $startDate = $this->parseDateOrNull($treatment->start_date);
+            $endDate = $this->parseDateOrNull($treatment->end_date);
             $patientName = optional(optional(optional($treatment->medicalRecord)->patientUser)->user)->name ?? 'N/A';
             $prescribedBy = optional($treatment->medicUser)->name ?? 'N/A';
             $treatmentDescription = optional($treatment->treatment)->treatment_description ?? 'N/A';
@@ -101,6 +101,19 @@ class TreatmentController extends Controller
                 'success' => false,
                 'message' => 'Error al actualizar el tratamiento'
             ], 500);
+        }
+    }
+
+    private function parseDateOrNull($value)
+    {
+        if (!$value) {
+            return null;
+        }
+        try {
+            return \Carbon\Carbon::parse($value)->format('Y-m-d');
+        } catch (\Exception $e) {
+            Log::warning('Fecha de tratamiento no válida', ['value' => $value]);
+            return null;
         }
     }
 }
