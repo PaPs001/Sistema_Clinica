@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     } catch (err) {
-        console.error("Error leyendo par�metros de la URL en agendar cita:", err);
+        console.error("Error leyendo parametros de la URL en agendar cita:", err);
     }
 
     if (nameInput && document.querySelector("#sugerencias-pacientes")) {

@@ -317,7 +317,7 @@ class EnfermeraController extends Controller
         try {
             $query = DB::table('appointments')
                 ->join('patient_users', 'appointments.patient_id', '=', 'patient_users.id')
-                ->join('general_users as patient_general', 'patient_users.userId', '=', 'patient_general.id')
+                ->leftJoin('general_users as patient_general', 'patient_users.userId', '=', 'patient_general.id')
                 ->join('medic_users', 'appointments.doctor_id', '=', 'medic_users.id')
                 ->join('general_users as medic_general', 'medic_users.userId', '=', 'medic_general.id')
                 // Saber si ya existen signos vitales registrados para esa cita
@@ -328,16 +328,21 @@ class EnfermeraController extends Controller
                     'appointments.appointment_time',
                     'appointments.status',
                     'patient_users.id as patient_id',
-                    'patient_general.name as paciente',
+                    DB::raw('COALESCE(patient_general.name, patient_users.temporary_name) as paciente'),
                     'medic_users.id as doctor_id',
                     'medic_general.name as medico',
                     'vital_signs.id as vital_id'
                 );
 
-            // Siempre limitar a las citas del mes actual
-            $today = Carbon::today();
-            $query->whereYear('appointments.appointment_date', $today->year)
-                  ->whereMonth('appointments.appointment_date', $today->month);
+            // Filtro de fecha
+            if ($request->input('date_filter') === 'today') {
+                $query->whereDate('appointments.appointment_date', Carbon::today());
+            } else {
+                // Comportamiento por defecto (mes actual) si no se especifica 'today'
+                $today = Carbon::today();
+                $query->whereYear('appointments.appointment_date', $today->year)
+                      ->whereMonth('appointments.appointment_date', $today->month);
+            }
 
             if ($request->filled('patient_id')) {
                 $query->where('appointments.patient_id', $request->patient_id);
@@ -345,7 +350,10 @@ class EnfermeraController extends Controller
 
             if ($request->filled('patient_name')) {
                 $nombrePaciente = $request->patient_name;
-                $query->where('patient_general.name', 'like', '%' . $nombrePaciente . '%');
+                $query->where(function($q) use ($nombrePaciente) {
+                    $q->where('patient_general.name', 'like', '%' . $nombrePaciente . '%')
+                      ->orWhere('patient_users.temporary_name', 'like', '%' . $nombrePaciente . '%');
+                });
             }
 
             if ($request->filled('doctor_name')) {

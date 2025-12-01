@@ -2,13 +2,10 @@
 document.addEventListener('DOMContentLoaded', function () {
     console.log('Página Mi Perfil cargada');
 
-    // Modales de edición
     setupEditModals();
 
-    // Configuración de switches
     setupSettingsSwitches();
 
-    // Acciones de cuenta
     setupAccountActions();
 });
 
@@ -21,7 +18,6 @@ function setupEditModals() {
     const formFields = document.getElementById('form-fields');
     const editForm = document.getElementById('edit-form');
 
-    // Configuraciones para cada tipo de edición
     const editConfigs = {
         'edit-personal': {
             title: 'Editar Información Personal',
@@ -70,7 +66,6 @@ function setupEditModals() {
                 loadFormFields(config.fields);
                 editModal.classList.add('active');
 
-                // Configurar el formulario para esta edición
                 editForm.onsubmit = function (e) {
                     e.preventDefault();
                     handleFormSubmit(configId, config.fields);
@@ -87,7 +82,6 @@ function setupEditModals() {
         editModal.classList.remove('active');
     });
 
-    // Cerrar modal al hacer clic fuera
     editModal.addEventListener('click', function (e) {
         if (e.target === editModal) {
             editModal.classList.remove('active');
@@ -148,8 +142,6 @@ function handleFormSubmit(configId, fields) {
 
     console.log('Datos del formulario:', formData);
 
-    // Aquí se enviarían los datos al servidor
-    // alert('Cambios guardados exitosamente.');
     Swal.fire({
         icon: 'success',
         title: '¡Guardado!',
@@ -159,13 +151,10 @@ function handleFormSubmit(configId, fields) {
     });
     document.getElementById('edit-modal').classList.remove('active');
 
-    // Actualizar la interfaz con los nuevos datos
     updateProfileDisplay(configId, formData);
 }
 
 function updateProfileDisplay(configId, formData) {
-    // Esta función actualizaría la visualización con los nuevos datos
-    // Por simplicidad, solo mostramos un mensaje
     console.log(`Actualizando perfil para: ${configId}`, formData);
 }
 
@@ -177,7 +166,6 @@ function setupSettingsSwitches() {
             const status = this.checked ? 'activada' : 'desactivada';
             console.log(`Configuración ${setting} ${status}`);
 
-            // Aquí se guardaría la preferencia en el servidor
         });
     });
 }
@@ -200,7 +188,6 @@ function setupAccountActions() {
         });
     }
 
-    // Cambiar avatar
     const changeAvatarBtn = document.querySelector('.btn-change-avatar');
     if (changeAvatarBtn) {
         changeAvatarBtn.addEventListener('click', function () {

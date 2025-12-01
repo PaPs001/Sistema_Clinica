@@ -1,4 +1,4 @@
-// Cargar citas semanales al cargar la p�gina
+// Cargar citas semanales al cargar la pagina
 document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('appointmentSearch');
     let searchTimeout = null;
