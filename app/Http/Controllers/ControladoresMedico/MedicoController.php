@@ -1,0 +1,185 @@
+<?php
+
+namespace App\Http\Controllers\ControladoresMedico;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\appointment;
+use App\Models\patientUser;
+use App\Models\vital_sign;
+use App\Models\medical_records;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
+class MedicoController extends Controller
+{
+    /**
+     * Obtiene las citas de la semana actual con estado 'agendada' para el m�dico autenticado,
+     * permitiendo filtrar por nombre de paciente (registrado o temporal).
+     */
+    public function getWeeklyAppointments(Request $request)
+    {
+        try {
+            $doctor = Auth::user()->medic;
+            
+            if (!$doctor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontr� el perfil de m�dico'
+                ], 404);
+            }
+
+            $today = Carbon::today();
+            $startOfWeek = $today->copy()->startOfWeek();
+            $endOfWeek = $today->copy()->endOfWeek();
+            $rangeStart = $today;
+
+            $search = trim((string) $request->input('q', ''));
+
+            Log::info('Buscando citas semanales', [
+                'doctor_id' => $doctor->id,
+                'start' => $rangeStart->toDateString(),
+                'end' => $endOfWeek->toDateString(),
+                'search' => $search,
+            ]);
+
+            $appointmentsQuery = appointment::with(['patient.user', 'doctor.user'])
+                ->where('doctor_id', $doctor->id)
+                ->where('status', 'agendada')
+                ->whereBetween('appointment_date', [$rangeStart->toDateString(), $endOfWeek->toDateString()]);
+
+            if ($search !== '') {
+                $appointmentsQuery->where(function ($q) use ($search) {
+                    $q->whereHas('patient.user', function ($sub) use ($search) {
+                        $sub->where('name', 'LIKE', '%' . $search . '%');
+                    })->orWhereHas('patient', function ($sub) use ($search) {
+                        $sub->where('is_Temporary', true)
+                            ->where('temporary_name', 'LIKE', '%' . $search . '%');
+                    });
+                });
+            }
+
+            $appointments = $appointmentsQuery
+                ->orderBy('appointment_date', 'asc')
+                ->orderBy('appointment_time', 'asc')
+                ->get();
+
+            $formattedAppointments = $appointments->map(function ($appointment) {
+                $patientName = 'Desconocido';
+                $isTemporary = false;
+                
+                if ($appointment->patient) {
+                    if ($appointment->patient->is_Temporary) {
+                        $patientName = $appointment->patient->temporary_name;
+                        $isTemporary = true;
+                    } elseif ($appointment->patient->user) {
+                        $patientName = $appointment->patient->user->name;
+                    }
+                }
+
+                return [
+                    'id' => $appointment->id,
+                    'patient_name' => $patientName,
+                    'patient_id' => $appointment->patient_id,
+                    'is_temporary' => $isTemporary,
+                    'date' => Carbon::parse($appointment->appointment_date)->format('d/m/Y'),
+                    'time' => Carbon::parse($appointment->appointment_time)->format('H:i'),
+                    'datetime' => $appointment->appointment_date . ' ' . $appointment->appointment_time,
+                    'reason' => $appointment->reason ?? 'Consulta general',
+                    'status' => $appointment->status,
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'appointments' => $formattedAppointments
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al obtener citas semanales: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener las citas: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Obtiene los datos completos del paciente asociado a una cita espec�fica
+     */
+    public function getAppointmentPatientData($appointmentId)
+    {
+        try {
+            $appointment = appointment::with(['patient.user'])->findOrFail($appointmentId);
+            
+            $patient = $appointment->patient;
+            
+            if (!$patient) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se encontr� el paciente asociado a la cita'
+                ], 404);
+            }
+
+            $patientData = [
+                'appointment_id' => $appointment->id,
+                'patient_id' => $patient->id,
+                'is_temporary' => (bool) $patient->is_Temporary,
+                'appointment_date' => $appointment->appointment_date,
+                'appointment_time' => $appointment->appointment_time,
+            ];
+
+            if ($patient->is_Temporary) {
+                $patientData['nombre'] = $patient->temporary_name;
+                $patientData['telefono'] = $patient->temporary_phone;
+            } else {
+                $user = $patient->user;
+                
+                if ($user) {
+                    $patientData['nombre'] = $user->name;
+                    $patientData['fechaNacimiento'] = $user->birthdate;
+                    $patientData['genero'] = $user->genre;
+                    $patientData['telefono'] = $user->phone;
+                    $patientData['email'] = $user->email;
+                    $patientData['direccion'] = $user->address;
+
+                    $medicalRecord = medical_records::where('patient_id', $patient->id)->first();
+                    
+                    if ($medicalRecord) {
+                        $patientData['smoking_status'] = $medicalRecord->smoking_status;
+                        $patientData['alcohol_use'] = $medicalRecord->alcohol_use;
+                        $patientData['physical_activity'] = $medicalRecord->physical_activity;
+                        $patientData['special_needs'] = $medicalRecord->special_needs;
+                    }
+
+                    $vitalSigns = vital_sign::where('patient_id', $patient->id)
+                        ->orderBy('created_at', 'desc')
+                        ->first();
+                    
+                    if ($vitalSigns) {
+                        $patientData['signos_vitales'] = [
+                            'presionArterial' => $vitalSigns->blood_pressure,
+                            'frecuenciaCardiaca' => $vitalSigns->heart_rate,
+                            'temperatura' => $vitalSigns->temperature,
+                            'peso' => $vitalSigns->weight,
+                            'estatura' => $vitalSigns->height,
+                        ];
+                    }
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $patientData
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error al obtener datos del paciente: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al obtener los datos del paciente: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+}

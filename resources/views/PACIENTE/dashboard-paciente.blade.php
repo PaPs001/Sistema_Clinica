@@ -2,59 +2,26 @@
 @section('title', 'Dashboard Paciente - Hospital Naval')
 @section('content')
             <header class="content-header">
-                <h1>¡Hola {{ Auth::user()->name }}</h1>
+                <h1>Hola {{ $user->name }}</h1>
                 <div class="header-actions">
                     @include('partials.header-notifications')
                 </div>
             </header>
 
-           <!-- <div class="content">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-calendar-check"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>2</h3>
-                            <p>Citas Pendientes</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-file-medical"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>15</h3>
-                            <p>Documentos Médicos</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-stethoscope"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>3</h3>
-                            <p>Consultas Este Mes</p>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon">
-                            <i class="fas fa-prescription"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3>5</h3>
-                            <p>Medicamentos Activos</p>
-                        </div>
-                    </div>
-                </div>-->
-
+            <div class="content">
                 <div class="recent-section">
                     <h2>
                         Próximas Citas
                         <div class="section-actions">
-                            <button class="section-btn" id="filter-appointments">
-                                <i class="fas fa-filter"></i> Filtrar
-                            </button>
+                            <div class="filters-inline">
+                                <select id="filterDoctor">
+                                    <option value="">Todos los médicos</option>
+                                    @foreach($medics as $medic)
+                                        <option value="{{ $medic->id }}">{{ $medic->user->name ?? 'Médico' }}</option>
+                                    @endforeach
+                                </select>
+                                <input type="date" id="filterDate">
+                            </div>
                         </div>
                     </h2>
                     <div class="appointments-table">
@@ -72,30 +39,29 @@
                             </tbody>
                         </table>
                     </div>
-                        <template id="cita-template">
-                            <tr>
-                                <td>
-                                    <div class="appointment-info">
-                                        <strong class="fecha"></strong>
-                                        <span class="hora"></span>
+                    <template id="cita-template">
+                        <tr>
+                            <td>
+                                <div class="appointment-info">
+                                    <strong class="fecha"></strong>
+                                    <span class="hora"></span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="doctor-info">
+                                    <div class="doctor-avatar"><i class="fas fa-user-md"></i></div>
+                                    <div>
+                                        <strong class="doctor-nombre"></strong>
+                                        <span class="doctor-servicio"></span>
                                     </div>
-                                </td>
-                                <td>
-                                    <div class="doctor-info">
-                                        <div class="doctor-avatar"><i class="fas fa-user-md"></i></div>
-                                        <div>
-                                            <strong class="doctor-nombre"></strong>
-                                            <span class="doctor-servicio"></span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="doctor-especialidad"></td>
-                                <td>
-                                    <button class="btn-view">Ver Detalles</button>
-                                    <button class="btn-cancel">Cancelar</button>
-                                </td>
-                            </tr>
-                        </template>
+                                </div>
+                            </td>
+                            <td class="doctor-especialidad"></td>
+                            <td>
+                                <button class="btn-view">Ver Detalles</button>
+                            </td>
+                        </tr>
+                    </template>
                     <div id="paginationContainer-appointments"></div>
                 </div>
 
@@ -105,38 +71,46 @@
                         <h3><i class="fas fa-heartbeat"></i> Información de Salud</h3>
                         <div class="info-grid">
                             <div class="info-item">
-                                <strong>Grupo Sanguíneo:</strong>
-                                <span>O+</span>
+                                <strong>Edad:</strong>
+                                <span>
+                                    @php
+                                        $birth = $user->birthdate ? \Carbon\Carbon::parse($user->birthdate) : null;
+                                    @endphp
+                                    {{ $birth ? $birth->age . ' años' : 'No registrado' }}
+                                </span>
                             </div>
                             <div class="info-item">
-                                <strong>Alergias:</strong>
-                                <span>Penicilina</span>
+                                <strong>Teléfono:</strong>
+                                <span>{{ $user->phone ?? 'No registrado' }}</span>
                             </div>
                             <div class="info-item">
-                                <strong>Condiciones Crónicas:</strong>
-                                <span>Hipertensión</span>
+                                <strong>Dirección:</strong>
+                                <span>{{ $user->address ?? 'No registrada' }}</span>
                             </div>
                             <div class="info-item">
-                                <strong>Última Visita:</strong>
-                                <span>15 Mar 2024</span>
+                                <strong>Última consulta:</strong>
+                                <span>
+                                    @if($lastAppointment)
+                                        {{ \Carbon\Carbon::parse($lastAppointment->appointment_date)->format('d/m/Y') }}
+                                    @else
+                                        Sin consultas registradas
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </div>
                     
                     <div class="info-card">
-                        <h3><i class="fas fa-prescription"></i> Medicamentos Activos</h3>
-                        <div class="medications-list">
+                        <h3><i class="fas fa-prescription"></i> Medicamentos / Tratamientos Activos</h3>
+                        <div class="medications-list" id="active-treatments"></div>
+                        <template id="tratamiento-activo-template">
                             <div class="medication-item">
-                                <strong>Losartán</strong>
-                                <span>50mg - 1 vez al día</span>
-                                <small>Para hipertensión</small>
+                                <strong class="tratamiento-nombre"></strong>
+                                <span class="tratamiento-detalle"></span>
+                                <small class="tratamiento-fecha"></small>
                             </div>
-                            <div class="medication-item">
-                                <strong>Atorvastatina</strong>
-                                <span>20mg - 1 vez al día</span>
-                                <small>Para colesterol</small>
-                            </div>
-                        </div>
+                        </template>
+                        <div id="paginationContainer-treatments"></div>
                     </div>
                 </div>
 
@@ -144,21 +118,17 @@
                 <div class="quick-actions">
                     <h2>Acciones Rápidas</h2>
                     <div class="actions-grid">
-                        <a href="solicitar-cita.html" class="action-card">
-                            <i class="fas fa-calendar-plus"></i>
-                            <span>Agendar Cita</span>
-                        </a>
-                        <a href="mi-historial.html" class="action-card">
+                        <a href="{{ route('historialPaciente') }}" class="action-card">
                             <i class="fas fa-file-medical"></i>
                             <span>Ver Historial</span>
                         </a>
-                        <a href="mis-documentos.html" class="action-card">
+                        <a href="{{ route('documentosPaciente') }}" class="action-card">
                             <i class="fas fa-download"></i>
-                            <span>Descargar Documentos</span>
+                            <span>Mis Documentos</span>
                         </a>
-                        <a href="perfil-paciente.html" class="action-card">
+                        <a href="{{ route('perfilPaciente') }}" class="action-card">
                             <i class="fas fa-user-edit"></i>
-                            <span>Actualizar Perfil</span>
+                            <span>Mi Perfil</span>
                         </a>
                     </div>
                 </div>

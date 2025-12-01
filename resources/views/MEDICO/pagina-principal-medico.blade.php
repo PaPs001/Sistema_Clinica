@@ -1,7 +1,7 @@
 @extends('plantillas.dashboard_medico')
-@section('title', 'Dashboard Médico - Hospital Naval')
+@section('title', 'Dashboard M�dico - Hospital Naval')
 @section('styles')
-    @vite('resources/css/medic/paginas/modulo_plantilla.css')
+    @vite('resources/css/medic/paginas/pagina_principal_medico.css')
 @endsection
 @section('content')
         <header class="content-header">
@@ -16,7 +16,7 @@
         </header>
         
         <div class="content">
-            <!-- Estadísticas -->
+            <!-- Estad�sticas -->
             <div class="stats-grid">
                 <div class="stat-card">
                     <div class="stat-icon">
@@ -56,59 +56,28 @@
                 </div>
             </div>
 
-            <!-- Pacientes Recientes -->
+            <!-- Pr�ximas Citas de la Semana -->
             <div class="recent-patients">
-                <h2>Pacientes Recientes</h2>
+                <h2>Pr�ximas Citas de la Semana</h2>
+                <div class="appointments-search">
+                    <input type="text" id="appointmentSearch" placeholder="Buscar cita por nombre de paciente...">
+                </div>
                 <div class="patients-table">
-                    <table>
+                    <table id="appointments-table">
                         <thead>
                             <tr>
                                 <th>Paciente</th>
-                                <th>Edad</th>
-                                <th>Última Visita</th>
-                                <th>Diagnóstico</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Motivo</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="appointments-tbody">
                             <tr>
-                                <td>
-                                    <div class="patient-info">
-                                        <div class="patient-avatar">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                        <div>
-                                            <strong>María González</strong>
-                                            <span>ID: MG-001</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>35 años</td>
-                                <td>15 Mar 2024</td>
-                                <td>Hipertensión</td>
-                                <td>
-                                    <button class="btn-view">Ver</button>
-                                    <button class="btn-edit">Editar</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="patient-info">
-                                        <div class="patient-avatar">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                        <div>
-                                            <strong>Carlos López</strong>
-                                            <span>ID: CL-002</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>42 años</td>
-                                <td>14 Mar 2024</td>
-                                <td>Diabetes Tipo 2</td>
-                                <td>
-                                    <button class="btn-view">Ver</button>
-                                    <button class="btn-edit">Editar</button>
+                                <td colspan="6" style="text-align: center; padding: 20px;">
+                                    <i class="fas fa-spinner fa-spin"></i> Cargando citas...
                                 </td>
                             </tr>
                         </tbody>
@@ -116,9 +85,9 @@
                 </div>
             </div>
 
-            <!-- Acciones Rápidas -->
+            <!-- Acciones R�pidas -->
             <div class="quick-actions">
-                <h2>Acciones Rápidas</h2>
+                <h2>Acciones R�pidas</h2>
                 <div class="actions-grid">
                     <a href="{{ route('registro-expediente') }}" class="action-card">
                         <i class="fas fa-file-medical"></i>
@@ -142,5 +111,5 @@
 @endsection
 
 @section('scripts')
-@vite(['resources/js/medic/script-medico.js'])
+@vite(['resources/js/medic/script-medico.js', 'resources/js/medic/pagina-principal-medico.js'])
 @endsection
