@@ -99,7 +99,7 @@
                             <a href="{{ route('gestionCitas') }}" class="section-btn btn-cancel" style="text-decoration: none; display: inline-flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-arrow-left"></i> Volver a gestión de citas
                             </a>
-                            @hasPermission('gestionar_citas')
+                            @hasPermission('crear_citas')
                             <button type="submit" class="section-btn">
                                 <i class="fas fa-save"></i> Agendar Cita
                             </button>
