@@ -203,8 +203,13 @@
 }
 
 @keyframes spin {
-    0% { transform: translate(-50%, -50%) rotate(0deg); }
-    100% { transform: translate(-50%, -50%) rotate(360deg); }
+    0% {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
 }
 
 /* Botones deshabilitados */
@@ -224,31 +229,31 @@ button:disabled:hover {
         flex-direction: column;
         align-items: stretch;
     }
-    
+
     .filter-group {
         min-width: auto;
     }
-    
+
     .date-navigation {
         flex-direction: column;
         gap: 10px;
         padding: 15px;
     }
-    
+
     .date-navigation span {
         min-width: auto;
     }
-    
+
     .form-actions {
         flex-direction: column;
     }
-    
+
     .header-actions {
         flex-direction: column;
         gap: 10px;
         align-items: stretch;
     }
-    
+
     .search-box input {
         width: 100%;
     }
@@ -295,4 +300,44 @@ select {
     background-position: right 10px center;
     background-size: 16px;
     padding-right: 35px !important;
+}
+
+/* Estilos para el autocompletado de pacientes */
+.sugerencias-lista {
+    position: absolute;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 5px 5px;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: none;
+    /* Se controla via JS */
+    margin-top: 2px;
+    left: 0;
+}
+
+.item-sugerencia {
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.item-sugerencia:last-child {
+    border-bottom: none;
+}
+
+.item-sugerencia:hover {
+    background-color: #f8f9fa;
+    color: var(--primary-color);
+}
+
+/* Asegurar que el contenedor del input tenga position relative */
+.form-group {
+    position: relative;
 }
