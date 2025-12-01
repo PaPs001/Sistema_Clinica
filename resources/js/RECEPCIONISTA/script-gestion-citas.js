@@ -591,12 +591,6 @@ function showAppointmentDetails(patientName, row) {
         </div>
         
         <div style="display: flex; gap: 10px; justify-content: flex-end;">
-            <button onclick="sendAppointmentReminder('${patientName}')" class="section-btn" style="background: var(--accent-color);">
-                <i class="fas fa-bell"></i> Recordatorio
-            </button>
-            <button onclick="rescheduleAppointmentFromDetails('${patientName}')" class="section-btn">
-                <i class="fas fa-calendar-alt"></i> Reagendar
-            </button>
             <button onclick="this.parentElement.parentElement.remove()" class="section-btn btn-cancel">
                 Cerrar
             </button>
