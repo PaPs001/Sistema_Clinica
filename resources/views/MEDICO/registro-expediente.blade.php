@@ -16,6 +16,16 @@
             @endif
 
             <div class="form-container">
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form id="expedienteForm" class="medical-form" method="post" action="{{ route('save_medical_record') }}">
                     @csrf
                     
@@ -34,7 +44,7 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label for="nombre">Nombre Completo *</label>
-                                <input type="text" id="nombre" name="nombre" required autocomplete="off" disabled>
+                                <input type="text" id="nombre" name="nombre" required autocomplete="off" readonly>
                                 <div id="sugerencias-pacientes" class="sugerencias-lista"></div>
                                 <input type="hidden" id="paciente_id" name="paciente_id">
                             </div>

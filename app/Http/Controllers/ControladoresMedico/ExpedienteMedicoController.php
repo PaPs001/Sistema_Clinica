@@ -39,8 +39,9 @@ class ExpedienteMedicoController extends Controller
             'nombre' => 'required|string|max:255',
             'fechaNacimiento' => 'required|date',
             'genero' => 'required|string|max:50',
-            'direccion' => 'required|string|max:500',
-            'telefono' => 'required|string|regex:/^[0-9+\-\s()]+$/|max:20',
+            // Dirección y teléfono se tratan como opcionales para coincidir con el formulario
+            'direccion' => 'nullable|string|max:500',
+            'telefono' => 'nullable|string|regex:/^[0-9+\-\s()]+$/|max:20',
             'email' => 'required|email|max:255',
             'smoking_status' => 'nullable|string|in:actual,exfumador,nunca',
             'alcohol_use' => 'nullable|string|in:ninguno,ocasional,frecuente',
